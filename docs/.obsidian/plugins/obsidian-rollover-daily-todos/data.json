@@ -1,0 +1,7 @@
+{
+  "templateHeading": "## Today",
+  "deleteOnComplete": true,
+  "removeEmptyTodos": false,
+  "rolloverChildren": true,
+  "rolloverOnFileCreate": true
+}

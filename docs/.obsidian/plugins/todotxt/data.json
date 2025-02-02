@@ -1,0 +1,9 @@
+{
+  "defaultPriorityFilter": "Z",
+  "defaultOrganizeBy": "project",
+  "defaultTodotxt": "default",
+  "defaultGroupBy": "INBOX",
+  "additionalExts": [],
+  "recurringTasks": true,
+  "preservePriority": true
+}

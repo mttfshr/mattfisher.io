@@ -1,0 +1,10 @@
+{
+	"id": "bluesky",
+	"name": "Bluesky",
+	"version": "1.0.7", 
+	"minAppVersion": "0.15.0",
+	"description": "Post to Bluesky.",
+	"author": "eharris128",
+	"authorUrl": "https://bsky.app/profile/evanharris.bsky.social",
+	"isDesktopOnly": false
+}
