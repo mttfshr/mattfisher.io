@@ -1,9 +1,0 @@
-{
-  "daysLookBack": 1,
-  "lookBackExistingNotesInsteadOfDays": true,
-  "groupBySection": true,
-  "removeEmptyTodos": true,
-  "removeIncompleteTodosFromPreviousNotes": true,
-  "supportedTodoChars": "xX/- ><?",
-  "completeTodoChars": "xX-"
-}

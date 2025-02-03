@@ -1,5 +1,4 @@
 # Logs
-logs
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -9,8 +8,6 @@ yarn-error.log*
 node_modules/
 
 # Build output
-dist/
-build/
 docs/.vitepress/dist/
 docs/.vitepress/.temp/
 
@@ -29,3 +26,5 @@ docs/.vitepress/cache/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+docs/.obsidian
