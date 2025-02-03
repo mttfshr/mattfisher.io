@@ -1,1 +1,0 @@
-import{_ as e,c as t,o}from"./chunks/framework.YypNwwLR.js";const f=JSON.parse('{"title":"Bio","description":"","frontmatter":{"title":"Bio","publish":true},"headers":[],"relativePath":"_profile/Bio.md","filePath":"_profile/Bio.md"}'),r={name:"_profile/Bio.md"};function i(a,s,c,n,p,_){return o(),t("div")}const d=e(r,[["render",i]]);export{f as __pageData,d as default};
