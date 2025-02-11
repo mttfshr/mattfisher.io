@@ -2,4 +2,4 @@
 layout: home
 
 hero:
-  tagline: "Welcome to my placeholder"
+  tagline: "Welcome to my sandbox"
