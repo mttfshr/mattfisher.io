@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="800" height="450" viewBox="0 0 800 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="450" fill="#2A2A2A"/>
+  <path d="M340 160V280M400 120V320M460 200V240" stroke="white" stroke-width="12" stroke-linecap="round"/>
+  <path d="M280 225L280 225C280 256.48 305.52 282 337 282V282C368.48 282 394 256.48 394 225V225C394 193.52 368.48 168 337 168V168C305.52 168 280 193.52 280 225Z" stroke="white" stroke-width="12"/>
+  <path d="M406 225L406 225C406 256.48 431.52 282 463 282V282C494.48 282 520 256.48 520 225V225C520 193.52 494.48 168 463 168V168C431.52 168 406 193.52 406 225Z" stroke="white" stroke-width="12"/>
+  <text x="400" y="410" font-family="sans-serif" font-size="14" fill="#FFFFFF" text-anchor="middle">Audio Content</text>
+</svg>

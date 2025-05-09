@@ -2,4 +2,4 @@
 layout: home
 
 hero:
-  tagline: "Welcome to my sandbox"
+  tagline: "it's a process"
