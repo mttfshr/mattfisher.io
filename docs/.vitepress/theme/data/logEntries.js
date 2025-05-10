@@ -1,7 +1,7 @@
 // Auto-generated log entries
 export const logEntries = [
   {
-    "id": "pin-2025-05-08-d9c534f8",
+    "id": "pin-2025-05-08-dfdb307a",
     "type": "pin",
     "title": "The Book Room | Kilchhofer",
     "url": "https://open.spotify.com/album/2BxsRR8wntvPexBQsKvDkW?si=2djiWlcbSJO1WHy_2B9enw",
@@ -14,7 +14,7 @@ export const logEntries = [
     "note": ""
   },
   {
-    "id": "pin-2025-05-08-28cae2af",
+    "id": "pin-2025-05-08-1af6c058",
     "type": "pin",
     "title": "Jonny | Powell",
     "url": "https://open.spotify.com/track/3wf8mwxaRhxlYzky909n6O?si=76e22a29f8494376",
@@ -27,7 +27,7 @@ export const logEntries = [
     "note": "Just checking to see if I still love this track. I do!"
   },
   {
-    "id": "pin-2025-05-08-5c475ab3",
+    "id": "pin-2025-05-08-4ec390b3",
     "type": "pin",
     "title": "Maudlin Tales of Grief and Love | Mystery Tiime",
     "url": "https://open.spotify.com/album/4I4qSJhJSldtEQZAXAqzJq?si=QMUMb6OwS5i7Ua7XTo4N-Q",
@@ -40,7 +40,7 @@ export const logEntries = [
     "note": ""
   },
   {
-    "id": "pin-2025-05-08-2fccf19f",
+    "id": "pin-2025-05-08-1296e516",
     "type": "pin",
     "title": "Abrabo | K. Frimprong",
     "url": "https://open.spotify.com/album/1v8P21FxdGjGxHOfQMEExN?si=-Ca_Ss5eRE6Cj1t3bYUYcw",
@@ -53,7 +53,7 @@ export const logEntries = [
     "note": ""
   },
   {
-    "id": "pin-2025-05-08-e5c149b8",
+    "id": "pin-2025-05-08-446cbd0f",
     "type": "pin",
     "title": "Stuff I've bought on Bandcamp",
     "url": "https://bandcamp.com/mattfisher/purchases",
@@ -66,7 +66,7 @@ export const logEntries = [
     "note": ""
   },
   {
-    "id": "pin-2025-05-08-c9949071",
+    "id": "pin-2025-05-08-82773f70",
     "type": "pin",
     "title": "The Hexadic System",
     "url": "https://sixorgansofadmittance.bandcamp.com/merch/ben-chasny-the-hexadic-system-paperback",
@@ -79,7 +79,7 @@ export const logEntries = [
     "note": ""
   },
   {
-    "id": "pin-2025-05-08-a13ddfb5",
+    "id": "pin-2025-05-08-cf34478a",
     "type": "pin",
     "title": "Spotify playlist",
     "url": "https://open.spotify.com/playlist/37i9dQZF1E4DfBpw1sdlKi?si=5032369b4c0945e4",
@@ -92,7 +92,7 @@ export const logEntries = [
     "note": ""
   },
   {
-    "id": "pin-2025-05-08-f973ae50",
+    "id": "pin-2025-05-08-3697c643",
     "type": "pin",
     "title": "Particula",
     "url": "https://github.com/ribponce/particula",

@@ -3,11 +3,12 @@
     "docs:dev": "npm run generate-content && vitepress dev docs",
     "docs:build": "npm run generate-content && vitepress build docs",
     "docs:preview": "vitepress preview docs",
-    "generate-content": "npm run generate-log && npm run generate-notes && npm run generate-workbook",
-    "generate-log": "node scripts/generateLogEntries.js",
-    "generate-notes": "node scripts/generateNotesData.js",
-    "generate-workbook": "node scripts/generateWorkbookItems.js",
-    "watch-log": "node scripts/watchLogFiles.js"
+    "generate-content": "npm run generate-log && npm run generate-notes && npm run generate-workbook && npm run generate-pins",
+    "generate-log": "node docs/_scripts/generateLogEntries.js",
+    "generate-notes": "node docs/_scripts/generateNotesData.js",
+    "generate-workbook": "node docs/_scripts/generateWorkbookItems.js",
+    "generate-pins": "node docs/_scripts/generatePinsData.js",
+    "watch-log": "node docs/_scripts/watchLogFiles.js"
   },
   "dependencies": {
     "@fontsource-variable/kode-mono": "^5.2.5",

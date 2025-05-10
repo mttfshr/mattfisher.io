@@ -1,0 +1,84 @@
+/* Custom styles for mattfisher.io */
+
+/* Workbook specific styles */
+.workbook-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.workbook-card {
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  background-color: var(--vp-c-bg-soft);
+}
+
+.workbook-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.workbook-card-image {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  background-color: var(--vp-c-bg-alt);
+}
+
+.workbook-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.workbook-card:hover .workbook-card-image img {
+  transform: scale(1.05);
+}
+
+.workbook-card-content {
+  padding: 1.5rem;
+}
+
+.workbook-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: var(--vp-c-text-1);
+}
+
+.workbook-card-date {
+  font-size: 0.875rem;
+  color: var(--vp-c-text-2);
+  margin-bottom: 0.75rem;
+}
+
+.workbook-card-description {
+  font-size: 0.95rem;
+  color: var(--vp-c-text-2);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* General utility classes */
+.full-width {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Adjusting VitePress defaults for our content */
+:root {
+  --content-max-width: 1200px;
+}
+
+@media (max-width: 768px) {
+  .workbook-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}

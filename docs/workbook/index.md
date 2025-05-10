@@ -6,6 +6,7 @@ sidebar: false
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import WorkbookGallery from '../.vitepress/theme/components/workbook/WorkbookGallery.vue';
 
 // Initialize with empty array
 const workbookItems = ref([]);
@@ -14,7 +15,7 @@ const workbookItems = ref([]);
 onMounted(async () => {
   try {
     // Dynamic import with fallback to empty array if file doesn't exist
-    const itemsModule = await import('../.vitepress/data/workbookItems.js');
+    const itemsModule = await import('../.vitepress/theme/data/workbookItems.js');
     workbookItems.value = itemsModule.workbookItems || [];
   } catch (error) {
     console.error('Error loading workbook items:', error);

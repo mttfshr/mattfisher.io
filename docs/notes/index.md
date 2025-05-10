@@ -6,6 +6,7 @@ sidebar: false
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import NotesGrid from '../.vitepress/theme/components/notes/NotesGrid.vue';
 
 // Initialize with empty array
 const notesData = ref([]);
@@ -14,7 +15,7 @@ const notesData = ref([]);
 onMounted(async () => {
   try {
     // Dynamic import with fallback to empty array if file doesn't exist
-    const dataModule = await import('../.vitepress/data/notesData.js');
+    const dataModule = await import('../.vitepress/theme/data/notesData.js');
     notesData.value = dataModule.notesData || [];
   } catch (error) {
     console.error('Error loading notes data:', error);

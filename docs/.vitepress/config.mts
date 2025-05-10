@@ -11,8 +11,9 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: 'Log', link: '/log' },
       { text: 'Workbook', link: '/workbook' },
+      { text: 'Log', link: '/log' },
+      { text: 'Pins', link: '/pins/' },
       { text: 'Notes', link: '/notes' },
       { text: 'Links', items: 
         [

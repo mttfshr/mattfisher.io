@@ -6,6 +6,7 @@ sidebar: false
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import LogFeed from '../.vitepress/theme/components/log/LogFeed.vue'
 
 // Initialize with empty array
 const logEntries = ref([])
@@ -14,7 +15,7 @@ const logEntries = ref([])
 onMounted(async () => {
   try {
     // Dynamic import with fallback to empty array if file doesn't exist
-    const entriesModule = await import('../.vitepress/data/logEntries.js')
+    const entriesModule = await import('../.vitepress/theme/data/logEntries.js')
     logEntries.value = entriesModule.logEntries || []
   } catch (error) {
     console.error('Error loading log entries:', error)
