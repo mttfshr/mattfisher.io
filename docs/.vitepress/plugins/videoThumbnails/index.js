@@ -14,63 +14,66 @@ export function videoThumbnailsPlugin() {
       // Run for both development and production
       console.log('Video Thumbnails Plugin: Processing thumbnails on plugin initialization');
       
-      // Import the config directly
-      const fs = await import('fs');
-      const path = await import('path');
-      
       // Get the base path
       const basePath = process.cwd();
-      const configPath = path.resolve(basePath, 'docs/.vitepress/config.mts');
       
-      // Check if the config exists
-      if (!fs.existsSync(configPath)) {
-        console.error('Config file not found:', configPath);
-        return;
-      }
-      
-      // Dynamically import the config
-      const { default: config } = await import(configPath);
-      const workbookItems = config?.themeConfig?.workbookItems || [];
-      
-      if (workbookItems.length === 0) {
-        console.log('No workbook items found in themeConfig');
-        return;
-      }
-      
-      console.log(`Found ${workbookItems.length} workbook items to process`);
-      
-      // Make sure thumbnail directory exists
-      const outputDir = path.resolve(basePath, 'docs/media/thumbnails');
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
-      }
-      
-      // Also ensure the public directory exists
-      const publicDir = path.resolve(basePath, 'docs/public');
-      if (!fs.existsSync(publicDir)) {
-        fs.mkdirSync(publicDir, { recursive: true });
-      }
-      
-      // Create a symlink from public to media if it doesn't exist
-      const publicMediaDir = path.resolve(publicDir, 'media');
-      if (!fs.existsSync(publicMediaDir)) {
-        const targetDir = path.resolve(basePath, 'docs/media');
-        if (fs.existsSync(targetDir)) {
-          fs.symlinkSync(targetDir, publicMediaDir, 'dir');
-          console.log('Created symlink from public/media to media');
-        } else {
-          console.error('Target directory does not exist:', targetDir);
+      try {
+        // Dynamically import the config
+        const { default: config } = await import(`${basePath}/docs/.vitepress/config.mts`);
+        const workbookItems = config?.themeConfig?.workbookItems || [];
+        
+        if (workbookItems.length === 0) {
+          console.log('No workbook items found in themeConfig');
+          return;
         }
+        
+        console.log(`Found ${workbookItems.length} workbook items to process`);
+        
+        // Make sure thumbnail directory exists in the media directory
+        const outputDir = path.resolve(basePath, 'docs/media/thumbnails');
+        if (!fs.existsSync(outputDir)) {
+          fs.mkdirSync(outputDir, { recursive: true });
+        }
+        
+        // Also ensure the public directory and its media subdirectory exist
+        const publicDir = path.resolve(basePath, 'docs/public');
+        if (!fs.existsSync(publicDir)) {
+          fs.mkdirSync(publicDir, { recursive: true });
+        }
+        
+        // Create a public/media directory and public/media/thumbnails directory
+        const publicMediaDir = path.resolve(publicDir, 'media');
+        if (!fs.existsSync(publicMediaDir)) {
+          fs.mkdirSync(publicMediaDir, { recursive: true });
+        }
+        
+        const publicThumbnailsDir = path.resolve(publicMediaDir, 'thumbnails');
+        if (!fs.existsSync(publicThumbnailsDir)) {
+          fs.mkdirSync(publicThumbnailsDir, { recursive: true });
+        }
+        
+        // Copy any SVG placeholders from media directory to public if they don't exist yet
+        const placeholderSvg = path.resolve(basePath, 'docs/media/video-placeholder.svg');
+        if (fs.existsSync(placeholderSvg)) {
+          const publicPlaceholderSvg = path.resolve(publicMediaDir, 'video-placeholder.svg');
+          if (!fs.existsSync(publicPlaceholderSvg)) {
+            const svgContent = fs.readFileSync(placeholderSvg, 'utf8');
+            fs.writeFileSync(publicPlaceholderSvg, svgContent);
+            console.log('Copied video-placeholder.svg to public directory');
+          }
+        }
+        
+        // Process video thumbnails
+        fetchVideoThumbnails(workbookItems, {
+          outputDir,
+          width: 640,
+          height: 360,
+          quality: 80,
+          skipExisting: true
+        });
+      } catch (error) {
+        console.error('Error loading config:', error);
       }
-      
-      // Process video thumbnails
-      fetchVideoThumbnails(workbookItems, {
-        outputDir,
-        width: 640,
-        height: 360,
-        quality: 80,
-        skipExisting: true
-      });
     } catch (error) {
       console.error('Error pre-processing thumbnails:', error);
     }
@@ -103,6 +106,23 @@ export function videoThumbnailsPlugin() {
         const outputDir = path.resolve(process.cwd(), 'docs/media/thumbnails');
         if (!fs.existsSync(outputDir)) {
           fs.mkdirSync(outputDir, { recursive: true });
+        }
+        
+        // Also ensure the public directory and its media subdirectory exist
+        const publicDir = path.resolve(process.cwd(), 'docs/public');
+        if (!fs.existsSync(publicDir)) {
+          fs.mkdirSync(publicDir, { recursive: true });
+        }
+        
+        // Create a public/media directory and public/media/thumbnails directory
+        const publicMediaDir = path.resolve(publicDir, 'media');
+        if (!fs.existsSync(publicMediaDir)) {
+          fs.mkdirSync(publicMediaDir, { recursive: true });
+        }
+        
+        const publicThumbnailsDir = path.resolve(publicMediaDir, 'thumbnails');
+        if (!fs.existsSync(publicThumbnailsDir)) {
+          fs.mkdirSync(publicThumbnailsDir, { recursive: true });
         }
         
         // Process video thumbnails

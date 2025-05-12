@@ -9,7 +9,7 @@ import path from 'path';
  */
 export async function fetchVideoThumbnails(workbookItems, options = {}) {
   const {
-    outputDir = path.resolve(process.cwd(), 'docs/_media/thumbnails'),
+    outputDir = path.resolve(process.cwd(), 'docs/media/thumbnails'),
     width = 640,
     height = 360,
     quality = 80,
@@ -19,6 +19,12 @@ export async function fetchVideoThumbnails(workbookItems, options = {}) {
   // Create output directory if it doesn't exist
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
+  }
+  
+  // Also create public directory for thumbnails
+  const publicDir = path.resolve(process.cwd(), 'docs/public/media/thumbnails');
+  if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir, { recursive: true });
   }
   
   // Process each workbook item that has a video
@@ -94,6 +100,10 @@ async function processVimeoVideo(item, mediaUrl, outputDir, options) {
       const buffer = await thumbnailResponse.buffer();
       fs.writeFileSync(outputPath, buffer);
       
+      // Also copy to public directory
+      const publicPath = path.join(process.cwd(), 'docs/public', relativePath);
+      fs.writeFileSync(publicPath, buffer);
+      
       console.log(`Saved thumbnail for Vimeo video ${vimeoId}`);
       
       // Update the item with the thumbnail path
@@ -108,6 +118,11 @@ async function processVimeoVideo(item, mediaUrl, outputDir, options) {
     
     const svgContent = createVideoPlaceholderSvg(item.title, 'V');
     fs.writeFileSync(svgPath, svgContent);
+    
+    // Also copy to public directory
+    const publicSvgPath = path.join(process.cwd(), 'docs/public', relativeSvgPath);
+    fs.writeFileSync(publicSvgPath, svgContent);
+    
     console.log(`Created SVG placeholder for ${item.title}`);
     
     // Update the item with the SVG placeholder path
@@ -150,9 +165,17 @@ async function processYouTubeVideo(item, mediaUrl, outputDir) {
       
       const buffer = await fallbackResponse.buffer();
       fs.writeFileSync(outputPath, buffer);
+      
+      // Also copy to public directory
+      const publicPath = path.join(process.cwd(), 'docs/public', relativePath);
+      fs.writeFileSync(publicPath, buffer);
     } else {
       const buffer = await response.buffer();
       fs.writeFileSync(outputPath, buffer);
+      
+      // Also copy to public directory
+      const publicPath = path.join(process.cwd(), 'docs/public', relativePath);
+      fs.writeFileSync(publicPath, buffer);
     }
     
     console.log(`Saved thumbnail for YouTube video ${youtubeId}`);
@@ -168,6 +191,10 @@ async function processYouTubeVideo(item, mediaUrl, outputDir) {
     
     const svgContent = createVideoPlaceholderSvg(item.title, 'YT');
     fs.writeFileSync(placeholderPath, svgContent);
+    
+    // Also copy to public directory
+    const publicSvgPath = path.join(process.cwd(), 'docs/public', relativePlaceholderPath);
+    fs.writeFileSync(publicSvgPath, svgContent);
     
     // Update the item with the placeholder path
     item.thumbnailUrl = relativePlaceholderPath;
