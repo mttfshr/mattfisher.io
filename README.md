@@ -6,11 +6,11 @@ This is a personal website built with [VitePress](https://vitepress.dev/), a sta
 
 ### Log
 
-A chronological feed of updates and thoughts.
+A chronological feed of updates and thoughts, presented in chronological order.
 
 ### Workbook
 
-A portfolio of creative work and projects.
+A portfolio of creative work and projects, primarily focused on video synth projects.
 
 ### Pins
 
@@ -24,7 +24,17 @@ A collection of links to interesting content found across the web. Features incl
 
 ### Notes
 
-Long-form content and documentation.
+Long-form content and documentation with support for rich media.
+
+## Architecture
+
+This site uses VitePress's native data handling capabilities and asset management:
+
+- **Content as Data**: All content is stored in Markdown files with frontmatter metadata
+- **VitePress Config Integration**: Data is processed at build time and accessible via `useData()` hook
+- **Component-Based Rendering**: Vue components consume structured data for display
+- **Plugin Enhancements**: Custom VitePress plugins for media handling and metadata extraction
+- **Asset Management**: Media files stored in `_media` directory and symlinked to `public` for inclusion in the build
 
 ## Development
 
@@ -42,13 +52,73 @@ npm run docs:build
 npm run docs:preview
 ```
 
+No additional build steps or data generation scripts are needed. Data is automatically processed from content files at build time.
+
+### Asset Management
+
+Media assets are stored in the `docs/media` directory and linked to the `public` directory to ensure they're included in the build:
+
+```
+docs/
+├── media/         # Media files location
+│   ├── thumbnails/ # Video thumbnails
+│   └── ...         # Other media assets
+├── public/         # Public assets directory
+│   └── media -> ../media  # Symlink to media directory
+```
+
+This approach ensures that all media assets are properly included in the build output.
+
 ## Content Management
+
+### Notes
+
+Create Markdown files in the `docs/notes/` directory with frontmatter:
+
+```markdown
+---
+title: Note Title
+description: Brief description
+tags: [tag1, tag2]
+image: /_media/image.jpg
+layout: note
+---
+
+Your note content here...
+```
+
+The last update time is automatically tracked by VitePress based on file modification time.
+
+### Workbook Items
+
+Create Markdown files in the `docs/workbook/` directory with frontmatter:
+
+```markdown
+---
+title: Project Title
+description: Description
+date: YYYY-MM-DD
+layout: workbookItem
+tags: [tag1, tag2]
+media:
+  type: video|image|audio|gallery
+  provider: vimeo|youtube (for videos)
+  url: https://...
+  embed: true|false
+---
+
+Project content here...
+```
+
+Thumbnails for video content are automatically generated during build.
 
 ### Adding New Pins
 
 Edit the `docs/pins/pins.md` file and add new links in this format:
 
 ```markdown
+## Section Name (optional)
+
 - https://example.com/some-link
   Optional notes about the link #tag1 #tag2
 ```
@@ -59,7 +129,19 @@ The system will automatically:
 3. Apply appropriate styling
 4. Add to collections based on tags
 
-No need to manually add titles, descriptions, or thumbnails - they're all pulled automatically from the URL's Open Graph data.
+### Log Entries
+
+Edit the `docs/log/entries.md` file to add new entries:
+
+```markdown
+# YYYY-MM-DD: Update Title
+Your update content here...
+
+---
+
+# YYYY-MM-DD: [Pin Title](https://example.com)
+Your notes about this pin #tag1 #tag2
+```
 
 ## License
 

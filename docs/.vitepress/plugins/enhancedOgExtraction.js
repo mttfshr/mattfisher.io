@@ -1,4 +1,4 @@
-// docs/_scripts/enhancedOgExtraction.js
+// docs/.vitepress/plugins/enhancedOgExtraction.js
 // Import issue workaround for node-fetch@2
 import nodeFetch from 'node-fetch';
 const fetch = nodeFetch.default || nodeFetch;

@@ -1,11 +1,11 @@
-// fetchThumbnails.js
+// docs/.vitepress/plugins/videoThumbnails/fetchThumbnails.js
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
 
 /**
  * Fetches thumbnails for Vimeo and YouTube videos and saves them locally.
- * This can be run as a build step to ensure thumbnails are available.
+ * Updated version to work with VitePress-native data structure.
  */
 export async function fetchVideoThumbnails(workbookItems, options = {}) {
   const {
@@ -23,27 +23,28 @@ export async function fetchVideoThumbnails(workbookItems, options = {}) {
   
   // Process each workbook item that has a video
   const promises = workbookItems
-    .filter(item => item.mediaType === 'video' || (item.media && item.media.type === 'video'))
+    .filter(item => item.media && item.media.type === 'video')
     .map(async item => {
       try {
-        // Skip if item already has a thumbnail and skipExisting is true
-        if (skipExisting && item.thumbnailUrl) {
-          console.log(`Item ${item.title} already has a thumbnail, skipping`);
+        // Get provider and URL from the media object
+        const { provider, url } = item.media;
+        
+        // Skip if provider is not supported
+        if (!provider || (provider !== 'vimeo' && provider !== 'youtube')) {
+          console.log(`Skipping ${item.title}: Unsupported provider ${provider}`);
           return;
         }
         
-        // Check if it's using the new or old format
-        const provider = item.videoProvider || (item.media ? item.media.provider : '');
-        const mediaUrl = item.mediaUrl || (item.media ? item.media.url : '');
-        
-        // We'll handle Vimeo and YouTube differently
+        // Process based on provider
         if (provider === 'vimeo') {
-          await processVimeoVideo(item, outputDir, { width, height, quality });
+          await processVimeoVideo(item, url, outputDir, { width, height, quality });
+          
+          // Update the item with thumbnailUrl
+          if (item.thumbnailUrl) {
+            console.log(`Thumbnail already set for ${item.title}: ${item.thumbnailUrl}`);
+          }
         } else if (provider === 'youtube') {
-          await processYouTubeVideo(item, outputDir);
-        } else if (provider === '') {
-          // Handle known slugs with custom thumbnails
-          await processCustomThumbnail(item, outputDir);
+          await processYouTubeVideo(item, url, outputDir);
         }
       } catch (error) {
         console.error(`Error processing thumbnail for ${item.title}:`, error.message);
@@ -54,19 +55,21 @@ export async function fetchVideoThumbnails(workbookItems, options = {}) {
   console.log('Video thumbnails processed successfully!');
 }
 
-async function processVimeoVideo(item, outputDir, options) {
-  // Get the Vimeo ID from either the new or old format
-  const mediaUrl = item.mediaUrl || (item.media ? item.media.url : '');
+async function processVimeoVideo(item, mediaUrl, outputDir, options) {
+  // Get the Vimeo ID
   const vimeoId = extractVimeoId(mediaUrl);
-  if (!vimeoId) return;
+  if (!vimeoId) {
+    console.log(`Could not extract Vimeo ID from ${mediaUrl}`);
+    return;
+  }
   
   const outputPath = path.join(outputDir, `vimeo-${vimeoId}.jpg`);
+  const relativePath = `/media/thumbnails/vimeo-${vimeoId}.jpg`;
   
-  // Skip if thumbnail already exists
+  // Skip if thumbnail already exists and update the item
   if (fs.existsSync(outputPath)) {
     console.log(`Thumbnail already exists for Vimeo video ${vimeoId}`);
-    // Still update the item with the thumbnail path
-    item.thumbnailUrl = `/_media/thumbnails/vimeo-${vimeoId}.jpg`;
+    item.thumbnailUrl = relativePath;
     return;
   }
   
@@ -94,44 +97,39 @@ async function processVimeoVideo(item, outputDir, options) {
       console.log(`Saved thumbnail for Vimeo video ${vimeoId}`);
       
       // Update the item with the thumbnail path
-      item.thumbnailUrl = `/_media/thumbnails/vimeo-${vimeoId}.jpg`;
+      item.thumbnailUrl = relativePath;
     }
   } catch (error) {
     console.error(`Error processing Vimeo video ${vimeoId}:`, error.message);
     
     // Create a SVG placeholder instead
     const svgPath = path.join(outputDir, `${item.slug}.svg`);
-    const svgContent = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="640" height="360" viewBox="0 0 640 360" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <rect width="640" height="360" fill="#222222"/>
-  <rect x="120" y="120" width="400" height="120" fill="#333333"/>
-  <text x="320" y="190" font-family="IBM Plex Mono, monospace" font-size="24" text-anchor="middle" fill="#ffffff">${item.title}</text>
-  <g transform="translate(540, 40)">
-    <circle r="25" fill="rgba(0, 173, 239, 0.8)"/>
-    <text x="0" y="8" font-family="IBM Plex Mono, monospace" font-size="20" text-anchor="middle" fill="#ffffff">V</text>
-  </g>
-</svg>`;
+    const relativeSvgPath = `/media/thumbnails/${item.slug}.svg`;
+    
+    const svgContent = createVideoPlaceholderSvg(item.title, 'V');
     fs.writeFileSync(svgPath, svgContent);
     console.log(`Created SVG placeholder for ${item.title}`);
     
     // Update the item with the SVG placeholder path
-    item.thumbnailUrl = `/_media/thumbnails/${item.slug}.svg`;
+    item.thumbnailUrl = relativeSvgPath;
   }
 }
 
-async function processYouTubeVideo(item, outputDir) {
-  // Get the YouTube ID from either the new or old format
-  const mediaUrl = item.mediaUrl || (item.media ? item.media.url : '');
+async function processYouTubeVideo(item, mediaUrl, outputDir) {
+  // Get the YouTube ID
   const youtubeId = extractYouTubeId(mediaUrl);
-  if (!youtubeId) return;
+  if (!youtubeId) {
+    console.log(`Could not extract YouTube ID from ${mediaUrl}`);
+    return;
+  }
   
   const outputPath = path.join(outputDir, `youtube-${youtubeId}.jpg`);
+  const relativePath = `/media/thumbnails/youtube-${youtubeId}.jpg`;
   
-  // Skip if thumbnail already exists
+  // Skip if thumbnail already exists and update the item
   if (fs.existsSync(outputPath)) {
     console.log(`Thumbnail already exists for YouTube video ${youtubeId}`);
-    // Still update the item with the thumbnail path
-    item.thumbnailUrl = `/_media/thumbnails/youtube-${youtubeId}.jpg`;
+    item.thumbnailUrl = relativePath;
     return;
   }
   
@@ -160,58 +158,34 @@ async function processYouTubeVideo(item, outputDir) {
     console.log(`Saved thumbnail for YouTube video ${youtubeId}`);
     
     // Update the item with the thumbnail path
-    item.thumbnailUrl = `/_media/thumbnails/youtube-${youtubeId}.jpg`;
+    item.thumbnailUrl = relativePath;
   } catch (error) {
     console.error(`Error processing YouTube video ${youtubeId}:`, error.message);
     
     // Create a placeholder instead
     const placeholderPath = path.join(outputDir, `${item.slug}.svg`);
-    const svgContent = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="640" height="360" viewBox="0 0 640 360" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <rect width="640" height="360" fill="#222222"/>
-  <rect x="120" y="120" width="400" height="120" fill="#333333"/>
-  <text x="320" y="190" font-family="IBM Plex Mono, monospace" font-size="24" text-anchor="middle" fill="#ffffff">${item.title}</text>
-  <g transform="translate(540, 40)">
-    <circle r="25" fill="rgba(255, 0, 0, 0.8)"/>
-    <text x="0" y="8" font-family="IBM Plex Mono, monospace" font-size="20" text-anchor="middle" fill="#ffffff">YT</text>
-  </g>
-</svg>`;
+    const relativePlaceholderPath = `/media/thumbnails/${item.slug}.svg`;
+    
+    const svgContent = createVideoPlaceholderSvg(item.title, 'YT');
     fs.writeFileSync(placeholderPath, svgContent);
     
     // Update the item with the placeholder path
-    item.thumbnailUrl = `/_media/thumbnails/${item.slug}.svg`;
+    item.thumbnailUrl = relativePlaceholderPath;
   }
 }
 
-async function processCustomThumbnail(item, outputDir) {
-  // Special handling for certain slugs
-  const specialSlugs = {
-    'motion-studies': 'Motion Studies',
-    'sound-viz': 'Sound Visualization'
-  };
-  
-  if (specialSlugs[item.slug]) {
-    const svgPath = path.join(outputDir, `${item.slug}.svg`);
-    
-    // Check if SVG already exists
-    if (!fs.existsSync(svgPath)) {
-      const svgContent = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+// Helper function to create placeholder SVG
+function createVideoPlaceholderSvg(title, providerLabel) {
+  return `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg width="640" height="360" viewBox="0 0 640 360" version="1.1" xmlns="http://www.w3.org/2000/svg">
   <rect width="640" height="360" fill="#222222"/>
   <rect x="120" y="120" width="400" height="120" fill="#333333"/>
-  <text x="320" y="190" font-family="IBM Plex Mono, monospace" font-size="24" text-anchor="middle" fill="#ffffff">${specialSlugs[item.slug]}</text>
+  <text x="320" y="190" font-family="IBM Plex Mono, monospace" font-size="24" text-anchor="middle" fill="#ffffff">${title}</text>
   <g transform="translate(540, 40)">
     <circle r="25" fill="rgba(0, 173, 239, 0.8)"/>
-    <text x="0" y="8" font-family="IBM Plex Mono, monospace" font-size="20" text-anchor="middle" fill="#ffffff">V</text>
+    <text x="0" y="8" font-family="IBM Plex Mono, monospace" font-size="20" text-anchor="middle" fill="#ffffff">${providerLabel}</text>
   </g>
 </svg>`;
-      fs.writeFileSync(svgPath, svgContent);
-      console.log(`Created SVG placeholder for ${item.title}`);
-    }
-    
-    // Update the item with the SVG placeholder path
-    item.thumbnailUrl = `/_media/thumbnails/${item.slug}.svg`;
-  }
 }
 
 // Helper function to extract Vimeo ID
@@ -228,7 +202,7 @@ function extractVimeoId(url) {
 function extractYouTubeId(url) {
   if (!url) return null;
   
-  const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/;
+  const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/;
   const match = url.match(regex);
   
   return match ? match[1] : null;

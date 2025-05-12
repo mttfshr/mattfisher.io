@@ -5,23 +5,13 @@ sidebar: false
 ---
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import NotesGrid from '../.vitepress/theme/components/notes/NotesGrid.vue';
+import { computed } from 'vue';
+import NotesIndex from '../.vitepress/theme/components/notes/NotesIndex.vue';
+import { useData } from 'vitepress';
 
-// Initialize with empty array
-const notesData = ref([]);
-
-// Use onMounted to import the data client-side to avoid server-side issues
-onMounted(async () => {
-  try {
-    // Dynamic import with fallback to empty array if file doesn't exist
-    const dataModule = await import('../.vitepress/theme/data/notesData.js');
-    notesData.value = dataModule.notesData || [];
-  } catch (error) {
-    console.error('Error loading notes data:', error);
-    // Keep using empty array if import fails
-  }
-});
+// Get the notes data from theme config
+const { theme } = useData();
+const notesData = computed(() => theme.value.notes || []);
 </script>
 
 # Notes
@@ -29,7 +19,7 @@ onMounted(async () => {
 <div class="notes-intro">
 </div>
 
-<NotesGrid :notes="notesData" />
+<NotesIndex :notes="notesData" />
 
 <style scoped>
 .notes-intro {

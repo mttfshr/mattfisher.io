@@ -1,6 +1,34 @@
 <!-- docs/.vitepress/theme/components/workbook/WorkbookGallery.vue -->
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useData } from 'vitepress'
+import { getVideoThumbnail } from '../../utils/mediaUtils'
+
+// Function to extract Vimeo ID
+function extractVimeoId(url) {
+  if (!url) return null;
+  
+  const regex = /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)/;
+  const match = url.match(regex);
+  
+  return match ? match[1] : null;
+}
+
+// Function to extract YouTube ID
+function extractYouTubeId(url) {
+  if (!url) return null;
+  
+  const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/;
+  const match = url.match(regex);
+  
+  return match ? match[1] : null;
+}
+
+const { theme } = useData()
+
+onMounted(() => {
+  console.log('Workbook Items:', theme.value.workbookItems)
+})
 
 const props = defineProps({
   items: {
@@ -39,23 +67,50 @@ function setTag(tag) {
   activeTag.value = tag === activeTag.value ? '' : tag
 }
 
-import { getVideoThumbnail } from '../../utils/mediaUtils'
-
 // Generate a thumbnail URL for items based on media type
 function getThumbnail(item) {
-  // If it's a video, try to get a thumbnail
-  if (item.media?.type === 'video') {
-    const thumbnail = getVideoThumbnail(item.media);
-    if (thumbnail) return thumbnail;
+  // Check if the item has a thumbnailUrl property set in the config
+  if (item.thumbnailUrl) {
+    console.log('Using item.thumbnailUrl:', item.thumbnailUrl);
+    return item.thumbnailUrl;
+  }
+
+  // If the item doesn't have media, use a placeholder
+  if (!item.media) {
+    return '/media/video-placeholder.svg';
+  }
+  
+  // Process based on media type
+  if (item.media.type === 'video') {
+    // Handle Vimeo videos
+    if (item.media.provider === 'vimeo') {
+      const vimeoId = extractVimeoId(item.media.url);
+      console.log('Vimeo ID:', vimeoId, 'URL:', item.media.url);
+      if (vimeoId) {
+        // Try to use direct Vimeo thumbnail
+        const thumbnailUrl = `/media-/thumbnails/vimeo-${vimeoId}.jpg`;
+        console.log('Using thumbnail URL:', thumbnailUrl);
+        return thumbnailUrl;
+      }
+    }
+    
+    // Handle YouTube videos
+    if (item.media.provider === 'youtube') {
+      const youtubeId = extractYouTubeId(item.media.url);
+      if (youtubeId) {
+        // Use local YouTube thumbnail
+        return `/media-/thumbnails/youtube-${youtubeId}.jpg`;
+      }
+    }
   }
   
   // If it's an image, use the URL
-  if (item.media?.type === 'image' && item.media?.url) {
+  if (item.media.type === 'image' && item.media.url) {
     return item.media.url;
   }
   
   // Fallback to a placeholder
-  return '/_media/placeholder.jpg';
+  return '/media/video-placeholder.svg';
 }
 
 // Generate a display title for the media type
@@ -278,5 +333,4 @@ function getMediaTypeDisplay(item) {
     gap: 1.5rem;
   }
 }
-
 </style>

@@ -1,13 +1,24 @@
 // docs/.vitepress/theme/composables/usePinsData.js
-import { ref, computed } from 'vue';
-import { pinsData } from '../data/pinsData';
+import { computed } from 'vue';
+import { useData } from 'vitepress';
 
 export function usePinsData() {
-  const pins = ref(pinsData.pins || []);
-  const contentTypes = ref(pinsData.contentTypes || []);
-  const allTags = ref(pinsData.allTags || []);
-  const userTags = ref(pinsData.userTags || []);
-  const sections = ref(pinsData.sections || []);
+  const { theme } = useData();
+  
+  // Access pins data from theme
+  const pinsData = computed(() => theme.value.pins || {
+    pins: [],
+    contentTypes: [],
+    allTags: [],
+    userTags: [],
+    sections: []
+  });
+  
+  const pins = computed(() => pinsData.value.pins || []);
+  const contentTypes = computed(() => pinsData.value.contentTypes || []);
+  const allTags = computed(() => pinsData.value.allTags || []);
+  const userTags = computed(() => pinsData.value.userTags || []);
+  const sections = computed(() => pinsData.value.sections || []);
   
   // Function to filter pins by tag
   const filterByTag = (tag) => {

@@ -5,23 +5,13 @@ sidebar: false
 ---
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { computed } from 'vue';
+import { useData } from 'vitepress';
 import WorkbookGallery from '../.vitepress/theme/components/workbook/WorkbookGallery.vue';
 
-// Initialize with empty array
-const workbookItems = ref([]);
-
-// Use onMounted to import the data client-side to avoid server-side issues
-onMounted(async () => {
-  try {
-    // Dynamic import with fallback to empty array if file doesn't exist
-    const itemsModule = await import('../.vitepress/theme/data/workbookItems.js');
-    workbookItems.value = itemsModule.workbookItems || [];
-  } catch (error) {
-    console.error('Error loading workbook items:', error);
-    // Keep using empty array if import fails
-  }
-});
+// Get workbook items from themeConfig
+const { theme } = useData();
+const workbookItems = computed(() => theme.value.workbookItems || []);
 </script>
 
 # Workbook

@@ -103,7 +103,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
-import { usePinsData } from '../../composables/usePinsData';
+import { useData } from 'vitepress'; // Use VitePress useData composable
 import PinGrid from './PinGrid.vue';
 import PinDetail from './PinDetail.vue';
 
@@ -120,8 +120,16 @@ const props = defineProps({
 
 const emit = defineEmits(['update-collection']);
 
+// Get pins data from themeConfig
+const { theme } = useData();
+const pinsData = computed(() => theme.value.pins || { pins: [], contentTypes: [], allTags: [], userTags: [], sections: [] });
+
 // State
-const { pins, contentTypes, allTags, userTags } = usePinsData();
+const pins = computed(() => pinsData.value.pins || []);
+const contentTypes = computed(() => pinsData.value.contentTypes || []);
+const allTags = computed(() => pinsData.value.allTags || []);
+const userTags = computed(() => pinsData.value.userTags || []);
+
 const activeCollection = ref(props.defaultCollection);
 const selectedPin = ref(null);
 const moreMenuOpen = ref(false);

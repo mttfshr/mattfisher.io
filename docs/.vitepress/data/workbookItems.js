@@ -11,8 +11,7 @@ export const workbookItems = [
     ],
     "mediaType": "video",
     "mediaUrl": "https://vimeo.com/552620356",
-    "videoProvider": "vimeo",
-    "thumbnailUrl": "/_media/thumbnails/vimeo-552620356.jpg"
+    "videoProvider": "vimeo"
   },
   {
     "title": "Obsidian Heart",
@@ -25,8 +24,7 @@ export const workbookItems = [
     ],
     "mediaType": "video",
     "mediaUrl": "https://vimeo.com/684505621",
-    "videoProvider": "vimeo",
-    "thumbnailUrl": "/_media/thumbnails/vimeo-684505621.jpg"
+    "videoProvider": "vimeo"
   },
   {
     "title": "Smoking Frog",
@@ -39,8 +37,7 @@ export const workbookItems = [
     ],
     "mediaType": "video",
     "mediaUrl": "https://vimeo.com/684505690",
-    "videoProvider": "vimeo",
-    "thumbnailUrl": "/_media/thumbnails/vimeo-684505690.jpg"
+    "videoProvider": "vimeo"
   },
   {
     "title": "SpearThrowerOwl",
@@ -53,8 +50,7 @@ export const workbookItems = [
     ],
     "mediaType": "video",
     "mediaUrl": "https://vimeo.com/684505733",
-    "videoProvider": "vimeo",
-    "thumbnailUrl": "/_media/thumbnails/vimeo-684505733.jpg"
+    "videoProvider": "vimeo"
   },
   {
     "title": "The Place Where Gods Are Born",
@@ -67,8 +63,7 @@ export const workbookItems = [
     ],
     "mediaType": "video",
     "mediaUrl": "https://vimeo.com/684505790",
-    "videoProvider": "vimeo",
-    "thumbnailUrl": "/_media/thumbnails/vimeo-684505790.jpg"
+    "videoProvider": "vimeo"
   },
   {
     "title": "Sabine's Search for Quantum Gravity",
@@ -81,8 +76,7 @@ export const workbookItems = [
     ],
     "mediaType": "video",
     "mediaUrl": "https://vimeo.com/553619218",
-    "videoProvider": "vimeo",
-    "thumbnailUrl": "/_media/thumbnails/vimeo-553619218.jpg"
+    "videoProvider": "vimeo"
   },
   {
     "title": "Maybe Later, Maybe Next Time",
@@ -95,8 +89,7 @@ export const workbookItems = [
     ],
     "mediaType": "video",
     "mediaUrl": "https://vimeo.com/553177184",
-    "videoProvider": "vimeo",
-    "thumbnailUrl": "/_media/thumbnails/vimeo-553177184.jpg"
+    "videoProvider": "vimeo"
   },
   {
     "title": "This Is Where We Say Goodbye",
@@ -109,7 +102,6 @@ export const workbookItems = [
     ],
     "mediaType": "video",
     "mediaUrl": "https://vimeo.com/553179389",
-    "videoProvider": "vimeo",
-    "thumbnailUrl": "/_media/thumbnails/vimeo-553179389.jpg"
+    "videoProvider": "vimeo"
   }
 ];

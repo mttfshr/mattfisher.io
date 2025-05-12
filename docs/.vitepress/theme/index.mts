@@ -17,7 +17,7 @@ import LogUpdate from './components/log/LogUpdate.vue'
 import LogPin from './components/log/LogPin.vue'
 import LogFeed from './components/log/LogFeed.vue'
 import NoteCard from './components/notes/NoteCard.vue'
-import NotesGrid from './components/notes/NotesGrid.vue'
+import NotesIndex from './components/notes/NotesIndex.vue'
 import WorkbookItem from './components/workbook/WorkbookItem.vue'
 import WorkbookGallery from './components/workbook/WorkbookGallery.vue'
 
@@ -33,7 +33,8 @@ export default {
     app.component('LogPin', LogPin)
     app.component('LogFeed', LogFeed)
     app.component('NoteCard', NoteCard)
-    app.component('NotesGrid', NotesGrid)
+    app.component('NotesIndex', NotesIndex)
+    app.component('PinsLayout', PinsLayout)
     app.component('WorkbookItem', WorkbookItem)
     app.component('WorkbookGallery', WorkbookGallery)
   },

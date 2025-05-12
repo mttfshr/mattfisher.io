@@ -2,10 +2,18 @@
 layout: home
 ---
 
+<script setup>
+import PinCollections from '../.vitepress/theme/components/pins/PinCollections.vue'
+import { useData } from 'vitepress'
+
+// Verify data is available in theme
+const { theme } = useData()
+</script>
+
 # Pins
 
 <div class="pin-intro">
-  <p>In progress</p>
+  <p>Collection of interesting links, organized by category and tag. <code>#hashtags</code> are extracted from pin descriptions.</p>
 </div>
 
 <!-- Force full width wrapper to work around any VitePress limitations -->
@@ -14,10 +22,6 @@ layout: home
     <PinCollections />
   </div>
 </div>
-
-<script setup>
-import PinCollections from '../.vitepress/theme/components/pins/PinCollections.vue'
-</script>
 
 <style>
 /* Reset VitePress styling for the pins page */

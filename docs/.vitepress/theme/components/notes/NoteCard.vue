@@ -15,12 +15,8 @@ const props = defineProps({
     type: String,
     default: ''
   },
-  lastModified: {
-    type: [String, Date],
-    default: null
-  },
-  createdAt: {
-    type: [String, Date],
+  lastUpdated: {
+    type: Number,
     default: null
   },
   tags: {
@@ -33,26 +29,10 @@ const props = defineProps({
   }
 })
 
-const formattedLastModified = computed(() => {
-  if (!props.lastModified) return null
+const formattedLastUpdated = computed(() => {
+  if (!props.lastUpdated) return null
   
-  const date = props.lastModified instanceof Date 
-    ? props.lastModified 
-    : new Date(props.lastModified)
-    
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-})
-
-const formattedCreatedAt = computed(() => {
-  if (!props.createdAt) return null
-  
-  const date = props.createdAt instanceof Date 
-    ? props.createdAt 
-    : new Date(props.createdAt)
+  const date = new Date(props.lastUpdated)
     
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -62,16 +42,13 @@ const formattedCreatedAt = computed(() => {
 })
 
 const isRecent = computed(() => {
-  if (!props.lastModified) return false
+  if (!props.lastUpdated) return false
   
-  const lastModified = props.lastModified instanceof Date 
-    ? props.lastModified 
-    : new Date(props.lastModified)
-    
+  const lastUpdated = new Date(props.lastUpdated)
   const now = new Date()
   const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30))
   
-  return lastModified > thirtyDaysAgo
+  return lastUpdated > thirtyDaysAgo
 })
 
 // Update note URL to use flat structure
@@ -91,14 +68,9 @@ const noteUrl = computed(() => {
       <p v-if="description" class="card-description">{{ description }}</p>
       
       <div class="card-meta">
-        <div v-if="formattedLastModified" class="meta-item">
-          <span class="meta-label">Last modified:</span>
-          <span class="meta-value">{{ formattedLastModified }}</span>
-        </div>
-        
-        <div v-if="formattedCreatedAt" class="meta-item">
-          <span class="meta-label">Created:</span>
-          <span class="meta-value">{{ formattedCreatedAt }}</span>
+        <div v-if="formattedLastUpdated" class="meta-item">
+          <span class="meta-label">Last updated:</span>
+          <span class="meta-value">{{ formattedLastUpdated }}</span>
         </div>
         
         <div v-if="tags && tags.length" class="card-tags">

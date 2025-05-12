@@ -1,4 +1,4 @@
-<!-- NotesGrid.vue -->
+<!-- NotesIndex.vue -->
 <script setup>
 import { ref, computed } from 'vue'
 import NoteCard from './NoteCard.vue'
@@ -49,7 +49,6 @@ const filteredNotes = computed(() => {
 // Sort options
 const sortOptions = [
   { label: 'Recently Updated', value: 'recently-updated' },
-  { label: 'Recently Created', value: 'recently-created' },
   { label: 'Alphabetical', value: 'alphabetical' }
 ]
 
@@ -59,9 +58,16 @@ const activeSortOption = ref('recently-updated')
 const sortedNotes = computed(() => {
   return [...filteredNotes.value].sort((a, b) => {
     if (activeSortOption.value === 'recently-updated') {
-      return new Date(b.lastModified) - new Date(a.lastModified)
-    } else if (activeSortOption.value === 'recently-created') {
-      return new Date(b.createdAt) - new Date(a.createdAt)
+      // For notes with lastUpdated, use it; otherwise fall back to title
+      if (a.lastUpdated && b.lastUpdated) {
+        return b.lastUpdated - a.lastUpdated
+      } else if (a.lastUpdated) {
+        return -1 // a has lastUpdated, b doesn't
+      } else if (b.lastUpdated) {
+        return 1  // b has lastUpdated, a doesn't
+      }
+      // If neither has lastUpdated, sort alphabetically
+      return a.title.localeCompare(b.title)
     } else if (activeSortOption.value === 'alphabetical') {
       return a.title.localeCompare(b.title)
     }
@@ -79,7 +85,7 @@ function setSortOption(option) {
 </script>
 
 <template>
-  <div class="notes-grid">
+  <div class="notes-index">
     <div v-if="showFilters" class="notes-controls">
       <div class="search-box">
         <input 
@@ -144,17 +150,16 @@ function setSortOption(option) {
         :title="note.title"
         :slug="note.slug"
         :description="note.description"
-        :last-modified="note.lastModified"
-        :created-at="note.createdAt"
+        :last-updated="note.lastUpdated"
         :tags="note.tags"
-        :cover-image="note.coverImage"
+        :cover-image="note.image"
       />
     </div>
   </div>
 </template>
 
 <style scoped>
-.notes-grid {
+.notes-index {
   max-width: 900px;
   margin: 0 auto;
 }

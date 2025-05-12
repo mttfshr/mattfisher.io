@@ -3,7 +3,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useData, useRoute } from 'vitepress'
 
-const { frontmatter } = useData()
+const { frontmatter, theme, page } = useData()
 const route = useRoute()
 
 // Reactive variables
@@ -32,17 +32,16 @@ function formatDate(dateString) {
 }
 
 // Find related notes
-onMounted(async () => {
+onMounted(() => {
   try {
-    // Dynamically import the data
-    const dataModule = await import('../data/notesData.js')
-    notesData.value = dataModule.notesData || []
+    // Get all notes data from theme config
+    notesData.value = theme.value.notes || [];
     
     // Find current note
     const currentNote = notesData.value.find(note => 
       note.slug === currentSlug.value || 
       note.slug.replace('.html', '') === currentSlug.value
-    )
+    );
     
     // If we have tags, find related notes with similar tags
     if (currentNote && currentNote.tags && currentNote.tags.length) {
@@ -52,10 +51,10 @@ onMounted(async () => {
           note.tags && 
           note.tags.some(tag => currentNote.tags.includes(tag)) // Has at least one matching tag
         )
-        .slice(0, 3) // Limit to 3 related notes
+        .slice(0, 3); // Limit to 3 related notes
     }
   } catch (error) {
-    console.error('Error loading notes data:', error)
+    console.error('Error processing notes data:', error);
   }
 })
 </script>
@@ -68,11 +67,8 @@ onMounted(async () => {
       
       <div class="metadata">
         <div class="date-info">
-          <div v-if="frontmatter.createdAt" class="created-date">
-            Created: {{ formatDate(frontmatter.createdAt) }}
-          </div>
-          <div v-if="frontmatter.lastModified" class="modified-date">
-            Updated: {{ formatDate(frontmatter.lastModified) }}
+          <div v-if="page.lastUpdated" class="modified-date">
+            Updated: {{ formatDate(page.lastUpdated) }}
           </div>
         </div>
         
@@ -186,6 +182,10 @@ onMounted(async () => {
 
 .note-content {
   line-height: 1.7;
+}
+
+.note-content p {
+  margin-bottom: .5rem;;
 }
 
 .note-content h2 {

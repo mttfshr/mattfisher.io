@@ -5,23 +5,13 @@ sidebar: false
 ---
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed } from 'vue'
 import LogFeed from '../.vitepress/theme/components/log/LogFeed.vue'
+import { useData } from 'vitepress'
 
-// Initialize with empty array
-const logEntries = ref([])
-
-// Use onMounted to import the data client-side to avoid server-side issues
-onMounted(async () => {
-  try {
-    // Dynamic import with fallback to empty array if file doesn't exist
-    const entriesModule = await import('../.vitepress/theme/data/logEntries.js')
-    logEntries.value = entriesModule.logEntries || []
-  } catch (error) {
-    console.error('Error loading log entries:', error)
-    // Keep using empty array if import fails
-  }
-})
+// Get the log entries data from theme config
+const { theme } = useData();
+const logEntries = computed(() => theme.value.logEntries || [])
 </script>
 
 # Log
