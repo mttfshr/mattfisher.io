@@ -297,6 +297,8 @@ export default defineConfig({
   
   // Include media directory in build
   srcExclude: ['!docs/media/**'],
+  // Ensure media directory is copied to the output
+  publicDir: 'media',
   
   lastUpdated: true,
   
@@ -309,11 +311,11 @@ export default defineConfig({
     build: {
       assetsInlineLimit: 0,
     },
-    // Configure asset handling
+    // Configure asset handling - ensure media path is correctly resolved
     resolve: {
-      alias: {
-        '/media': '/media'
-      }
+    alias: [
+    { find: /^\/media\//, replacement: '/media/' }
+    ]
     }
   },
 })

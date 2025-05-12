@@ -18,14 +18,20 @@ export async function fetchVideoThumbnails(workbookItems, options = {}) {
   
   // Create output directory if it doesn't exist
   if (!fs.existsSync(outputDir)) {
+    console.log(`Creating output directory: ${outputDir}`);
     fs.mkdirSync(outputDir, { recursive: true });
   }
   
-  // Also create public directory for thumbnails
-  const publicDir = path.resolve(process.cwd(), 'docs/public/media/thumbnails');
+  // Set up the VitePress public directory path
+  const publicDir = path.resolve(process.cwd(), 'docs/.vitepress/public/media/thumbnails');
   if (!fs.existsSync(publicDir)) {
+    console.log(`Creating VitePress public thumbnails directory: ${publicDir}`);
     fs.mkdirSync(publicDir, { recursive: true });
   }
+  
+  // Determine if we're in a CI environment
+  const isCI = process.env.CI || process.env.NETLIFY || process.env.CLOUDFLARE;
+  console.log(`Environment detected: ${isCI ? 'CI/Build' : 'Development'}`);
   
   // Process each workbook item that has a video
   const promises = workbookItems
@@ -100,9 +106,20 @@ async function processVimeoVideo(item, mediaUrl, outputDir, options) {
       const buffer = await thumbnailResponse.buffer();
       fs.writeFileSync(outputPath, buffer);
       
-      // Also copy to public directory
-      const publicPath = path.join(process.cwd(), 'docs/public', relativePath);
-      fs.writeFileSync(publicPath, buffer);
+      // Also copy to VitePress public directory if in CI environment or if not using symlinks
+      if (isCI || !fs.existsSync(path.resolve(process.cwd(), 'docs/.vitepress/public/media'))) {
+        const publicPath = path.join(process.cwd(), 'docs/.vitepress/public', relativePath);
+        
+        // Ensure the directory exists
+        const publicDir = path.dirname(publicPath);
+        if (!fs.existsSync(publicDir)) {
+          console.log(`Creating directory: ${publicDir}`);
+          fs.mkdirSync(publicDir, { recursive: true });
+        }
+        
+        fs.writeFileSync(publicPath, buffer);
+        console.log(`Copied thumbnail to VitePress public directory: ${publicPath}`);
+      }
       
       console.log(`Saved thumbnail for Vimeo video ${vimeoId}`);
       
@@ -119,9 +136,20 @@ async function processVimeoVideo(item, mediaUrl, outputDir, options) {
     const svgContent = createVideoPlaceholderSvg(item.title, 'V');
     fs.writeFileSync(svgPath, svgContent);
     
-    // Also copy to public directory
-    const publicSvgPath = path.join(process.cwd(), 'docs/public', relativeSvgPath);
-    fs.writeFileSync(publicSvgPath, svgContent);
+    // Also copy to VitePress public directory if in CI environment or if not using symlinks
+    if (isCI || !fs.existsSync(path.resolve(process.cwd(), 'docs/.vitepress/public/media'))) {
+      const publicSvgPath = path.join(process.cwd(), 'docs/.vitepress/public', relativeSvgPath);
+      
+      // Ensure the directory exists
+      const publicDir = path.dirname(publicSvgPath);
+      if (!fs.existsSync(publicDir)) {
+        console.log(`Creating directory: ${publicDir}`);
+        fs.mkdirSync(publicDir, { recursive: true });
+      }
+      
+      fs.writeFileSync(publicSvgPath, svgContent);
+      console.log(`Created SVG placeholder in VitePress public directory: ${publicSvgPath}`);
+    }
     
     console.log(`Created SVG placeholder for ${item.title}`);
     
@@ -166,9 +194,20 @@ async function processYouTubeVideo(item, mediaUrl, outputDir) {
       const buffer = await fallbackResponse.buffer();
       fs.writeFileSync(outputPath, buffer);
       
-      // Also copy to public directory
-      const publicPath = path.join(process.cwd(), 'docs/public', relativePath);
-      fs.writeFileSync(publicPath, buffer);
+      // Also copy to VitePress public directory if in CI environment or if not using symlinks
+      if (isCI || !fs.existsSync(path.resolve(process.cwd(), 'docs/.vitepress/public/media'))) {
+        const publicPath = path.join(process.cwd(), 'docs/.vitepress/public', relativePath);
+        
+        // Ensure the directory exists
+        const publicDir = path.dirname(publicPath);
+        if (!fs.existsSync(publicDir)) {
+          console.log(`Creating directory: ${publicDir}`);
+          fs.mkdirSync(publicDir, { recursive: true });
+        }
+        
+        fs.writeFileSync(publicPath, buffer);
+        console.log(`Copied thumbnail to VitePress public directory: ${publicPath}`);
+      }
     } else {
       const buffer = await response.buffer();
       fs.writeFileSync(outputPath, buffer);
@@ -192,9 +231,20 @@ async function processYouTubeVideo(item, mediaUrl, outputDir) {
     const svgContent = createVideoPlaceholderSvg(item.title, 'YT');
     fs.writeFileSync(placeholderPath, svgContent);
     
-    // Also copy to public directory
-    const publicSvgPath = path.join(process.cwd(), 'docs/public', relativePlaceholderPath);
-    fs.writeFileSync(publicSvgPath, svgContent);
+    // Also copy to VitePress public directory if in CI environment or if not using symlinks
+    if (isCI || !fs.existsSync(path.resolve(process.cwd(), 'docs/.vitepress/public/media'))) {
+      const publicSvgPath = path.join(process.cwd(), 'docs/.vitepress/public', relativePlaceholderPath);
+      
+      // Ensure the directory exists
+      const publicDir = path.dirname(publicSvgPath);
+      if (!fs.existsSync(publicDir)) {
+        console.log(`Creating directory: ${publicDir}`);
+        fs.mkdirSync(publicDir, { recursive: true });
+      }
+      
+      fs.writeFileSync(publicSvgPath, svgContent);
+      console.log(`Created SVG placeholder in VitePress public directory: ${publicSvgPath}`);
+    }
     
     // Update the item with the placeholder path
     item.thumbnailUrl = relativePlaceholderPath;
