@@ -284,6 +284,16 @@ export default defineConfig({
   // Theme configuration
   lastUpdated: true,
   
+  // Add favicon and app icons
+  head: [
+    ['link', { rel: 'icon', href: '/icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' }],
+    ['link', { rel: 'icon', href: '/icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' }],
+    ['link', { rel: 'icon', href: '/icons/favicon.svg', type: 'image/svg+xml' }],
+    ['link', { rel: 'apple-touch-icon', href: '/icons/apple-touch-icon.png' }],
+    ['link', { rel: 'manifest', href: '/manifest.json' }],
+    ['meta', { name: 'theme-color', content: '#4CAF50' }]
+  ],
+  
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [

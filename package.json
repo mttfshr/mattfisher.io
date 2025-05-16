@@ -16,7 +16,8 @@
     "spotify-auth": "node docs/.vitepress/utils/connectors/spotifyAuth.js",
     "verify-spotify": "node docs/.vitepress/utils/connectors/verifySpotifyConfig.js",
     "ensure-cache": "node --input-type=module -e \"import { ensurePublicCache } from './docs/.vitepress/utils/ensurePublicCache.js'; ensurePublicCache();\"",
-    "prebuild": "npm run update-pins && npm run generate-og-cache && npm run ensure-cache",
+    "generate-favicons": "node --input-type=module -e \"import { generateFavicons } from './docs/.vitepress/utils/generateFavicons.js'; generateFavicons();\"",
+    "prebuild": "npm run update-pins && npm run generate-og-cache && npm run ensure-cache && npm run generate-favicons",
     "verify-build": "node docs/.vitepress/utils/verifyBuild.js"
   },
   "dependencies": {
@@ -39,6 +40,7 @@
     "gray-matter": "^4.0.3",
     "jsdom": "^24.1.3",
     "node-fetch": "^2.7.0",
+    "sharp": "^0.33.2",
     "spotify-web-api-node": "^5.0.2",
     "uuid": "^9.0.1",
     "vimeo": "^2.3.1",
