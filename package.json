@@ -9,11 +9,15 @@
     "test:e2e": "playwright test",
     "test:ui": "vitest --ui",
     "rebuild": "npm run enhanced-fix && npm run docs:build && npm run docs:preview",
-    "generate-og-cache": "node docs/.vitepress/scripts/generate-og-cache.js",
+    "generate-og-cache:legacy": "node docs/.vitepress/scripts/generate-og-cache.js",
+    "generate-og-cache": "node --input-type=module -e \"import { generateOgCache } from './docs/.vitepress/utils/improvedOGCache.js'; generateOgCache(false);\"",
+    "generate-og-cache:force": "node --input-type=module -e \"import { generateOgCache } from './docs/.vitepress/utils/improvedOGCache.js'; generateOgCache(true);\"",
     "update-pins": "node docs/.vitepress/utils/connectors/index.js",
     "spotify-auth": "node docs/.vitepress/utils/connectors/spotifyAuth.js",
     "verify-spotify": "node docs/.vitepress/utils/connectors/verifySpotifyConfig.js",
-    "prebuild": "npm run update-pins && npm run generate-og-cache"
+    "ensure-cache": "node --input-type=module -e \"import { ensurePublicCache } from './docs/.vitepress/utils/ensurePublicCache.js'; ensurePublicCache();\"",
+    "prebuild": "npm run update-pins && npm run generate-og-cache && npm run ensure-cache",
+    "verify-build": "node docs/.vitepress/utils/verifyBuild.js"
   },
   "dependencies": {
     "@fontsource-variable/kode-mono": "^5.2.5",

@@ -207,7 +207,20 @@ function processAllMetadata(manualTags, url, ogData) {
  */
 function getOgDataFromCache(url) {
   try {
-    // Try to read from the OG cache
+    // Try to read from the production-ready public cache first
+    const publicCachePath = path.resolve(process.cwd(), 'docs/public/cache/pins-cache.json');
+    if (fs.existsSync(publicCachePath)) {
+      try {
+        const cache = JSON.parse(fs.readFileSync(publicCachePath, 'utf8'));
+        if (cache[url]) {
+          return cache[url];
+        }
+      } catch (err) {
+        console.warn(`Error reading public cache for ${url}:`, err.message);
+      }
+    }
+    
+    // Then try the standard VitePress cache
     const cachePath = path.resolve(process.cwd(), 'docs/.vitepress/cache/pins-cache.json');
     if (fs.existsSync(cachePath)) {
       const cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'));
@@ -222,6 +235,19 @@ function getOgDataFromCache(url) {
       const globalCache = JSON.parse(fs.readFileSync(globalCachePath, 'utf8'));
       if (globalCache[url]) {
         return globalCache[url];
+      }
+    }
+
+    // Also try the global OG cache in public directory
+    const publicGlobalCachePath = path.resolve(process.cwd(), 'docs/public/cache/og-cache.json');
+    if (fs.existsSync(publicGlobalCachePath)) {
+      try {
+        const publicGlobalCache = JSON.parse(fs.readFileSync(publicGlobalCachePath, 'utf8'));
+        if (publicGlobalCache[url]) {
+          return publicGlobalCache[url];
+        }
+      } catch (err) {
+        console.warn(`Error reading public global cache for ${url}:`, err.message);
       }
     }
   } catch (error) {

@@ -1,0 +1,39 @@
+name: Pre-Build Cache Setup
+
+on:
+  push:
+    branches:
+      - main  # Adjust based on your deployment branch
+
+jobs:
+  pre-build-setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run OG cache generation
+        run: npm run generate-og-cache
+      
+      - name: Ensure cache files in public directory
+        run: npm run ensure-cache
+      
+      - name: Verify build setup
+        run: npm run verify-build
+      
+      - name: Commit and push cache files
+        run: |
+          git config --global user.name 'Cache Generation Bot'
+          git config --global user.email 'bot@example.com'
+          git add docs/public/cache/
+          git commit -m "Update cache files for build" || echo "No changes to commit"
+          git push
