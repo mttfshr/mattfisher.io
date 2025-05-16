@@ -1,0 +1,1 @@
+This is a test file to verify that the standard VitePress public directory is working.

@@ -87,9 +87,11 @@ function getThumbnail(item) {
       const vimeoId = extractVimeoId(item.media.url);
       console.log('Vimeo ID:', vimeoId, 'URL:', item.media.url);
       if (vimeoId) {
-        // Try to use direct Vimeo thumbnail
-        const thumbnailUrl = `/media-/thumbnails/vimeo-${vimeoId}.jpg`;
+        // Use path that matches VitePress public directory structure
+        const thumbnailUrl = `/media/thumbnails/vimeo-${vimeoId}.jpg`;
         console.log('Using thumbnail URL:', thumbnailUrl);
+        // Diagnostic: Log the full thumbnail URL to check what's happening
+        console.log('TESTING thumbnail full URL:', location.origin + thumbnailUrl);
         return thumbnailUrl;
       }
     }
@@ -98,8 +100,8 @@ function getThumbnail(item) {
     if (item.media.provider === 'youtube') {
       const youtubeId = extractYouTubeId(item.media.url);
       if (youtubeId) {
-        // Use local YouTube thumbnail
-        return `/media-/thumbnails/youtube-${youtubeId}.jpg`;
+        // Use path that matches VitePress public directory structure
+        return `/media/thumbnails/youtube-${youtubeId}.jpg`;
       }
     }
   }

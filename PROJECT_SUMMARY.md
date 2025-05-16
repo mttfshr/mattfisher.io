@@ -22,23 +22,160 @@ This document serves as a "crib note" for Claude in each new conversation. Due t
 
 ## Current Task
 
-**Working on:** Completed Cleanup after VitePress-native data migration
-**Status:** Completed
-**Achievements:**
-- Deleted obsolete _scripts directory 
-- Removed unused data files and plugins
-- Updated README.md with new build instructions
-- Verified build process works with VitePress-native approach
+**Working on:** Improve OG Data Caching
+**Status:** Not Started
+**Plan:**
+- Implement incremental OG data updates for new pins
+- Create a more robust error handling system for OG data fetching
+- Consider implementing a local image cache for external thumbnails
+- Add metadata to indicate when OG data was last refreshed
+
+**Implementation Steps:**
+1. Analyze current OG data caching implementation
+2. Design an incremental update approach that only fetches data for new pins
+3. Improve error handling to gracefully handle API failures
+4. Create a metadata system to track freshness of cached data
+5. Consider implementing a local thumbnail cache to reduce external dependencies
 
 ## Next Steps
 
-### 1. Consider Additional Optimizations
+### 2. Optimize Cache Directory Structure
+- Establish clear standards for cache file organization
+- Document cache structure and usage for future reference
+- Implement automated cache cleanup for unused assets
+
+### 3. Add Additional Monitoring
+- Create diagnostic tools to verify asset rendering
+- Implement checks to ensure layouts are loading correctly
+- Add a basic status page for site operation
 - Explore lazy-loading for large image galleries
 - Add SSR optimizations for better performance
 - Consider implementing content search feature using VitePress's built-in search
 - Explore ways to minimize plugin duplication (videoThumbnails plugin runs twice)
 
 ## Session Notes
+
+### May 15, 2025 - Session 30 Summary
+- Successfully implemented Side-by-Side Filters UI for Types and Collections
+- Created responsive layout with filters sidebar and content area
+- Built TypeFilter component for filtering pins by content type
+- Implemented CollectionsBrowser component with visual type distribution indicators
+- Added ActiveFilters component to manage and display active filters
+- Fixed data transformation to convert raw pins data to component-friendly format
+- Resolved template rendering issues with improved error handling
+- Added robust null checks and default values to prevent rendering errors
+- Enhanced PinsLayout component to correctly apply full-width styles
+- Implemented responsive mobile design with collapsible filters sidebar
+- Verified functionality with real pins data from Spotify, Vimeo, etc.
+
+### May 15, 2025 - Session 29 Summary
+- Planned implementation of enhanced pins filtering UI
+- Designed UI with dual facets: inferred content types and collections
+- Selected Side-by-Side Filters layout approach (Option 1)
+- Created detailed implementation plan for enhanced filtering experience
+- Developed strategy for distinct visual language between types and collections
+- Planned data processing enhancements for types and collections statistics
+- Designed reactive filtering system to support both facets individually and combined
+
+### May 15, 2025 - Session 26 Summary
+- Fixed Vue rendering errors with custom layouts
+- Resolved "Cannot read properties of null (reading 'ce')" errors in Layout component
+- Fixed PinsLayout.vue to remove problematic slot rendering
+- Updated Layout.vue to include proper slot handling
+- Registered all custom layouts properly in theme/index.mts
+- Imported additional layout components missing from the theme
+- Ensured consistent pattern across all custom layouts
+- Applied debugging approach to identify and resolve component slot issues
+- Cleared VitePress cache to resolve stale component definitions
+
+### May 14, 2025 - Session 21 Summary
+- Designed architecture for automated pins updates via API connectors
+- Created plan to fetch favorites from Spotify, Vimeo, and YouTube APIs
+- Selected .env approach for securely managing API credentials
+- Designed connector structure in .vitepress/utils/connectors/
+- Planned for hybrid approach with both manual pins.md and auto-generated service files
+- Added error handling and fallback strategies for API failures
+- Documented implementation steps including:
+  - Setting up dotenv for environment variables
+  - Creating service-specific connector scripts
+  - Implementing main connector orchestration script
+  - Updating build process to run connectors before build
+  - Adding service credentials setup documentation
+- Updated PROJECT_SUMMARY.md with new implementation plan
+- Prioritized API connectors as the next development task
+
+### May 12, 2025 - Session 20 Summary
+- Fixed VitePress rendering issues with custom layouts and thumbnails
+- Fixed NoteLayout not rendering by properly registering custom layouts in theme/index.mts
+- Created OG data cache generation script for pins thumbnails
+- Added new npm script for generating OG cache (npm run generate-og-cache)
+- Installed jsdom dependency for HTML parsing in OG cache generation
+- Identified and fixed issues with missing cache files
+- Ensured the cache and dist directories were properly cleaned before rebuilding
+- Created a more resilient approach to theme layout registration
+
+### May 12, 2025 - Session 19 Summary
+- Fixed Vue component rendering errors
+- Resolved "Cannot read properties of null (reading 'ce')" error in Layout.vue
+- Updated Layout.vue to properly handle default slots vs named slots
+- Fixed public directory asset path inconsistencies in WorkbookGallery
+- Successfully built and deployed site with VitePress standard directory
+- Updated PROJECT_SUMMARY.md with next steps for cleanup and optimization
+- Standardized on docs/public as the canonical assets location
+
+### May 12, 2025 - Session 18 Summary
+- Analyzed VitePress documentation regarding public assets directory
+- Discovered discrepancy between VitePress standards and our configuration
+- Found that VitePress documentation specifies `docs/public/` as the standard, while our configuration uses `docs/.vitepress/public/`
+- Updated config.mts to move cache directory outside of docs/ for cleaner structure
+- Created a plan to test which public directory location VitePress actually uses
+- Developed approach to standardize on VitePress conventions for better maintainability
+- Next steps: Create test script to verify asset serving from both locations and adjust accordingly
+
+### May 12, 2025 - Session 17 Summary
+- Identified critical issue with VitePress public directory location
+- Assets in `docs/public` instead of `.vitepress/public` causing 404 errors
+- Created diagnostic script to analyze VitePress structure
+- Developed fix script to copy assets to the correct location
+- Created comprehensive guide for fixing the issue
+- Fixed both directory structure and path reference issues
+- Added verification steps to confirm the fix works
+
+### May 12, 2025 - Session 16 Summary
+- Identified specific path duplication bug in thumbnail URLs
+- Created targeted fix focused on the actual issue
+- Added cleanup script to remove duplicate thumbnail directory
+- Created mock components to avoid path duplication in tests
+- Implemented comprehensive fix process with `npm run fix-everything`
+- Created focused PATH_DUPLICATION_FIX.md with specific instructions
+- Ready for execution of the targeted fix process
+
+### May 12, 2025 - Session 15 Summary
+- Fixed issues with testing framework path resolution
+- Addressed missing files in test environment
+- Fixed Vue component testing with proper render methods
+- Created directory setup utility to ensure consistent environment
+- Added single-command solution with `npm run fix-all`
+- Improved documentation with additional manual steps
+- Ready for execution of the fix process
+
+### May 12, 2025 - Session 14 Summary
+- Implemented comprehensive testing framework for thumbnail issues
+- Set up Vitest for unit testing components and utilities
+- Configured Playwright for E2E testing across browsers
+- Created detailed diagnostic tools for thumbnail path inconsistencies
+- Developed automatic fix script to standardize paths
+- Added CI/CD workflow with GitHub Actions
+- Created detailed step-by-step guides for resolving thumbnail issues
+- Ready for next phase: running diagnostics and applying the fix
+
+### May 12, 2025 - Session 13 Summary
+- Identified persistent thumbnail display issues in production and development environments
+- Attempted to standardize thumbnail paths across components and plugins
+- Refocused approach to implement testing frameworks for systematic issue identification
+- Added testing recommendations to PROJECT_SUMMARY.md
+- Selected Vitest for unit testing and Playwright for E2E testing
+- Began test implementation to identify and fix thumbnail issues
 
 ### May 11, 2025 - Session 12 Summary
 - Fixed the build error in Cloudflare's pipeline
@@ -153,140 +290,61 @@ This document serves as a "crib note" for Claude in each new conversation. Due t
 - Explored options for leveraging VitePress's $page.lastUpdated
 - Developed approach for eliminating manual date tracking in notes frontmatter
 
-## VitePress Architecture Recommendations
+## Testing Framework Recommendations
 
-The following recommendations have been added to help further enhance the architecture of the VitePress site:
+### 1. Unit Testing with Vitest
 
-### 1. Hooks & Composables Organization
+**Benefits of Vitest for This Project:**
+- **Vue Ecosystem Alignment**: Created by the same team behind Vite and Vue
+- **VitePress Compatibility**: Works seamlessly with VitePress's Vite-based setup
+- **Fast Execution**: Uses Vite's dev server for extremely fast test runs
+- **Vue Component Testing**: Native support for testing Vue components
+- **Simple Configuration**: Minimal setup required since the project already uses Vite
 
-**Recommendation: Centralize Composable Logic**
+**Recommended Test Coverage:**
+- Utility functions (mediaUtils.js)
+- Vue components with thumbnail rendering
+- Data transformation functions
+- Path generation and URL handling
 
-Create a standardized structure for composables to maintain consistency:
+### 2. E2E Testing with Playwright
 
-```
-docs/.vitepress/theme/composables/
-├── useWorkbookData.js    // Access workbook data with filtering, sorting, etc.
-├── useNotesData.js       // Access notes data with search, filtering
-├── usePinsData.js        // Access pins data
-├── useLogData.js         // Access log data
-└── index.js              // Export all composables
-```
+**Benefits of Playwright for This Project:**
+- **Cross-browser Support**: Tests Chrome, Firefox, Safari with the same code
+- **Visual Testing**: Captures screenshots for visual regression testing
+- **Component Testing**: Direct support for Vue component testing
+- **Network Interception**: Can mock network requests for thumbnail fetching
+- **Comprehensive Tracing**: Detailed debugging information
 
-Each composable should:
-- Use VitePress's `useData()` hook
-- Provide computed values for filtered/sorted data
-- Export utility functions for component use
-- Support SSR (Server-Side Rendering)
+**Recommended Test Coverage:**
+- Full page rendering and navigation
+- Thumbnail loading in actual browser context
+- Asset loading verification
+- Visual regression for UI components
+- Development and production build differences
 
-### 2. Plugin Structure Enhancement
+### 3. Testing Implementation Strategy
 
-**Recommendation: Create a Unified Plugin System**
+**Phase 1: Setup & Basic Tests**
+- Configure Vitest for unit testing
+- Set up Playwright for E2E testing
+- Create basic smoke tests for critical pages
 
-A more structured approach to plugins would be:
+**Phase 2: Thumbnail-Specific Tests**
+- Test thumbnail URL generation
+- Verify image loading in components
+- Test fallback behavior when thumbnails are missing
+- Compare paths between development and production
 
-```
-docs/.vitepress/plugins/
-├── index.js                 // Main export of all plugins
-├── videoThumbnails/         // Video thumbnails plugin
-├── enhancedOgExtraction/    // OG data extraction
-└── enhancedMetadataExtractor/ // Metadata extraction
-```
+**Phase 3: Visual Testing**
+- Implement visual comparison tests
+- Verify thumbnail rendering across browsers
+- Test responsive behavior of galleries
 
-Then in your config.mts:
-
-```js
-import { plugins } from './plugins'
-
-export default defineConfig({
-  // ...other config
-  vite: {
-    plugins: plugins()
-  }
-})
-```
-
-This approach allows for better plugin management.
-
-### 3. Component Architecture
-
-**Recommendation: Component Composition Pattern**
-
-For complex components like `WorkbookGallery`, consider decomposing them:
-
-```
-components/workbook/
-├── WorkbookGallery.vue        // Container component
-├── WorkbookFilters.vue        // Filter controls
-├── WorkbookGrid.vue           // Grid layout
-└── WorkbookCard.vue           // Individual item card
-```
-
-Benefits:
-- Easier testing and maintenance
-- Better reusability (e.g., `WorkbookCard` could be used elsewhere)
-- Clearer separation of concerns
-
-### 4. Data Flow Architecture
-
-**Recommendation: Unified Data Access Pattern**
-
-Consider standardizing how components access data:
-
-1. **Top-level component**: Fetch data using composables
-2. **Child components**: Receive data via props
-3. **Global state**: Use provide/inject for truly global state
-
-This pattern ensures:
-- Clear data flow through your application
-- Components that are easier to test
-- Better performance (computed refs are shared)
-
-### 5. Build Performance Optimization
-
-**Recommendation: Smart Caching Strategy**
-
-For your VitePress site:
-
-1. Implement intelligent caching for expensive operations:
-   - OG data fetching (already implemented)
-   - Thumbnail generation
-   - External API calls
-
-2. Consider using a persistent cache that survives between builds for further performance improvements
-
-### 6. Documentation Strategy
-
-**Recommendation: Component Documentation**
-
-Consider adding a documentation section for your custom components:
-
-```md
-# Component Documentation
-
-## WorkbookGallery
-
-The WorkbookGallery component displays a grid of workbook items with filtering capabilities.
-
-### Props
-
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| items | Array | Yes | Array of workbook items |
-```
-
-This documentation will be valuable as your site grows more complex.
-
-### 7. Progressive Enhancement Approach
-
-**Recommendation: Core HTML + CSS Enhancement Strategy**
-
-Structure your components with progressive enhancement in mind:
-
-1. Start with semantic HTML that works without JavaScript
-2. Add CSS for styling
-3. Enhance with Vue behaviors
-
-This ensures your site remains accessible and functional even if JavaScript fails to load.
+**Phase 4: CI Integration**
+- Add GitHub Actions workflow for automated testing
+- Run tests on pull requests
+- Create test reports and artifact collection
 
 ## VitePress-Native Approach Recommendations
 
@@ -458,10 +516,10 @@ Combination of pins and updates, displayed in chronological order.
 
 ## Current Focus
 
-1. Completing final cleanup after transitioning to VitePress-native data handling
-2. Removing obsolete scripts and data files
-3. Updating documentation to reflect the new architecture
-4. Simplifying build process
+1. Implementing robust OG data caching for pins
+2. Optimizing cache directory structure
+3. Adding monitoring tools for asset and layout verification
+4. Improving performance with lazy-loading and SSR optimizations
 
 ## Implementation Notes
 

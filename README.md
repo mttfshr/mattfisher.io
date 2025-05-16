@@ -56,18 +56,21 @@ No additional build steps or data generation scripts are needed. Data is automat
 
 ### Asset Management
 
-Media assets are stored in the `docs/media` directory and linked to the `public` directory to ensure they're included in the build:
+Media assets are stored in the VitePress standard location following best practices:
 
 ```
 docs/
-├── media/         # Media files location
-│   ├── thumbnails/ # Video thumbnails
-│   └── ...         # Other media assets
-├── public/         # Public assets directory
-│   └── media -> ../media  # Symlink to media directory
+├── .vitepress/      # VitePress configuration
+│   ├── public/      # Assets to include in build
+│   │   ├── media/   # Media files (images, videos, etc.)
+│   │   │   └── thumbnails/ # Video thumbnails
 ```
 
-This approach ensures that all media assets are properly included in the build output.
+This standardized approach ensures:
+- All media assets are properly included in the build
+- Compatibility with any hosting environment (including Cloudflare)
+- No need for copying, symlinking, or complex build steps
+- Follows VitePress best practices for asset management
 
 ## Content Management
 
@@ -80,7 +83,7 @@ Create Markdown files in the `docs/notes/` directory with frontmatter:
 title: Note Title
 description: Brief description
 tags: [tag1, tag2]
-image: /_media/image.jpg
+image: /media/image.jpg
 layout: note
 ---
 

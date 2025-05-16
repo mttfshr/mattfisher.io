@@ -19,6 +19,7 @@
       <div class="pin-header">
         <h3 class="pin-title">{{ pin.title || 'Untitled' }}</h3>
         <div class="pin-source">
+          <img v-if="pin.favicon" :src="pin.favicon" class="site-favicon" alt="Site icon" />
           {{ getDomainName(pin.url) }}
         </div>
       </div>
@@ -29,14 +30,61 @@
         "{{ pin.notes }}"
       </div>
       
-      <div class="pin-tags">
+      <!-- Structured metadata display -->
+      <div v-if="hasMetadata" class="structured-metadata">
+        <div
+          v-for="key in highlightedKeys"
+          :key="`metadata-${key}`"
+          v-if="pin.metadata && pin.metadata[key] && pin.metadata[key].length > 0"
+          class="metadata-group"
+        >
+          <div 
+            v-for="value in pin.metadata[key].slice(0, 3)" 
+            :key="`${key}-${value}`"
+            class="metadata-tag"
+            :class="`meta-${key}`"
+            @click.stop="emit('tag-click', `${key}:${value}`)"
+          >
+            <span class="metadata-icon">{{ getMetadataValueIcon(key, value) }}</span>
+            <span class="metadata-value">{{ value }}</span>
+          </div>
+          
+          <div v-if="pin.metadata[key].length > 3" class="more-metadata">
+            +{{ pin.metadata[key].length - 3 }} more
+          </div>
+        </div>
+      </div>
+      
+      <!-- Collections display -->
+      <div v-if="hasCollections" class="pin-collections">
+        <div 
+          v-for="collectionId in pin.collections.slice(0, 2)" 
+          :key="`collection-${collectionId}`"
+          class="collection-tag"
+          @click.stop="emit('tag-click', `collection:${collectionId}`)"
+        >
+          <span class="collection-icon">{{ getCollectionIcon(collectionId) }}</span>
+          <span class="collection-name">{{ getCollectionName(collectionId) }}</span>
+        </div>
+        
+        <div v-if="pin.collections.length > 2" class="more-collections">
+          +{{ pin.collections.length - 2 }} more
+        </div>
+      </div>
+      
+      <!-- Traditional tags display -->
+      <div v-if="pin.tags && pin.tags.length > 0" class="pin-tags">
         <span
-          v-for="tag in pin.tags"
+          v-for="tag in pin.tags.slice(0, 3)"
           :key="tag"
           class="pin-tag"
           @click.stop="emit('tag-click', tag)"
         >
           #{{ tag }}
+        </span>
+        
+        <span v-if="pin.tags.length > 3" class="more-tags">
+          +{{ pin.tags.length - 3 }}
         </span>
       </div>
     </div>
@@ -44,7 +92,8 @@
 </template>
 
 <script setup>
-import { h } from 'vue';
+import { h, computed } from 'vue';
+import { getCollectionById, getMetadataConfig, getMetadataValueIcon as getValueIcon, getHighlightedMetadataKeys } from '../../../utils/tagConfig';
 
 const props = defineProps({
   pin: {
@@ -55,6 +104,21 @@ const props = defineProps({
 
 const emit = defineEmits(['click', 'tag-click']);
 
+// Check if pin has structured metadata
+const hasMetadata = computed(() => {
+  return props.pin.metadata && Object.keys(props.pin.metadata).length > 0;
+});
+
+// Check if pin is in any collections
+const hasCollections = computed(() => {
+  return props.pin.collections && props.pin.collections.length > 0;
+});
+
+// Get highlighted metadata keys to display
+const highlightedKeys = computed(() => {
+  return getHighlightedMetadataKeys();
+});
+
 // Extract domain name from URL
 const getDomainName = (url) => {
   try {
@@ -62,6 +126,22 @@ const getDomainName = (url) => {
   } catch (error) {
     return url;
   }
+};
+
+// Get collection information
+const getCollectionName = (collectionId) => {
+  const collection = getCollectionById(collectionId);
+  return collection ? collection.name : collectionId;
+};
+
+const getCollectionIcon = (collectionId) => {
+  const collection = getCollectionById(collectionId);
+  return collection ? collection.icon : '📁';
+};
+
+// Get metadata value icon
+const getMetadataValueIcon = (key, value) => {
+  return getValueIcon(key, value);
 };
 
 // Icons for different content types
@@ -101,7 +181,8 @@ const getContentTypeIcon = (type) => {
       
     case 'article':
       return () => h('svg', { 
-        xmlns: 'http://www.w3.org/2000/svg', 
+        xmlns: 'http://www.w3.org/2000/svg',
+
         width: '24', 
         height: '24', 
         viewBox: '0 0 24 24',
@@ -262,6 +343,15 @@ const getContentTypeIcon = (type) => {
   font-size: 0.8rem;
   color: var(--vp-c-text-2);
   margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.site-favicon {
+  width: 14px;
+  height: 14px;
+  margin-right: 5px;
+  object-fit: contain;
 }
 
 .pin-description {
@@ -286,17 +376,136 @@ const getContentTypeIcon = (type) => {
   border-radius: 0 4px 4px 0;
 }
 
+/* Structured metadata styles */
+.structured-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.5rem 0;
+}
+
+.metadata-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.metadata-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  background-color: var(--vp-c-bg-alt);
+  color: var(--vp-c-text-2);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.metadata-tag:hover {
+  background-color: var(--vp-c-brand-light);
+  color: var(--vp-c-white);
+}
+
+.metadata-icon {
+  margin-right: 0.25rem;
+}
+
+.metadata-value {
+  max-width: 100px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.more-metadata {
+  font-size: 0.7rem;
+  color: var(--vp-c-text-3);
+  padding: 0.2rem 0.4rem;
+}
+
+/* Type-specific styling */
+.meta-type {
+  background-color: var(--vp-c-gray-soft);
+}
+
+.meta-source {
+  background-color: var(--vp-c-gray-dark-soft);
+  color: var(--vp-c-gray-light-5);
+}
+
+.meta-artist, .meta-creator {
+  background-color: var(--vp-c-purple-soft);
+  color: var(--vp-c-purple-dark);
+}
+
+.meta-year {
+  background-color: var(--vp-c-yellow-soft);
+  color: var(--vp-c-yellow-dark);
+}
+
+.meta-genre {
+  background-color: var(--vp-c-green-soft);
+  color: var(--vp-c-green-dark);
+}
+
+.meta-mood {
+  background-color: var(--vp-c-pink-soft);
+  color: var(--vp-c-pink-dark);
+}
+
+/* Collections styling */
+.pin-collections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.collection-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 16px;
+  background-color: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-dark);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.collection-tag:hover {
+  background-color: var(--vp-c-brand);
+  color: var(--vp-c-white);
+}
+
+.collection-icon {
+  margin-right: 0.3rem;
+}
+
+.collection-name {
+  max-width: 120px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.more-collections {
+  font-size: 0.75rem;
+  color: var(--vp-c-text-3);
+  padding: 0.25rem 0.5rem;
+}
+
+/* Traditional tags */
 .pin-tags {
   margin-top: auto;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .pin-tag {
   display: inline-block;
   font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
+  padding: 0.2rem 0.5rem;
   background-color: var(--vp-c-bg-alt);
   border-radius: 12px;
   color: var(--vp-c-text-2);
@@ -306,5 +515,11 @@ const getContentTypeIcon = (type) => {
 .pin-tag:hover {
   background-color: var(--vp-c-brand-light);
   color: var(--vp-c-brand-contrast);
+}
+
+.more-tags {
+  font-size: 0.75rem;
+  color: var(--vp-c-text-3);
+  padding: 0.2rem 0.4rem;
 }
 </style>

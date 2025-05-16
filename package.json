@@ -2,7 +2,18 @@
   "scripts": {
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "migrate-thumbnails": "node docs/.vitepress/scripts/migrate-thumbnails.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:ui": "vitest --ui",
+    "rebuild": "npm run enhanced-fix && npm run docs:build && npm run docs:preview",
+    "generate-og-cache": "node docs/.vitepress/scripts/generate-og-cache.js",
+    "update-pins": "node docs/.vitepress/utils/connectors/index.js",
+    "spotify-auth": "node docs/.vitepress/utils/connectors/spotifyAuth.js",
+    "verify-spotify": "node docs/.vitepress/utils/connectors/verifySpotifyConfig.js",
+    "prebuild": "npm run update-pins && npm run generate-og-cache"
   },
   "dependencies": {
     "@fontsource-variable/kode-mono": "^5.2.5",
@@ -12,11 +23,22 @@
   },
   "devDependencies": {
     "@fontsource-variable/source-sans-3": "^5.1.1",
+    "@playwright/test": "^1.42.0",
+    "@testing-library/vue": "^8.0.2",
+    "@vitejs/plugin-vue": "^5.0.4",
+    "@vitest/ui": "^1.4.0",
     "cheerio": "^1.0.0",
     "chokidar": "^3.6.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "googleapis": "^148.0.0",
     "gray-matter": "^4.0.3",
+    "jsdom": "^24.1.3",
     "node-fetch": "^2.7.0",
-    "uuid": "^9.0.1"
+    "spotify-web-api-node": "^5.0.2",
+    "uuid": "^9.0.1",
+    "vimeo": "^2.3.1",
+    "vitest": "^1.4.0"
   },
   "type": "module"
 }

@@ -1,110 +1,175 @@
 <!-- docs/.vitepress/theme/components/pins/PinDetail.vue -->
 <template>
   <div class="pin-detail">
-    <div class="pin-detail-container">
-      <!-- Type-specific content display -->
-      <div class="pin-content" :class="[`type-${pin.contentType}`]">
-        <!-- Music content -->
-        <div v-if="pin.contentType === 'music'" class="music-content">
-          <div class="album-cover">
-            <img v-if="pin.imageUrl" :src="pin.imageUrl" :alt="pin.title" />
-            <div v-else class="fallback-cover">
-              <div class="music-icon">🎵</div>
-            </div>
-          </div>
-          
-          <div class="music-info">
-            <h2>{{ pin.title }}</h2>
-            <p v-if="pin.artist" class="artist">{{ pin.artist }}</p>
-            <a :href="pin.url" target="_blank" rel="noopener" class="action-button">
-              Listen on {{ getMusicService(pin.url) }}
-            </a>
-          </div>
-        </div>
+    <!-- Header with image, title, description -->
+    <div class="pin-header">
+      <div class="pin-image-container" v-if="pin.imageUrl">
+        <img :src="pin.imageUrl" :alt="pin.title" class="pin-image" />
+      </div>
+      
+      <div class="header-content">
+        <h2 class="pin-title">{{ pin.title }}</h2>
         
-        <!-- Video content -->
-        <div v-else-if="pin.contentType === 'video'" class="video-content">
-          <div class="video-embed" v-html="getEmbedCode(pin.url)"></div>
-          <h2>{{ pin.title }}</h2>
-          <p v-if="pin.description" class="description">{{ pin.description }}</p>
-        </div>
-        
-        <!-- Default content display -->
-        <div v-else class="default-content">
-          <div class="content-header">
-            <img v-if="pin.imageUrl" :src="pin.imageUrl" :alt="pin.title" class="content-image" />
-            <h2>{{ pin.title }}</h2>
-          </div>
-          
-          <p v-if="pin.description" class="description">{{ pin.description }}</p>
-          <a :href="pin.url" target="_blank" rel="noopener" class="action-button">
-            Visit {{ formatDomain(pin.url) }}
+        <div class="pin-source">
+          <a :href="pin.url" target="_blank" rel="noopener noreferrer" class="source-link">
+            <img v-if="pin.favicon" :src="pin.favicon" class="site-favicon" alt="Site icon" />
+            <span>{{ getDomainName(pin.url) }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="external-link-icon">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
           </a>
         </div>
-      </div>
-      
-      <!-- User notes -->
-      <div v-if="pin.notes" class="pin-notes">
-        <h3>Notes:</h3>
-        <div class="notes-content">{{ pin.notes }}</div>
-      </div>
-      
-      <!-- Metadata -->
-      <div class="pin-metadata">
-        <div class="metadata-item">
-          <span class="metadata-label">Added:</span>
-          <span>{{ formatDate(pin.pinDate) }}</span>
-        </div>
         
-        <div class="metadata-item">
-          <span class="metadata-label">Type:</span>
-          <span>{{ formatContentType(pin.contentType) }}</span>
-        </div>
+        <p v-if="pin.description" class="pin-description">
+          {{ pin.description }}
+        </p>
+      </div>
+    </div>
+    
+    <!-- Notes if available -->
+    <div v-if="pin.notes" class="pin-notes">
+      <h3>Notes</h3>
+      <blockquote>{{ pin.notes }}</blockquote>
+    </div>
+    
+    <!-- Metadata display -->
+    <div class="pin-metadata">
+      <div class="metadata-section">
+        <h3>Metadata</h3>
         
-        <div class="metadata-item">
-          <span class="metadata-label">Source:</span>
-          <span>{{ formatDomain(pin.url) }}</span>
+        <div class="metadata-layout">
+          <!-- Collections -->
+          <div class="metadata-group collections-group" v-if="hasCollections">
+            <h4>Collections</h4>
+            <div class="collections-list">
+              <div 
+                v-for="collectionId in pin.collections" 
+                :key="`collection-${collectionId}`"
+                class="collection-tag"
+                @click="emit('tag-click', `collection:${collectionId}`)"
+              >
+                <span class="collection-icon">{{ getCollectionIcon(collectionId) }}</span>
+                {{ getCollectionName(collectionId) }}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Structured metadata -->
+          <div class="metadata-groups" v-if="hasMetadata">
+            <!-- Inferred metadata -->
+            <div class="metadata-category inferred-metadata" v-if="hasInferredMetadata">
+              <h4>
+                <span class="category-icon">🤖</span>
+                Auto-Detected
+              </h4>
+              
+              <div 
+                v-for="key in Object.keys(inferredMetadata)"
+                :key="`inferred-${key}`"
+                class="metadata-group"
+              >
+                <div class="metadata-key">
+                  <span class="key-icon">{{ getMetadataIcon(key) }}</span>
+                  {{ getMetadataLabel(key) }}:
+                </div>
+                
+                <div class="metadata-values">
+                  <div 
+                    v-for="value in inferredMetadata[key]"
+                    :key="`inferred-${key}-${value}`"
+                    class="metadata-tag"
+                    :class="`meta-${key}`"
+                    @click="emit('tag-click', `${key}:${value}`)"
+                  >
+                    <span class="metadata-icon">{{ getMetadataValueIcon(key, value) }}</span>
+                    {{ value }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Manual metadata -->
+            <div class="metadata-category manual-metadata" v-if="hasManualMetadata">
+              <h4>
+                <span class="category-icon">✏️</span>
+                Manually Added
+              </h4>
+              
+              <div 
+                v-for="key in Object.keys(manualMetadata)"
+                :key="`manual-${key}`"
+                class="metadata-group"
+              >
+                <div class="metadata-key">
+                  <span class="key-icon">{{ getMetadataIcon(key) }}</span>
+                  {{ getMetadataLabel(key) }}:
+                </div>
+                
+                <div class="metadata-values">
+                  <div 
+                    v-for="value in manualMetadata[key]"
+                    :key="`manual-${key}-${value}`"
+                    class="metadata-tag"
+                    :class="`meta-${key}`"
+                    @click="emit('tag-click', `${key}:${value}`)"
+                  >
+                    <span class="metadata-icon">{{ getMetadataValueIcon(key, value) }}</span>
+                    {{ value }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Standard tags -->
+          <div class="metadata-group tags-group" v-if="pin.tags && pin.tags.length > 0">
+            <h4>Tags</h4>
+            <div class="tags-list">
+              <div 
+                v-for="tag in pin.tags" 
+                :key="`tag-${tag}`"
+                class="pin-tag"
+                @click="emit('tag-click', tag)"
+              >
+                #{{ tag }}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      
-      <!-- Tags -->
-      <div class="pin-tags">
-        <h3>Tags:</h3>
-        <div class="tags-list">
-          <span
-            v-for="tag in pin.tags"
-            :key="tag"
-            class="tag"
-            @click="emit('tag-click', tag)"
-          >
-            #{{ tag }}
-          </span>
-        </div>
-      </div>
-      
-      <!-- Related pins -->
-      <div v-if="relatedPins.length > 0" class="related-pins">
-        <h3>Related Pins:</h3>
-        <div class="related-pins-list">
-          <div
-            v-for="related in relatedPins"
-            :key="related.id"
-            class="related-pin"
-            @click="emit('pin-click', related)"
-          >
-            <div class="related-pin-thumbnail">
-              <img 
-                v-if="related.imageUrl" 
-                :src="related.imageUrl" 
-                :alt="related.title"
-                loading="lazy"
-              />
-              <div v-else class="related-fallback" :class="[`type-${related.contentType}`]"></div>
+    </div>
+    
+    <!-- Related pins -->
+    <div class="related-pins" v-if="relatedPins && relatedPins.length > 0">
+      <h3>Related Pins</h3>
+      <div class="related-pins-grid">
+        <div 
+          v-for="relatedPin in relatedPins" 
+          :key="`related-${relatedPin.id}`"
+          class="related-pin-card"
+          @click="emit('pin-click', relatedPin)"
+        >
+          <div class="related-pin-thumbnail">
+            <img 
+              v-if="relatedPin.imageUrl" 
+              :src="relatedPin.imageUrl" 
+              :alt="relatedPin.title" 
+              loading="lazy"
+            />
+            <div 
+              v-else 
+              class="fallback-thumbnail" 
+              :class="`type-${relatedPin.contentType}`"
+            >
+              <span class="related-type-icon">{{ getTypeIcon(relatedPin.contentType) }}</span>
             </div>
-            <div class="related-pin-info">
-              <div class="related-pin-title">{{ related.title }}</div>
-              <div class="related-pin-type">{{ formatContentType(related.contentType) }}</div>
-            </div>
+          </div>
+          
+          <div class="related-pin-info">
+            <h4 class="related-pin-title">{{ relatedPin.title }}</h4>
+            <div class="related-pin-source">{{ getDomainName(relatedPin.url) }}</div>
           </div>
         </div>
       </div>
@@ -114,6 +179,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import { getCollectionById, getMetadataConfig, getMetadataValueIcon as getValueIcon } from '../../../utils/tagConfig';
 
 const props = defineProps({
   pin: {
@@ -126,10 +192,57 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['close', 'tag-click', 'pin-click']);
+const emit = defineEmits(['tag-click', 'pin-click']);
 
-// Format the domain name
-const formatDomain = (url) => {
+// Check if pin has collections
+const hasCollections = computed(() => {
+  return props.pin.collections && props.pin.collections.length > 0;
+});
+
+// Check if pin has metadata
+const hasMetadata = computed(() => {
+  return props.pin.metadata && Object.keys(props.pin.metadata).length > 0;
+});
+
+// Separate inferred and manual metadata
+const inferredMetadata = computed(() => {
+  if (!props.pin.metadata || !props.pin.metadataSource) return {};
+  
+  const result = {};
+  
+  Object.entries(props.pin.metadata).forEach(([key, values]) => {
+    if (props.pin.metadataSource[key] === 'inferred') {
+      result[key] = values;
+    }
+  });
+  
+  return result;
+});
+
+const manualMetadata = computed(() => {
+  if (!props.pin.metadata || !props.pin.metadataSource) return {};
+  
+  const result = {};
+  
+  Object.entries(props.pin.metadata).forEach(([key, values]) => {
+    if (props.pin.metadataSource[key] === 'manual') {
+      result[key] = values;
+    }
+  });
+  
+  return result;
+});
+
+const hasInferredMetadata = computed(() => {
+  return Object.keys(inferredMetadata.value).length > 0;
+});
+
+const hasManualMetadata = computed(() => {
+  return Object.keys(manualMetadata.value).length > 0;
+});
+
+// Helper functions
+const getDomainName = (url) => {
   try {
     return new URL(url).hostname.replace('www.', '');
   } catch (error) {
@@ -137,293 +250,328 @@ const formatDomain = (url) => {
   }
 };
 
-// Format content type
-const formatContentType = (type) => {
-  return type.charAt(0).toUpperCase() + type.slice(1);
+const getCollectionName = (collectionId) => {
+  const collection = getCollectionById(collectionId);
+  return collection ? collection.name : collectionId;
 };
 
-// Format date
-const formatDate = (dateString) => {
-  if (!dateString) return 'Unknown';
-  
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
+const getCollectionIcon = (collectionId) => {
+  const collection = getCollectionById(collectionId);
+  return collection ? collection.icon : '📁';
 };
 
-// Get music service name
-const getMusicService = (url) => {
-  if (url.includes('spotify.com')) return 'Spotify';
-  if (url.includes('apple.com/music')) return 'Apple Music';
-  if (url.includes('bandcamp.com')) return 'Bandcamp';
-  if (url.includes('soundcloud.com')) return 'SoundCloud';
-  if (url.includes('tidal.com')) return 'Tidal';
-  return 'the music service';
+const getMetadataLabel = (key) => {
+  const config = getMetadataConfig(key);
+  return config.label;
 };
 
-// Generate embed code for video
-const getEmbedCode = (url) => {
-  // YouTube embed
-  if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    const videoId = url.includes('youtu.be') 
-      ? url.split('/').pop().split('?')[0]
-      : url.match(/v=([^&]+)/) ? url.match(/v=([^&]+)/)[1] : '';
-      
-    if (videoId) {
-      return `<iframe width="100%" height="400" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-    }
+const getMetadataIcon = (key) => {
+  const config = getMetadataConfig(key);
+  return config.icon;
+};
+
+const getMetadataValueIcon = (key, value) => {
+  return getValueIcon(key, value);
+};
+
+const getTypeIcon = (type) => {
+  switch (type) {
+    case 'music': return '🎵';
+    case 'video': return '🎬';
+    case 'article': return '📝';
+    case 'code': return '💻';
+    case 'design': return '🎨';
+    case 'image': return '🖼️';
+    case 'document': return '📑';
+    case 'social': return '💬';
+    default: return '🔗';
   }
-  
-  // Vimeo embed
-  if (url.includes('vimeo.com')) {
-    const videoId = url.split('/').pop().split('?')[0];
-    if (videoId) {
-      return `<iframe src="https://player.vimeo.com/video/${videoId}" width="100%" height="400" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-    }
-  }
-  
-  // Fallback
-  return `<a href="${url}" target="_blank" rel="noopener" class="video-link">Watch on original site</a>`;
 };
 </script>
 
 <style scoped>
 .pin-detail {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 1.5rem;
+  max-width: 100%;
 }
 
-.pin-detail-container {
-  background-color: var(--vp-c-bg-soft);
-  border-radius: 12px;
-  overflow: hidden;
-  padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.pin-content {
-  margin-bottom: 2rem;
-}
-
-/* Music content */
-.music-content {
+.pin-header {
   display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  align-items: center;
-}
-
-.album-cover {
-  width: 200px;
-  height: 200px;
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.album-cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.fallback-cover {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #8e44ad, #3498db);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 3rem;
-}
-
-.music-info {
-  flex: 1;
-  min-width: 250px;
-}
-
-.music-info h2 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-}
-
-.artist {
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-  color: var(--vp-c-text-2);
-}
-
-/* Video content */
-.video-content {
-  width: 100%;
-}
-
-.video-embed {
-  margin-bottom: 1rem;
-  width: 100%;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: #000;
-}
-
-.video-embed iframe {
-  display: block;
-}
-
-.video-content h2 {
-  margin: 1rem 0 0.5rem;
-}
-
-/* Default content */
-.default-content {
-  width: 100%;
-}
-
-.content-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.content-image {
-  width: 180px;
-  height: auto;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-.description {
-  line-height: 1.6;
-  color: var(--vp-c-text-2);
+  gap: 1.5rem;
   margin-bottom: 1.5rem;
 }
 
-/* Action button */
-.action-button {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  background-color: var(--vp-c-brand);
-  color: var(--vp-c-brand-contrast);
+.pin-image-container {
+  flex: 0 0 40%;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--vp-c-bg-alt);
+}
+
+.pin-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.pin-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+.pin-source {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--vp-c-text-2);
+}
+
+.source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--vp-c-text-2);
   text-decoration: none;
-  border-radius: 4px;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
+  transition: color 0.2s ease;
 }
 
-.action-button:hover {
-  background-color: var(--vp-c-brand-dark);
+.source-link:hover {
+  color: var(--vp-c-brand);
 }
 
-/* Notes */
+.site-favicon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.external-link-icon {
+  opacity: 0.6;
+}
+
+.pin-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--vp-c-text-1);
+  margin: 0;
+}
+
 .pin-notes {
-  margin: 1.5rem 0;
-  padding: 1rem;
-  background-color: rgba(0, 0, 0, 0.03);
-  border-left: 4px solid var(--vp-c-brand);
-  border-radius: 0 4px 4px 0;
+  margin-bottom: 1.5rem;
 }
 
 .pin-notes h3 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
   font-size: 1.1rem;
+  margin: 0 0 0.5rem;
 }
 
-.notes-content {
+.pin-notes blockquote {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--vp-c-brand);
+  background-color: var(--vp-c-bg-soft);
+  border-radius: 0 4px 4px 0;
   font-style: italic;
-  line-height: 1.6;
 }
 
-/* Metadata */
 .pin-metadata {
-  margin: 1.5rem 0;
-  padding: 1rem;
-  background-color: var(--vp-c-bg-alt);
-  border-radius: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
-.metadata-item {
-  margin-right: 1.5rem;
-}
-
-.metadata-label {
-  font-weight: 600;
-  margin-right: 0.5rem;
-}
-
-/* Tags */
-.pin-tags {
-  margin: 1.5rem 0;
-}
-
-.pin-tags h3 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
+.metadata-section h3 {
   font-size: 1.1rem;
+  margin: 0 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--vp-c-divider);
 }
 
-.tags-list {
+.metadata-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.metadata-group {
+  margin-bottom: 1rem;
+}
+
+.metadata-group h4 {
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  color: var(--vp-c-text-2);
+}
+
+.collections-list, .tags-list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-.tag {
-  display: inline-block;
-  padding: 0.3rem 0.6rem;
-  background-color: var(--vp-c-bg-alt);
+.collection-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
   border-radius: 16px;
-  font-size: 0.9rem;
-  color: var(--vp-c-text-2);
+  background-color: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-dark);
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-.tag:hover {
+.collection-tag:hover {
+  background-color: var(--vp-c-brand);
+  color: var(--vp-c-white);
+}
+
+.collection-icon {
+  margin-right: 0.4rem;
+}
+
+.metadata-category {
+  margin-bottom: 1.5rem;
+}
+
+.metadata-category h4 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--vp-c-text-1);
+}
+
+.category-icon {
+  margin-right: 0.5rem;
+}
+
+.metadata-key {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--vp-c-text-2);
+  margin-bottom: 0.3rem;
+}
+
+.key-icon {
+  margin-right: 0.3rem;
+}
+
+.metadata-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  padding-left: 0.5rem;
+}
+
+.metadata-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  background-color: var(--vp-c-bg-alt);
+  color: var(--vp-c-text-1);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.metadata-tag:hover {
   background-color: var(--vp-c-brand-light);
-  color: var(--vp-c-brand-contrast);
+  color: var(--vp-c-white);
+}
+
+.metadata-icon {
+  margin-right: 0.3rem;
+}
+
+/* Type-specific styling */
+.meta-type {
+  background-color: var(--vp-c-gray-soft);
+}
+
+.meta-source {
+  background-color: var(--vp-c-gray-dark-soft);
+  color: var(--vp-c-gray-light-5);
+}
+
+.meta-artist, .meta-creator {
+  background-color: var(--vp-c-purple-soft);
+  color: var(--vp-c-purple-dark);
+}
+
+.meta-year {
+  background-color: var(--vp-c-yellow-soft);
+  color: var(--vp-c-yellow-dark);
+}
+
+.meta-genre {
+  background-color: var(--vp-c-green-soft);
+  color: var(--vp-c-green-dark);
+}
+
+.meta-mood {
+  background-color: var(--vp-c-pink-soft);
+  color: var(--vp-c-pink-dark);
+}
+
+.pin-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  background-color: var(--vp-c-bg-alt);
+  color: var(--vp-c-text-2);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pin-tag:hover {
+  background-color: var(--vp-c-brand-light);
+  color: var(--vp-c-white);
 }
 
 /* Related pins */
-.related-pins {
-  margin-top: 2rem;
-}
-
 .related-pins h3 {
-  margin-top: 0;
-  margin-bottom: 1rem;
   font-size: 1.1rem;
+  margin: 0 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--vp-c-divider);
 }
 
-.related-pins-list {
+.related-pins-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 
-.related-pin {
-  background-color: var(--vp-c-bg-alt);
+.related-pin-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--vp-c-bg-soft);
   border-radius: 8px;
   overflow: hidden;
-  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  height: 100%;
 }
 
-.related-pin:hover {
+.related-pin-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
 .related-pin-thumbnail {
+  position: relative;
   height: 120px;
+  background-color: var(--vp-c-bg-alt);
   overflow: hidden;
 }
 
@@ -433,25 +581,41 @@ const getEmbedCode = (url) => {
   object-fit: cover;
 }
 
-.related-fallback {
+.fallback-thumbnail {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 2rem;
 }
 
-.related-fallback.type-music {
+.fallback-thumbnail.type-music {
   background: linear-gradient(135deg, #8e44ad, #3498db);
 }
 
-.related-fallback.type-video {
+.fallback-thumbnail.type-video {
   background: linear-gradient(135deg, #e74c3c, #f39c12);
 }
 
-.related-fallback.type-article {
+.fallback-thumbnail.type-article {
   background: linear-gradient(135deg, #2ecc71, #1abc9c);
 }
 
-.related-fallback.type-code {
+.fallback-thumbnail.type-code {
   background: linear-gradient(135deg, #34495e, #2c3e50);
+}
+
+.fallback-thumbnail.type-design {
+  background: linear-gradient(135deg, #e67e22, #d35400);
+}
+
+.fallback-thumbnail.type-link {
+  background: linear-gradient(135deg, #7f8c8d, #95a5a6);
 }
 
 .related-pin-info {
@@ -459,42 +623,52 @@ const getEmbedCode = (url) => {
 }
 
 .related-pin-title {
-  font-weight: 500;
   font-size: 0.9rem;
-  margin-bottom: 0.25rem;
-  white-space: nowrap;
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;  
   overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.4;
 }
 
-.related-pin-type {
-  font-size: 0.8rem;
+.related-pin-source {
+  font-size: 0.75rem;
   color: var(--vp-c-text-2);
 }
 
-/* Responsive design */
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .music-content {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .album-cover {
-    margin: 0 auto 1rem;
-  }
-  
-  .content-header {
+  .pin-header {
     flex-direction: column;
   }
   
-  .content-image {
+  .pin-image-container {
+    flex: none;
     width: 100%;
-    max-width: 300px;
-    margin: 0 auto 1rem;
+    max-height: 300px;
+    margin-bottom: 1rem;
   }
   
-  .related-pins-list {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  .pin-image {
+    height: 100%;
+    object-fit: contain;
+    background-color: var(--vp-c-bg-alt);
+  }
+  
+  .metadata-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .related-pins-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .related-pins-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

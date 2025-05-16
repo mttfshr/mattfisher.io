@@ -4,6 +4,24 @@ import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
 
+// Ensure the VitePress public directory exists
+// Using standard VitePress public directory location
+const publicDir = path.resolve(process.cwd(), 'docs/public');
+const mediaDir = path.resolve(publicDir, 'media');
+const thumbnailsDir = path.resolve(mediaDir, 'thumbnails');
+
+// Create the media directory if it doesn't exist
+if (!fs.existsSync(mediaDir)) {
+  console.log(`Creating standard VitePress public media directory: ${mediaDir}`);
+  fs.mkdirSync(mediaDir, { recursive: true });
+}
+
+// Create the thumbnails directory if it doesn't exist
+if (!fs.existsSync(thumbnailsDir)) {
+  console.log(`Creating thumbnails directory: ${thumbnailsDir}`);
+  fs.mkdirSync(thumbnailsDir, { recursive: true });
+}
+
 // Import our new getPins function
 import { getPins } from './utils/getPins.js'
 
@@ -202,7 +220,7 @@ async function getLogEntries() {
         
         try {
           // Use require to read from cache if available
-          const cachePath = path.resolve(process.cwd(), 'docs/_cache/og-cache.json')
+          const cachePath = path.resolve(process.cwd(), 'docs/.vitepress/cache/og-cache.json')
           if (fs.existsSync(cachePath)) {
             const cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'))
             if (cache[url]) {
@@ -253,17 +271,25 @@ async function getLogEntries() {
 }
 
 export default defineConfig({
+  // Basic configuration
   title: "Matt Fisher",
   description: "everything that is not a fragment is invisible",
+  base: '/',
   
-  // Media handling configured below in the vite section
+  // Directory configuration 
+  outDir: path.resolve(process.cwd(), 'docs/.vitepress/dist'),
+  cacheDir: path.resolve(process.cwd(), 'docs/.vitepress/cache'),
+  publicDir: path.resolve(process.cwd(), 'docs/public'),
+  
+  // Theme configuration
+  lastUpdated: true,
   
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Workbook', link: '/workbook' },
-      { text: 'Log', link: '/log' },
       { text: 'Pins', link: '/pins/' },
+      { text: 'Log', link: '/log' },
       { text: 'Notes', link: '/notes' },
       { text: 'Links', items: 
         [
@@ -292,30 +318,20 @@ export default defineConfig({
     // Gather all pins at build time using our new function
     pins: getPins()
   },
-  // Configure how assets are processed
+  // Configure how assets are processed - unified approach for all media assets
   assetsDir: 'assets',
   
-  // Include media directory in build
-  srcExclude: ['!docs/media/**'],
-  // Ensure media directory is copied to the output
-  publicDir: 'media',
+  // Don't exclude the media directory
+  srcExclude: [],
   
-  lastUpdated: true,
-  
-  // Configure VitePress with plugins
+  // Configure VitePress with simplified media handling
   vite: {
     plugins: [
       videoThumbnailsPlugin()
     ],
-    // Copy _media directory to the build output
+    // Disable asset inlining
     build: {
       assetsInlineLimit: 0,
-    },
-    // Configure asset handling - ensure media path is correctly resolved
-    resolve: {
-    alias: [
-    { find: /^\/media\//, replacement: '/media/' }
-    ]
     }
   },
 })

@@ -53,10 +53,8 @@ export function getVideoThumbnail(media) {
   if (provider === 'vimeo') {
     const vimeoMatch = url.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)/);
     if (vimeoMatch && vimeoMatch[1]) {
-      // In development, we might not have local thumbnails
-      // Use the Vimeo thumbnail pattern: https://i.vimeocdn.com/video/{video_id}_640.jpg
+      // Use the path that matches VitePress public directory structure
       const localThumbnail = `/media/thumbnails/vimeo-${vimeoMatch[1]}.jpg`;
-      const vimeoThumbnail = `https://i.vimeocdn.com/video/${vimeoMatch[1]}_640.jpg`;
       
       // Try using local thumbnail first
       return localThumbnail;
@@ -67,7 +65,7 @@ export function getVideoThumbnail(media) {
   if (provider === 'youtube') {
     const youtubeMatch = url.match(/(?:youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=)|youtu\.be\/|youtube\.com\/shorts\/)([^/?&#]+)/);
     if (youtubeMatch && youtubeMatch[1]) {
-      // Use local thumbnail if available, otherwise use YouTube's thumbnail
+      // Use the path that matches VitePress public directory structure
       const localThumbnail = `/media/thumbnails/youtube-${youtubeMatch[1]}.jpg`;
       return localThumbnail;
     }

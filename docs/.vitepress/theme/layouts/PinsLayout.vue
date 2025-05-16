@@ -1,34 +1,27 @@
 <!-- .vitepress/theme/layouts/PinsLayout.vue -->
 <template>
-  <Layout>
-    <template #aside>
-      <!-- Override the sidebar to be empty -->
-    </template>
-    
-    <template #doc-before>
-      <div class="pins-layout-notice" v-if="hasCustomLayout">
-        <!-- This div will help ensure our custom styles are applied -->
-      </div>
-    </template>
-  </Layout>
+  <div class="pins-page-container">
+    <div class="pins-layout-notice">
+      <p v-if="debug">Using PinsLayout component. Path: {{ route.path }}</p>
+    </div>
+    <Content />
+  </div>
 </template>
 
 <script setup>
-import { computed, onMounted, onBeforeUnmount } from 'vue';
-import { useRoute } from 'vitepress';
-import DefaultTheme from 'vitepress/theme';
+import { ref, computed, provide, onMounted, onBeforeUnmount } from 'vue';
+import { useRoute, useData } from 'vitepress';
 
-const { Layout } = DefaultTheme;
 const route = useRoute();
+const { frontmatter } = useData();
+const debug = ref(false);
 
-// Check if we're on a pins page
-const hasCustomLayout = computed(() => {
-  return route.path.startsWith('/pins/');
-});
+// Signal to child components we're using PinsLayout
+provide('inPinsLayout', true);
 
 // Add a class to the body element when on pins pages
 onMounted(() => {
-  if (hasCustomLayout.value && typeof document !== 'undefined') {
+  if (typeof document !== 'undefined') {
     document.body.classList.add('pins-page');
   }
 });
@@ -42,57 +35,42 @@ onBeforeUnmount(() => {
 </script>
 
 <style>
-/* Use !important to force override any default styles */
-/* Target the main container elements */
-.pins-layout-notice ~ .VPDoc .container,
-.pins-layout-notice ~ .VPDoc .container .content-container,
-.pins-layout-notice ~ .VPDoc .container .content,
-.pins-layout-notice ~ .VPDoc .main {
+.pins-page-container {
   max-width: 100% !important;
   width: 100% !important;
-  padding-left: 32px !important;
-  padding-right: 32px !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
+  padding: 0 !important;
 }
 
-/* Explicitly remove sidebar and aside */
-.pins-layout-notice ~ .VPDoc .aside,
-.pins-layout-notice ~ .VPDoc .VPDocAside {
+/* Force full-width layout */
+.pins-page .VPDoc .container,
+.pins-page .VPDoc .content-container,
+.pins-page .VPDoc .content,
+.pins-page .VPDoc .main {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+}
+
+/* Hide sidebar and aside */
+.pins-page .VPDoc .aside,
+.pins-page .VPDoc .VPDocAside {
   display: none !important;
   width: 0 !important;
 }
 
-/* Remove any grid column settings */
-.pins-layout-notice ~ .VPDoc .container,
-.pins-layout-notice ~ .VPDoc .content-container {
+/* Fix the container layout */
+.pins-page .VPDoc .container,
+.pins-page .VPDoc .content-container {
   display: block !important;
   grid-template-columns: 1fr !important;
 }
 
-/* Adjust the main content area */
-.pins-layout-notice ~ .VPDoc .VPContent {
-  padding-top: 16px !important; 
-}
-
-/* Make sure all pin components take full width */
-.pins-layout-notice ~ .VPDoc .pins-container,
-.pins-layout-notice ~ .VPDoc .pin-collections,
-.pins-layout-notice ~ .VPDoc .pin-grid {
-  width: 100% !important;
-  max-width: 100% !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
-/* Larger screens - even more aggressive */
-@media (min-width: 1280px) {
-  .pins-layout-notice ~ .VPDoc .container,
-  .pins-layout-notice ~ .VPDoc .container .content-container,
-  .pins-layout-notice ~ .VPDoc .container .content {
-    max-width: 100% !important;
-    padding-left: 48px !important;
-    padding-right: 48px !important;
-  }
+/* Debug styling */
+.pins-layout-notice p {
+  background-color: #ffeeee;
+  color: #990000;
+  padding: 0.5rem;
+  margin: 0 0 1rem;
+  display: none;
 }
 </style>
