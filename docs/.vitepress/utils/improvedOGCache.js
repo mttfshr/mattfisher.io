@@ -5,6 +5,30 @@ import { fileURLToPath } from 'url';
 import fetch from 'node-fetch';
 import { JSDOM } from 'jsdom';
 
+/**
+ * Decode HTML entities in a string
+ * @param {string} html - String with HTML entities
+ * @returns {string} - Decoded string
+ */
+function decodeHtmlEntities(html) {
+  if (!html) return '';
+  
+  return html
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&#039;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&#x2F;/g, '/')
+    .replace(/&#x27;/g, "'")
+    .replace(/&#x60;/g, '`')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&hellip;/g, '...')
+    .replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec))
+    .replace(/&#x([0-9A-F]+);/gi, (match, hex) => String.fromCharCode(parseInt(hex, 16)));
+}
+
 // Set up directory paths
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, '../../../');
@@ -57,8 +81,10 @@ function extractUrlsFromMarkdown(filePath) {
 
 /**
  * Get all pins directly from Markdown files
+ * @param {string[]} targetFiles - Optional array of pin filenames to target 
+ * @returns {string[]} - Array of URLs found in the markdown files
  */
-function getAllPins() {
+function getAllPins(targetFiles = []) {
   console.log('Getting pins data directly from markdown files...');
   
   const pinsDir = path.resolve(projectRoot, 'docs/pins');
@@ -70,8 +96,14 @@ function getAllPins() {
   }
   
   // Get all markdown files in the pins directory
-  const mdFiles = fs.readdirSync(pinsDir)
+  let mdFiles = fs.readdirSync(pinsDir)
     .filter(file => file.endsWith('.md') && file !== 'index.md');
+  
+  // Filter to target files if specified
+  if (targetFiles.length > 0) {
+    mdFiles = mdFiles.filter(file => targetFiles.includes(file));
+    console.log(`Targeting specific files: ${mdFiles.join(', ')}`);
+  }
   
   console.log(`Found ${mdFiles.length} markdown files in pins directory:`, mdFiles);
   
@@ -169,8 +201,9 @@ async function fetchOgData(url) {
       ogData.favicon = `${baseUrl.protocol}//${baseUrl.host}/favicon.ico`;
     }
     
-    // Clean up description
-    ogData.description = ogData.description.replace(/\\n/g, ' ').trim();
+    // Clean up and decode HTML entities in title and description
+    ogData.title = decodeHtmlEntities(ogData.title);
+    ogData.description = decodeHtmlEntities(ogData.description.replace(/\\n/g, ' ').trim());
     
     return ogData;
   } catch (error) {
@@ -309,7 +342,7 @@ export async function generateOgCache(forceRefresh = false) {
   }
   
   // Get all pin URLs directly from markdown files
-  const pinUrls = getAllPins();
+  const pinUrls = getAllPins(targetFiles);
   console.log(`Processing ${pinUrls.length} pin URLs for OG data...`);
   
   // Create images directory if it doesn't exist
@@ -388,7 +421,16 @@ export async function generateOgCache(forceRefresh = false) {
 // Main entry point when called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   const forceRefresh = process.argv.includes('--force');
-  generateOgCache(forceRefresh).catch(error => {
+  
+  // Check for targetFiles parameters
+  let targetFiles = [];
+  const targetIndex = process.argv.indexOf('--target');
+  if (targetIndex !== -1 && process.argv.length > targetIndex + 1) {
+    // Parse comma-separated file names
+    targetFiles = process.argv[targetIndex + 1].split(',');
+  }
+  
+  generateOgCache(forceRefresh, targetFiles).catch(error => {
     console.error('Error generating OG cache:', error);
     process.exit(1);
   });

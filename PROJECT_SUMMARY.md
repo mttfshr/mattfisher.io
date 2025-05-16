@@ -23,18 +23,23 @@ This document serves as a "crib note" for Claude in each new conversation. Due t
 ## Current Task
 
 **Working on:** Improve OG Data Caching
-**Status:** Not Started
-**Plan:**
-- Implement incremental OG data updates for new pins
-- Create a more robust error handling system for OG data fetching
+**Status:** Partially Completed
+**Progress:**
+- ✅ Implemented specialized scripts for Vimeo pins with HTML entity decoding
+- ✅ Added targeted OG cache refresh for specific content sources
+- ✅ Added proper cache synchronization between cache directories
+- ✅ Implemented improved error handling for OG data fetching
+
+**Remaining Steps:**
+- Implement incremental OG data updates for other pins sources
 - Consider implementing a local image cache for external thumbnails
-- Add metadata to indicate when OG data was last refreshed
+- Add metadata to indicate when OG data was last refreshed for each source
 
 **Implementation Steps:**
-1. Analyze current OG data caching implementation
-2. Design an incremental update approach that only fetches data for new pins
-3. Improve error handling to gracefully handle API failures
-4. Create a metadata system to track freshness of cached data
+1. ✅ Analyze current OG data caching implementation
+2. ✅ Design an incremental update approach that only fetches data for new pins
+3. ✅ Improve error handling to gracefully handle API failures
+4. Add metadata system to track freshness of cached data
 5. Consider implementing a local thumbnail cache to reduce external dependencies
 
 ## Next Steps
@@ -54,6 +59,20 @@ This document serves as a "crib note" for Claude in each new conversation. Due t
 - Explore ways to minimize plugin duplication (videoThumbnails plugin runs twice)
 
 ## Session Notes
+
+### May 15, 2025 - Session 31 Summary
+- Implemented HTML entity decoding for Vimeo pin descriptions
+- Added pagination support to Vimeo connector to fetch all liked videos
+- Created targeted OG cache refresh for Vimeo pins specifically
+- Discovered and fixed distinction between og-cache.json and pins-cache.json
+- Developed specialized scripts for Vimeo pin management:
+  - `npm run update-pins:vimeo` to update just Vimeo pins
+  - `npm run fix-vimeo-descriptions` to fix HTML entities in descriptions
+  - `npm run update-vimeo-full` for a complete update workflow
+- Fixed issue with simplified Vimeo pin format (removed extraneous hashtags and descriptions)
+- Added green circle favicon to site
+- Implemented favicon generation with SVG and PNG support
+- Created connectorrs architecture that allows selective updates by service
 
 ### May 15, 2025 - Session 30 Summary
 - Successfully implemented Side-by-Side Filters UI for Types and Collections
