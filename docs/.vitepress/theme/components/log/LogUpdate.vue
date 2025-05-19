@@ -44,9 +44,12 @@ const formattedContent = computed(() => {
   const urlRegex = /(https?:\/\/[^\s]+)/g
   
   // Replace URLs with links
-  return props.content.replace(urlRegex, (url) => {
+  let processedContent = props.content.replace(urlRegex, (url) => {
     return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
-  })
+  });
+  
+  // Preserve line breaks by replacing \n with <br>
+  return processedContent.replace(/\n/g, '<br>');
 })
 </script>
 

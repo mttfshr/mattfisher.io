@@ -31,14 +31,6 @@ const filteredEntries = computed(() => {
     return sortedEntries.value
   }
   
-  if (activeFilter.value === 'updates') {
-    return sortedEntries.value.filter(entry => entry.type === 'update')
-  }
-  
-  if (activeFilter.value === 'pins') {
-    return sortedEntries.value.filter(entry => entry.type === 'pin')
-  }
-  
   // Filter by tag
   return sortedEntries.value.filter(entry => 
     entry.tags && entry.tags.includes(activeFilter.value)
@@ -99,7 +91,7 @@ const groupedByMonth = computed(() => {
 
 <template>
   <div class="log-feed">
-    <div v-if="showFilters" class="log-filters">
+    <div v-if="showFilters && uniqueTags.length > 0" class="log-filters">
       <button 
         class="filter-button" 
         :class="{ active: activeFilter === 'all' }"
@@ -108,23 +100,7 @@ const groupedByMonth = computed(() => {
         All
       </button>
       
-      <button 
-        class="filter-button" 
-        :class="{ active: activeFilter === 'updates' }"
-        @click="setFilter('updates')"
-      >
-        Updates
-      </button>
-      
-      <button 
-        class="filter-button" 
-        :class="{ active: activeFilter === 'pins' }"
-        @click="setFilter('pins')"
-      >
-        Pins
-      </button>
-      
-      <div class="filter-divider"></div>
+      <div v-if="uniqueTags.length > 0" class="filter-divider"></div>
       
       <button 
         v-for="tag in uniqueTags" 

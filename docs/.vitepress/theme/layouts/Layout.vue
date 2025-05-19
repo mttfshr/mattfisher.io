@@ -5,9 +5,13 @@ import DefaultTheme from 'vitepress/theme'
 
 const { Layout } = DefaultTheme
 const { frontmatter } = useData()
+
+// Our main Layout component doesn't directly handle workbook items
+// They are handled by WorkbookItemLayout which is registered in theme/index.mts
 </script>
 
 <template>
+  <!-- Just use the default layout without special handling -->
   <Layout>
     <template #doc-after>
       <!-- This is where we can put extra content below the main content -->
@@ -15,3 +19,4 @@ const { frontmatter } = useData()
     </template>
   </Layout>
 </template>
+

@@ -312,8 +312,10 @@ function saveCache(ogCache, pinsCache) {
 
 /**
  * Main function to generate OG cache
+ * @param {boolean} forceRefresh - Whether to force refresh all entries
+ * @param {string[]} targetFiles - Optional array of pin filenames to target
  */
-export async function generateOgCache(forceRefresh = false) {
+export async function generateOgCache(forceRefresh = false, targetFiles = []) {
   console.log('Starting OG cache generation...');
   
   // Load existing cache if it exists

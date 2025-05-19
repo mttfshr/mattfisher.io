@@ -1,0 +1,11 @@
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="400" fill="#1a1a1a" />
+  <text x="400" y="200" font-family="Arial" font-size="36" fill="#ffffff" text-anchor="middle">Collaborative Projects</text>
+  <rect x="200" y="230" width="400" height="4" fill="#e67e22" />
+  <circle cx="300" cy="300" r="30" fill="none" stroke="#e67e22" stroke-width="2">
+    <animate attributeName="r" values="30;40;30" dur="3s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="500" cy="300" r="30" fill="none" stroke="#e67e22" stroke-width="2">
+    <animate attributeName="r" values="30;40;30" dur="3s" repeatCount="indefinite" begin="1.5s" />
+  </circle>
+</svg>

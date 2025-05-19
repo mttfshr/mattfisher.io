@@ -34,12 +34,27 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style>
+<style scoped>
+/* Component-specific styles */
 .pins-page-container {
   max-width: 100% !important;
   width: 100% !important;
   padding: 0 !important;
 }
+
+/* Debug styling */
+.pins-layout-notice p {
+  background-color: #ffeeee;
+  color: #990000;
+  padding: 0.5rem;
+  margin: 0 0 1rem;
+  display: none;
+}
+</style>
+
+<style>
+/* Global styles needed for pins functionality */
+/* These are intentionally global for the pins-page class */
 
 /* Force full-width layout */
 .pins-page .VPDoc .container,

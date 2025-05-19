@@ -1,23 +1,53 @@
 ---
-title: Basic Test
+title: Test Page
 ---
 
-# Basic Test Page
+<script setup>
+import { useData } from 'vitepress'
+import { ref, computed } from 'vue'
 
-This is a simple diagnostic test page to verify that VitePress is working correctly.
+const { frontmatter, page, theme } = useData()
+const data = computed(() => {
+  return {
+    frontmatter: frontmatter.value,
+    page: page.value,
+    theme: {
+      workbookItems: theme.value.workbookItems
+    }
+  }
+})
 
-## Test List
+// Find the Obsidian Heart item from workbook items
+const obsidianHeart = computed(() => {
+  return theme.value.workbookItems?.find(item => item.slug === 'obsidian-heart') || null
+})
 
-- Item 1
-- Item 2
-- Item 3
+const showInfo = ref(true)
+</script>
 
-## Test Code Block
+# Test Page for Workbook Items
 
-```js
-console.log('Hello, world!');
-```
+<div v-if="showInfo">
+  <h2>Workbook Item Data:</h2>
+  <pre>{{ JSON.stringify(obsidianHeart, null, 2) }}</pre>
 
-## Test Image
+  <h2>Embedded Video Test:</h2>
+  <div v-if="obsidianHeart?.media?.type === 'video' && obsidianHeart?.media?.provider === 'vimeo'">
+    <div style="padding-top: 56.25%; position: relative;">
+      <iframe
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+        :src="`https://player.vimeo.com/video/${obsidianHeart.media.url.match(/[0-9]+/)[0]}?title=0&byline=0&portrait=0`"
+        frameborder="0"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
 
-![Test Image](/media/thumbnails/vimeo-552620356.jpg)
+  <h2>Raw Data:</h2>
+  <pre>{{ JSON.stringify(data, null, 2) }}</pre>
+</div>
+
+<div>
+  <button @click="showInfo = !showInfo">Toggle Debug Info</button>
+</div>

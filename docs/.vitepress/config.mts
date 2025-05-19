@@ -22,8 +22,195 @@ if (!fs.existsSync(thumbnailsDir)) {
   fs.mkdirSync(thumbnailsDir, { recursive: true });
 }
 
-// Import our new getPins function
+// Import our getPins function
 import { getPins } from './utils/getPins.js'
+
+/**
+ * Parse structured tags in the format key:value
+ */
+function parseTags(tags) {
+  const result = {
+    type: [],
+    tech: [],
+    tool: [],
+    status: [],
+    medium: [],
+    project: [],
+    collab: [],
+    other: []
+  };
+  
+  if (!tags || !Array.isArray(tags)) return result;
+  
+  tags.forEach(tag => {
+    if (typeof tag !== 'string') return;
+    
+    const [prefix, value] = tag.includes(':') ? tag.split(':', 2) : ['other', tag];
+    
+    if (result[prefix]) {
+      result[prefix].push(value);
+    } else {
+      result.other.push(tag);
+    }
+  });
+  
+  return result;
+}
+
+/**
+ * Function to gather collections data at build time
+ */
+function getCollections() {
+  const collectionsDir = path.resolve(process.cwd(), 'docs/workbook/collections')
+  
+  // Create the collections directory if it doesn't exist
+  if (!fs.existsSync(collectionsDir)) {
+    console.log(`Creating collections directory: ${collectionsDir}`)
+    fs.mkdirSync(collectionsDir, { recursive: true })
+  }
+  
+  // Get all .md files in the collections directory except index.md
+  const files = fs.existsSync(collectionsDir) 
+    ? fs.readdirSync(collectionsDir).filter(file => 
+        file.endsWith('.md') && file !== 'index.md'
+      )
+    : []
+  
+  console.log('Collection files found:', files);
+  
+  // Parse each collection file
+  const collections = files.map(file => {
+    const filePath = path.join(collectionsDir, file)
+    const content = fs.readFileSync(filePath, 'utf-8')
+    const { data: frontmatter, content: description } = matter(content)
+    const slug = file.replace(/\.md$/, '')
+    
+    // Get last modified time from file stats
+    const stats = fs.statSync(filePath)
+    const lastModified = stats.mtime.getTime()
+    
+    return {
+      title: frontmatter.title || slug,
+      slug,
+      description: frontmatter.description || '',
+      featured: frontmatter.featured || false,
+      image: frontmatter.image || '',
+      order: frontmatter.order || 999,
+      tagQuery: frontmatter.tagQuery || null,
+      groupBy: frontmatter.groupBy || null,
+      sortBy: frontmatter.sortBy || 'year',
+      sortDirection: frontmatter.sortDirection || 'desc',
+      path: `/workbook/collections/${slug}`,
+      content: description,
+      lastUpdated: lastModified
+    }
+  })
+  
+  // Sort collections by order property
+  return collections.sort((a, b) => a.order - b.order)
+}
+
+/**
+ * Process collections to include their matching items
+ */
+function processCollections(collections, workbookItems) {
+  return collections.map(collection => {
+    // If collection doesn't have a tag query, return as is
+    if (!collection.tagQuery) {
+      return collection;
+    }
+    
+    // Find items matching the tag query
+    const matchingItems = workbookItems.filter(item => {
+      // Check if item has all required tags
+      if (collection.tagQuery.includes) {
+        const matches = collection.tagQuery.includes.every(tag => {
+          return item.tags.includes(tag);
+        });
+        
+        if (!matches) return false;
+      }
+      
+      // Check if item has any excluded tags
+      if (collection.tagQuery.excludes) {
+        const hasExcluded = collection.tagQuery.excludes.some(tag => {
+          return item.tags.includes(tag);
+        });
+        
+        if (hasExcluded) return false;
+      }
+      
+      return true;
+    });
+    
+    // Sort the matching items based on collection settings
+    const sortedItems = [...matchingItems].sort((a, b) => {
+      const valueA = a[collection.sortBy] || '';
+      const valueB = b[collection.sortBy] || '';
+      
+      // Handle numeric values
+      if (!isNaN(valueA) && !isNaN(valueB)) {
+        return collection.sortDirection === 'asc' 
+          ? valueA - valueB 
+          : valueB - valueA;
+      }
+      
+      // Handle string values
+      const strA = String(valueA).toLowerCase();
+      const strB = String(valueB).toLowerCase();
+      
+      return collection.sortDirection === 'asc'
+        ? strA.localeCompare(strB)
+        : strB.localeCompare(strA);
+    });
+    
+    // Group items if groupBy is specified
+    let groupedItems = null;
+    if (collection.groupBy) {
+      groupedItems = {};
+      
+      sortedItems.forEach(item => {
+        // Get the parsed tags for this item
+        const parsedItemTags = parseTags(item.tags);
+        
+        // Get grouping value based on tag category
+        const groupValues = parsedItemTags[collection.groupBy] || [];
+        
+        // If no group value, add to "Other"
+        if (groupValues.length === 0) {
+          const otherGroup = groupedItems['Other'] || [];
+          otherGroup.push(item);
+          groupedItems['Other'] = otherGroup;
+        } else {
+          // Add to each group
+          groupValues.forEach(groupValue => {
+            const group = groupedItems[groupValue] || [];
+            group.push(item);
+            groupedItems[groupValue] = group;
+          });
+        }
+      });
+      
+      // Sort the groups by key
+      groupedItems = Object.fromEntries(
+        Object.entries(groupedItems).sort((a, b) => {
+          // Keep "Other" at the end
+          if (a[0] === 'Other') return 1;
+          if (b[0] === 'Other') return -1;
+          return a[0].localeCompare(b[0]);
+        })
+      );
+    }
+    
+    // Return the collection with matched items
+    return {
+      ...collection,
+      items: sortedItems,
+      groupedItems,
+      totalItems: sortedItems.length
+    };
+  });
+}
 
 /**
  * Function to gather notes data at build time
@@ -106,12 +293,17 @@ function getWorkbookItems() {
       thumbnailUrl = `/media/thumbnails/youtube-${youtubeId}.jpg`;
     }
     
+    // Parse structured tags
+    const parsedTags = parseTags(frontmatter.tags || []);
+    
     return {
       title: frontmatter.title || slug,
       slug,
       description: frontmatter.description || '',
       date: frontmatter.date || null,
+      year: frontmatter.year || null, // Include year from frontmatter
       tags: frontmatter.tags || [],
+      parsedTags, // Add parsed tags
       media: frontmatter.media || null,
       thumbnailUrl, // Add thumbnailUrl property
       path: `/workbook/${slug}`,
@@ -270,6 +462,53 @@ async function getLogEntries() {
   return entries
 }
 
+// Get workbook items first, then process collections
+const workbookItems = getWorkbookItems();
+const collectionsData = getCollections();
+console.log(`Found ${collectionsData.length} collection files:`, collectionsData.map(c => c.slug).join(', '));
+const collections = processCollections(collectionsData, workbookItems);
+console.log(`Processed ${collections.length} collections with items`);
+
+// Log each collection to check if it has items
+collections.forEach(collection => {
+  console.log(`Collection "${collection.title}" (${collection.slug}): ${collection.totalItems || 0} items`);
+});
+
+// Copy collection files if they don't exist in the new location
+try {
+  const oldCollectionsDir = path.resolve(process.cwd(), 'docs/collections');
+  const newCollectionsDir = path.resolve(process.cwd(), 'docs/workbook/collections');
+  
+  // If the old directory exists and has files, copy them to the new location
+  if (fs.existsSync(oldCollectionsDir)) {
+    const files = fs.readdirSync(oldCollectionsDir).filter(file => 
+      file.endsWith('.md') && file !== 'index.md'
+    );
+    
+    console.log(`Found ${files.length} files in old collections directory`);
+    
+    // Ensure the new directory exists
+    if (!fs.existsSync(newCollectionsDir)) {
+      fs.mkdirSync(newCollectionsDir, { recursive: true });
+    }
+    
+    // Copy each file
+    for (const file of files) {
+      const srcPath = path.join(oldCollectionsDir, file);
+      const destPath = path.join(newCollectionsDir, file);
+      
+      // Only copy if the file doesn't already exist
+      if (!fs.existsSync(destPath)) {
+        console.log(`Copying ${file} to new collections directory`);
+        const content = fs.readFileSync(srcPath, 'utf-8');
+        fs.writeFileSync(destPath, content);
+      }
+    }
+  }
+} catch (error) {
+  console.error('Error copying collection files:', error);
+}
+
 export default defineConfig({
   // Basic configuration
   title: "Matt Fisher",
@@ -320,7 +559,10 @@ export default defineConfig({
     notes: getNotes(),
     
     // Gather all workbook items at build time
-    workbookItems: getWorkbookItems(),
+    workbookItems: workbookItems,
+    
+    // Add collections
+    collections: collections,
     
     // Gather all log entries at build time
     logEntries: await getLogEntries(),

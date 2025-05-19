@@ -400,7 +400,8 @@ const relatedPins = computed(() => {
   </div>
 </template>
 
-<style>
+<style scoped>
+/* Scoped to this component */
 /* Main layout */
 .pins-dashboard {
   width: 100%;

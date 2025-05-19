@@ -1,0 +1,58 @@
+/* docs/.vitepress/theme/styles/workbook.css */
+
+/* Workbook Styles */
+.workbook-viewer {
+  --workbook-bg-color: transparent;
+  --workbook-text-color: var(--vp-c-text-1);
+  --workbook-soft-bg: var(--vp-c-bg-soft);
+  --workbook-text-secondary: var(--vp-c-text-2);
+}
+
+.workbook-viewer h1,
+.workbook-viewer h2,
+.workbook-viewer h3,
+.workbook-viewer h4,
+.workbook-viewer h5,
+.workbook-viewer h6,
+.workbook-viewer p,
+.workbook-viewer a,
+.workbook-viewer li,
+.workbook-viewer blockquote {
+  background-color: var(--workbook-bg-color);
+  color: var(--workbook-text-color);
+}
+
+.workbook-viewer a {
+  color: var(--vp-c-brand);
+  transition: color 0.2s;
+}
+
+.workbook-viewer a:hover {
+  color: var(--vp-c-brand-dark);
+}
+
+.immersive-viewer {
+  --workbook-immersive-text: white;
+  --workbook-immersive-bg: black;
+  --workbook-immersive-overlay: rgba(0, 0, 0, 0.7);
+  
+  color: var(--workbook-immersive-text);
+}
+
+/* Fix for VitePress content styles */
+.vp-doc h1,
+.vp-doc h2,
+.vp-doc h3,
+.vp-doc h4,
+.vp-doc h5,
+.vp-doc h6,
+.vp-doc p,
+.vp-doc a,
+.vp-doc li,
+.vp-doc blockquote {
+  background-color: transparent;
+}
+
+.VPContent {
+  background-color: var(--vp-c-bg);
+}

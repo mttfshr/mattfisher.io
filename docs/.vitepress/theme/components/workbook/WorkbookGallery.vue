@@ -62,6 +62,26 @@ const allTags = computed(() => {
   return Array.from(tags).sort()
 })
 
+// Format tag for display
+function formatTag(tag) {
+  if (!tag) return '';
+  
+  // Check if it's a structured tag (contains a colon)
+  if (tag.includes(':')) {
+    const [category, value] = tag.split(':', 2);
+    
+    // Format the value part (replace hyphens with spaces, capitalize)
+    const formattedValue = value
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, l => l.toUpperCase());
+    
+    return formattedValue;
+  }
+  
+  // If not a structured tag, just return as is
+  return tag;
+}
+
 // Set active tag
 function setTag(tag) {
   activeTag.value = tag === activeTag.value ? '' : tag
@@ -142,7 +162,7 @@ function getMediaTypeDisplay(item) {
         :class="{ active: activeTag === tag }"
         @click="setTag(tag)"
       >
-        {{ tag }}
+        {{ formatTag(tag) }}
       </button>
     </div>
     
@@ -178,13 +198,16 @@ function getMediaTypeDisplay(item) {
             {{ item.description }}
           </div>
           
-          <div v-if="item.date" class="item-date">
-            {{ new Date(item.date).toLocaleDateString() }}
+          <div v-if="item.year" class="item-date">
+            {{ item.year }}
           </div>
           
           <div v-if="item.tags && item.tags.length" class="item-tags">
-            <span v-for="tag in item.tags" :key="tag" class="item-tag">
-              {{ tag }}
+            <span v-for="tag in item.tags.slice(0, 3)" :key="tag" class="item-tag">
+              {{ formatTag(tag) }}
+            </span>
+            <span v-if="item.tags.length > 3" class="more-tags">
+              +{{ item.tags.length - 3 }} more
             </span>
           </div>
         </div>
@@ -320,6 +343,7 @@ function getMediaTypeDisplay(item) {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3rem;
+  align-items: center;
 }
 
 .item-tag {
@@ -327,6 +351,12 @@ function getMediaTypeDisplay(item) {
   background-color: var(--vp-c-bg-soft);
   padding: 0.1rem 0.4rem;
   border-radius: 3px;
+}
+
+.more-tags {
+  font-size: 0.7rem;
+  color: var(--vp-c-text-3);
+  margin-left: 0.3rem;
 }
 
 @media (max-width: 768px) {

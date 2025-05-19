@@ -1,50 +1,26 @@
 ---
-title: VitePress Public Assets Diagnostics
+title: Debug Page
 ---
 
-# VitePress Public Assets Diagnostics
+<script setup>
+import { useData } from 'vitepress'
 
-This page helps diagnose problems with the public assets directory in VitePress.
+const { page, theme, frontmatter } = useData()
+</script>
 
-## Asset Test Results
+# Debug Information
 
-<AssetDiagnostics />
-
-## Manual Tests
-
-Try accessing these URLs directly:
-
-- [Test file](/public-fix-test.txt)
-- [Vimeo thumbnail](/media/thumbnails/vimeo-552620356.jpg)
-- [Sample thumbnail](/media/thumbnails/sample-thumbnail.jpg)
-- [Video placeholder](/media/video-placeholder.svg)
-
-## Directory Structure (Correct)
-
-The correct directory structure for VitePress public assets is:
-
-```
-docs/
-  .vitepress/
-    public/         <-- This is where static assets should go
-      media/
-        thumbnails/
-          vimeo-123456789.jpg
-          youtube-abcdefghi.jpg
-        placeholder.jpg
-      other-assets/
-        file.pdf
+## Page Data
+```json
+{{ JSON.stringify(page, null, 2) }}
 ```
 
-## Technical Details
-
-VitePress expects static assets to be in `.vitepress/public/` but our site had them in `docs/public/` instead.
-
-When using static assets in your components, reference them with paths like:
-
-```vue
-<img src="/media/thumbnails/vimeo-123456789.jpg" alt="Thumbnail">
+## Theme Data
+```json
+{{ JSON.stringify(theme, null, 2) }}
 ```
 
-VitePress will correctly resolve these paths to the files in `.vitepress/public/`.
-
+## Frontmatter Data
+```json
+{{ JSON.stringify(frontmatter, null, 2) }}
+```
