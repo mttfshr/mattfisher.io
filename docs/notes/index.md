@@ -6,7 +6,6 @@ sidebar: false
 
 <script setup>
 import { computed } from 'vue';
-import NotesIndex from '../.vitepress/theme/components/notes/NotesIndex.vue';
 import { useData } from 'vitepress';
 
 // Get the notes data from theme config

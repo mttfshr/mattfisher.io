@@ -1,8 +1,12 @@
-<!-- LogUpdate.vue -->
+<!-- LogSession.vue -->
 <script setup>
 import { computed } from 'vue'
 
 const props = defineProps({
+  title: {
+    type: String,
+    required: true
+  },
   content: {
     type: String,
     required: true
@@ -22,14 +26,6 @@ const props = defineProps({
   id: {
     type: String,
     required: true
-  },
-  title: {
-    type: String,
-    default: ''
-  },
-  isClaudeSession: {
-    type: Boolean,
-    default: false
   }
 })
 
@@ -42,7 +38,7 @@ const formattedDate = computed(() => {
   })
 })
 
-// Format content to find URLs and convert them to links
+// Format content to convert URLs to links and preserve line breaks
 const formattedContent = computed(() => {
   // Simple URL regex
   const urlRegex = /(https?:\/\/[^\s]+)/g
@@ -55,32 +51,56 @@ const formattedContent = computed(() => {
   // Preserve line breaks by replacing \n with <br>
   return processedContent.replace(/\n/g, '<br>');
 })
+
+// Format title by extracting session number
+const sessionInfo = computed(() => {
+  // Try to extract session number from the title
+  // Expected format: "Development Session XX"
+  const match = props.title.match(/Development Session (\d+)/i);
+  if (match) {
+    return {
+      number: match[1],
+      name: props.title
+    };
+  }
+  
+  return {
+    number: "",
+    name: props.title
+  };
+})
 </script>
 
 <template>
-  <div class="log-update" :id="id">
-    <div class="update-header">
-      <div class="update-time">
-        <a :href="`#${id}`" class="update-date">{{ formattedDate }}</a>
+  <div :id="id" class="log-session">
+    <div class="session-header">
+      <div class="session-date" :id="id">
+        <a :href="`#${id}`" class="date-link">{{ formattedDate }}</a>
       </div>
     </div>
     
-    <div class="update-content">
-      <div v-if="title" class="update-title">{{ title }}</div>
+    <div class="session-content">
+      <div class="session-title">
+        <span class="session-badge">Session {{ sessionInfo.number }}</span>
+        <h3>{{ sessionInfo.name }}</h3>
+      </div>
+      
+      <div class="claude-indicator">Notes by Claude</div>
+      
       <div v-html="formattedContent" class="content-text"></div>
       
-      <div v-if="images && images.length" class="update-images">
+      <div v-if="images && images.length" class="session-images">
         <div 
           v-for="(image, index) in images" 
           :key="index" 
           class="image-wrapper"
           :class="{ 'single': images.length === 1, 'multiple': images.length > 1 }"
         >
-          <img :src="image.url" :alt="image.alt || 'Update image'" loading="lazy" />
+          <img :src="image.url" :alt="image.alt || 'Session image'" loading="lazy" />
         </div>
       </div>
       
-      <div v-if="tags && tags.length" class="update-tags">
+      <div v-if="tags && tags.length" class="session-tags">
         <span 
           v-for="tag in tags" 
           :key="tag" 
@@ -94,7 +114,7 @@ const formattedContent = computed(() => {
 </template>
 
 <style scoped>
-.log-update {
+.log-session {
   display: flex;
   gap: 1.5rem;
   padding-bottom: 2rem;
@@ -102,38 +122,61 @@ const formattedContent = computed(() => {
   margin-bottom: 2rem;
 }
 
-.update-header {
+.session-header {
   min-width: 100px;
 }
 
-.update-time {
+.session-date {
   position: sticky;
   top: 80px;
 }
 
-.update-date {
+.date-link {
   font-weight: 500;
   color: var(--vp-c-text-2);
   font-size: 0.85rem;
   text-decoration: none;
 }
 
-.update-date:hover {
+.date-link:hover {
   color: var(--vp-c-brand);
   text-decoration: underline;
 }
 
-.update-content {
+.session-content {
   flex: 1;
 }
 
-.update-title {
+.session-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.session-title h3 {
+  margin: 0;
   font-size: 1.2rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
-  color: var(--vp-c-text-1);
-  padding-left: 0.5rem;
-  border-left: 3px solid var(--vp-c-brand);
+}
+
+.session-badge {
+  background-color: var(--vp-c-brand);
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.claude-indicator {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--vp-c-text-2);
+  padding: 0.2rem 0.5rem;
+  background-color: var(--vp-c-bg-soft);
+  border-radius: 4px;
 }
 
 .content-text {
@@ -152,17 +195,17 @@ const formattedContent = computed(() => {
   border-bottom: 1px solid var(--vp-c-brand-dark);
 }
 
-.update-images {
+.session-images {
   display: grid;
   gap: 0.5rem;
   margin: 1rem 0;
 }
 
-.update-images.single {
+.session-images.single {
   grid-template-columns: 1fr;
 }
 
-.update-images.multiple {
+.session-images.multiple {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
@@ -186,7 +229,7 @@ const formattedContent = computed(() => {
   aspect-ratio: 16/9;
 }
 
-.update-tags {
+.session-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -199,20 +242,23 @@ const formattedContent = computed(() => {
 }
 
 @media (max-width: 640px) {
-  .log-update {
+  .log-session {
     flex-direction: column;
     gap: 0.75rem;
   }
   
-  .update-header {
-    display: flex;
-    align-items: center;
-    width: 100%;
+  .session-header {
     min-width: unset;
   }
   
-  .update-time {
+  .session-date {
     position: static;
+  }
+  
+  .session-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
   }
 }
 </style>

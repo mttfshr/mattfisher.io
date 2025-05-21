@@ -21,7 +21,6 @@ import EnhancedNote from './components/notes/EnhancedNote.vue'
 import MediaEmbed from './components/common/MediaEmbed.vue'
 import AssetDiagnostics from './components/common/AssetDiagnostics.vue'
 import LogUpdate from './components/log/LogUpdate.vue'
-import LogPin from './components/log/LogPin.vue'
 import LogFeed from './components/log/LogFeed.vue'
 import NoteCard from './components/notes/NoteCard.vue'
 import NotesIndex from './components/notes/NotesIndex.vue'
@@ -62,7 +61,6 @@ export default {
     app.component('EnhancedNote', EnhancedNote)
     app.component('MediaEmbed', MediaEmbed)
     app.component('LogUpdate', LogUpdate)
-    app.component('LogPin', LogPin)
     app.component('LogFeed', LogFeed)
     app.component('NoteCard', NoteCard)
     app.component('NotesIndex', NotesIndex)

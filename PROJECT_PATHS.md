@@ -2,6 +2,289 @@
 
 This document outlines potential development paths and feature ideas for the MattFisher.io project, organized by thematic areas. These represent directions to explore rather than a fixed roadmap, providing options for enhancing the site as it evolves.
 
+## Media Strategy Implementation
+
+### Cloudflare Images Integration
+
+A comprehensive approach to handle all static images and video thumbnails through Cloudflare Images:
+
+#### Key Concepts
+- **Unified CDN Delivery**: All images served from Cloudflare's global CDN
+- **Automatic Optimization**: Images optimized for different devices and contexts
+- **NAS to Web Workflow**: Streamlined process from local storage to web
+- **Video Thumbnail Management**: Automated handling of video preview images
+- **Component-Based Integration**: Vue components for consistent display
+
+#### Implementation Steps
+1. Set up Cloudflare Images account and API access
+2. Create image upload utility for local-to-Cloudflare workflow
+3. Implement markdown processor for link replacement
+4. Develop video thumbnail automation for Vimeo/YouTube
+5. Build Vue components for media display
+
+```javascript
+// Example: Markdown processor for image uploads and link replacement
+const fs = require('fs');
+const path = require('path');
+const { uploadToCloudflare } = require('./cloudflare-upload');
+
+async function processMarkdownFile(filePath) {
+  // Read the markdown file
+  let content = fs.readFileSync(filePath, 'utf8');
+  
+  // Load the image catalog
+  let catalog = { images: {}, localToRemote: {} };
+  if (fs.existsSync(CATALOG_FILE)) {
+    catalog = JSON.parse(fs.readFileSync(CATALOG_FILE, 'utf8'));
+  }
+  
+  // Find all image references
+  const imageRegex = /!\[(.*?)\]\((.*?)\)/g;
+  const matches = [...content.matchAll(imageRegex)];
+  
+  // Process each image reference
+  for (const match of matches) {
+    const [fullMatch, altText, imagePath] = match;
+    
+    // Skip if it's already a Cloudflare URL
+    if (imagePath.includes('imagedelivery.net')) {
+      continue;
+    }
+    
+    // Use existing mapping if available
+    if (catalog.localToRemote[imagePath]) {
+      const remoteUrl = catalog.localToRemote[imagePath];
+      
+      // Replace the URL in the content
+      content = content.replace(
+        new RegExp(`!\\[(.*?)\\]\\(${escapeRegExp(imagePath)}\\)`, 'g'),
+        `![\\$1](${remoteUrl})`
+      );
+      
+      continue;
+    }
+    
+    // Resolve full path and upload to Cloudflare
+    let fullImagePath = resolveImagePath(imagePath, filePath);
+    
+    // Upload image and update content reference
+    try {
+      const result = await uploadToCloudflare(fullImagePath);
+      const cfUrl = `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGES_HASH}/${result.id}/public`;
+      
+      // Add to catalog and replace link
+      updateCatalog(catalog, imagePath, fullImagePath, result.id, cfUrl);
+      content = updateMarkdownLink(content, imagePath, cfUrl);
+    } catch (error) {
+      console.error(`Error uploading ${fullImagePath}:`, error);
+    }
+  }
+  
+  // Save the updated catalog and content
+  fs.writeFileSync(CATALOG_FILE, JSON.stringify(catalog, null, 2));
+  fs.writeFileSync(filePath, content);
+  
+  return content;
+}
+```
+
+### Video Thumbnail Automation
+
+System for automatically managing video thumbnails from Vimeo and YouTube:
+
+#### Key Concepts
+- **Automatic Extraction**: Video IDs parsed from embedded URLs
+- **Thumbnail Retrieval**: Fetching thumbnails from video platforms
+- **Cloudflare Upload**: Storing thumbnails in Cloudflare Images
+- **Component Integration**: Vue components for consistent thumbnail display
+- **Catalog Management**: System for tracking and accessing thumbnails
+
+#### Implementation Steps
+1. Implement video ID extraction from markdown and frontmatter
+2. Create thumbnail fetching from Vimeo and YouTube APIs
+3. Develop Cloudflare Images upload system
+4. Build thumbnail catalog for efficient lookup
+5. Create Vue components for thumbnail display
+
+```javascript
+// Example: Video thumbnail automation plugin
+export function videoThumbnailsPlugin() {
+  return {
+    name: 'video-thumbnails-plugin',
+    
+    async buildStart() {
+      // Load the thumbnail catalog
+      const catalogPath = path.resolve(process.cwd(), 'thumbnail-catalog.json');
+      let catalog = { thumbnails: {} };
+      
+      if (fs.existsSync(catalogPath)) {
+        catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+      }
+      
+      // Find workbook items with video embeds
+      const workbookDir = path.resolve(process.cwd(), 'docs/workbook');
+      const mdFiles = fs.readdirSync(workbookDir).filter(file => file.endsWith('.md'));
+      
+      // Process each file for video embeds
+      for (const file of mdFiles) {
+        const filePath = path.join(workbookDir, file);
+        const content = fs.readFileSync(filePath, 'utf8');
+        const { data: frontmatter } = matter(content);
+        
+        // Process Vimeo embeds
+        if (frontmatter.media?.provider === 'vimeo' && frontmatter.media?.url) {
+          const vimeoId = extractVimeoId(frontmatter.media.url);
+          
+          if (vimeoId) {
+            await processVimeoThumbnail(vimeoId, catalog);
+          }
+        }
+        
+        // Process YouTube embeds
+        if (frontmatter.media?.provider === 'youtube' && frontmatter.media?.url) {
+          const youtubeId = extractYouTubeId(frontmatter.media.url);
+          
+          if (youtubeId) {
+            await processYouTubeThumbnail(youtubeId, catalog);
+          }
+        }
+      }
+      
+      // Save the updated catalog
+      fs.writeFileSync(catalogPath, JSON.stringify(catalog, null, 2));
+    }
+  };
+}
+```
+
+### Media Component Architecture
+
+Custom Vue components for consistent media display across the site:
+
+#### Key Concepts
+- **Unified Presentation**: Consistent display for all media types
+- **Provider Abstraction**: Components that handle provider-specific logic
+- **Responsive Design**: Adaptable to different screen sizes and contexts
+- **Lazy Loading**: Optimized loading for improved performance
+- **Variant Support**: Different presentations based on context
+
+#### Implementation Steps
+1. Design MediaImage component for Cloudflare Images
+2. Create VideoThumbnail component for video previews
+3. Enhance MediaContainer for consistent layout
+4. Implement responsive behaviors for all components
+5. Add support for different variants and sizes
+
+```vue
+<!-- Example: MediaImage.vue -->
+<template>
+  <img 
+    :src="imageUrl" 
+    :alt="alt" 
+    :width="width" 
+    :height="height"
+    :loading="loading"
+    class="media-image"
+  />
+</template>
+
+<script setup>
+import { computed } from 'vue';
+
+const props = defineProps({
+  imageId: {
+    type: String,
+    required: true
+  },
+  alt: {
+    type: String,
+    default: ''
+  },
+  width: {
+    type: [String, Number],
+    default: null
+  },
+  height: {
+    type: [String, Number],
+    default: null
+  },
+  loading: {
+    type: String,
+    default: 'lazy'
+  },
+  variant: {
+    type: String,
+    default: 'public'
+  }
+});
+
+// Cloudflare Images URL construction
+const CLOUDFLARE_HASH = import.meta.env.VITE_CLOUDFLARE_IMAGES_HASH;
+const imageUrl = computed(() => {
+  return `https://imagedelivery.net/${CLOUDFLARE_HASH}/${props.imageId}/${props.variant}`;
+});
+</script>
+```
+
+### NAS-to-Web Workflow
+
+Optimized process for moving content from local NAS storage to the website:
+
+#### Key Concepts
+- **Hybrid Workflow**: Work locally in Obsidian, publish to web seamlessly
+- **Automatic Uploads**: Image detection and uploading during publish
+- **Link Transformation**: Convert local paths to Cloudflare URLs
+- **Catalog Management**: Track mappings between local and remote paths
+- **Content Synchronization**: Keep local and published content in sync
+
+#### Implementation Steps
+1. Create tooling for detecting local NAS references
+2. Implement automatic image upload during build process
+3. Build path mapping system between NAS and Cloudflare
+4. Develop Obsidian integration for smoother workflow
+5. Create versioning and synchronization tools
+
+```javascript
+// Example: Obsidian-to-Cloudflare workflow script
+async function processObsidianToWeb(obsidianDir, webDir) {
+  console.log(`Processing content from Obsidian (${obsidianDir}) to web (${webDir})`);
+  
+  // Get all markdown files
+  const files = getMarkdownFiles(obsidianDir);
+  
+  // For each file that should be published
+  for (const file of files) {
+    // Check if it has publish:true frontmatter
+    const { data: frontmatter, content } = matter.read(file);
+    
+    if (frontmatter.publish !== true) {
+      console.log(`Skipping ${file} - not marked for publishing`);
+      continue;
+    }
+    
+    // Determine destination path
+    const relativePath = path.relative(obsidianDir, file);
+    const destPath = path.join(webDir, relativePath);
+    
+    console.log(`Publishing ${relativePath} to web`);
+    
+    // Create directories if needed
+    const destDir = path.dirname(destPath);
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir, { recursive: true });
+    }
+    
+    // Process the file (upload images, transform links)
+    const processedContent = await processMarkdownFile(file);
+    
+    // Save to destination with processed content
+    fs.writeFileSync(destPath, processedContent);
+  }
+  
+  console.log('Publishing complete!');
+}
+```
+
 ## Pins Enhancement Paths
 
 ### Temporal Organization Systems
@@ -486,382 +769,20 @@ const relationshipTypes = [
 4. Build series/evolution presentation tools
 5. Develop connection system between pins and workbook items
 
-## Social Integration Paths
-
-### POSSE Implementation
-
-Publish Own Site, Syndicate Elsewhere implementation:
-
-#### Key Concepts
-- **Selective Syndication**: Controls for what content gets shared where
-- **Origin Markers**: Clear indicators of original source
-- **Engagement Aggregation**: Collecting responses across platforms
-- **Federated Identity**: Consistent identity across social contexts
-- **Protocol-First Approach**: Focusing on protocols rather than platforms
-
-#### Implementation Steps
-1. Build Bluesky/AT Protocol integration
-2. Create syndication control system
-3. Implement webmention support for response collection
-4. Develop consistent cross-platform identity presentation
-5. Build engagement dashboard showing activity across platforms
-
-### Community Interaction Tools
-
-Systems for meaningful interaction around content:
-
-#### Key Concepts
-- **Contextual Discussions**: Discussions tied to specific content
-- **Response Integration**: Incorporating external responses
-- **Conversation Preservation**: Archiving valuable discussions
-- **Attribution System**: Proper credit for contributions and influences
-- **Collaboration Capabilities**: Tools for collaborative creation
-
-#### Implementation Steps
-1. Design comment/discussion component
-2. Build webmention receiver and display
-3. Create conversation archiving system
-4. Implement attribution mechanisms
-5. Develop collaboration features
-
-## Technical Architecture Paths
-
-### Longevity Assurance
-
-Ensuring long-term viability of the system:
-
-#### Key Concepts
-- **Format Durability**: Using maximally durable formats
-- **Migration Pathways**: Clear paths for future technology transitions
-- **Self-Contained Systems**: Minimizing external dependencies
-- **Documentation**: Thorough documentation of all systems
-- **Regular Exports**: Automated exports in portable formats
-
-#### Implementation Steps
-1. Audit and document all data formats
-2. Create comprehensive backup system
-3. Develop automated export tools
-4. Build migration utilities for potential future transitions
-5. Document the full system architecture
-
-### Flexibility Enhancements
-
-Making the system more adaptable to future needs:
-
-#### Key Concepts
-- **Extensible Data Models**: Schemas that can evolve without breaking
-- **Plugin Architecture**: Support for future feature extensions
-- **Module Independence**: Ensuring components can evolve independently
-- **Progressive Enhancement**: Core functionality that works without advanced features
-- **Feature Toggles**: Easy enabling/disabling of experimental features
-
-#### Implementation Steps
-1. Design extensible data schemas
-2. Create plugin system for future extensions
-3. Refactor towards more independent modules
-4. Implement feature toggle system
-5. Build progressive enhancement approach
-
 ## Next Steps Evaluation Matrix
 
 When considering which paths to pursue next, this matrix can help evaluate options:
 
 | Path | Value | Complexity | Dependencies | Fun Factor | Priority |
 |------|-------|------------|--------------|------------|----------|
-| Temporal Collections | High | Medium | Low | High | 🌟🌟🌟🌟 |
+| Media Strategy Implementation | High | Medium | Low | Medium | 🌟🌟🌟🌟🌟 |
+| Workbook Collections | High | Medium | Low | High | 🌟🌟🌟🌟 |
+| Temporal Collections | High | Medium | Low | High | 🌟🌟🌟 |
 | Enhanced Relationships | High | High | Medium | High | 🌟🌟🌟 |
 | Context Tools | Medium | Low | Low | Medium | 🌟🌟 |
 | Serendipity Features | Medium | Low | Low | High | 🌟🌟🌟 |
 | Visual Organization | High | High | Medium | High | 🌟🌟 |
-| Media Presentation | High | Medium | Low | High | 🌟🌟🌟🌟🌟 |
+| Media Presentation | High | Medium | Low | High | 🌟🌟🌟🌟 |
 | POSSE Implementation | Medium | High | High | Medium | 🌟 |
 
 This document will evolve as the project progresses and new opportunities emerge. It's designed to capture possibilities rather than prescribe a fixed roadmap, providing inspiration and direction while maintaining flexibility.
-
-# Workbook Metadata and Collections Implementation Plan
-
-## Tag-Driven Collections System
-
-## Structured Tags System
-
-### Workbook Item with Structured Tags
-
-```yaml
----
-title: Obsidian Heart video
-description: For "Obsidian Heart" by THEATH and MANNING.
-year: 2021
-sidebar: false
-tags:
-  - type:video
-  - medium:digital
-  - tech:video-synth
-  - tool:max-msp
-  - tool:jitter
-  - status:completed
-  - project:abstract-hymns
-  - collab:theath-manning
-media:
-  type: video
-  provider: vimeo
-  url: https://vimeo.com/684505621
-  embed: true
-  presentation:
-    enabled: true
-  technicalDetails:
-    tools: ['Max/MSP', 'Jitter', 'Custom video synthesis patches']
-    format: 'HD Video (1920x1080)'
-    duration: '4:36'
----
-```
-
-### Standard Tag Categories
-
-| Category | Description | Examples |
-|----------|-------------|----------|
-| `type` | Fundamental medium or format | `type:video`, `type:installation`, `type:software` |
-| `medium` | Physical or digital material | `medium:digital`, `medium:analog`, `medium:mixed` |
-| `tech` | Techniques or processes | `tech:video-synth`, `tech:generative`, `tech:collage` |
-| `tool` | Software or hardware used | `tool:max-msp`, `tool:processing`, `tool:premiere` |
-| `status` | Current state of the project | `status:completed`, `status:in-progress`, `status:concept` |
-| `project` | Parent project or series | `project:abstract-hymns`, `project:responsive-environments` |
-| `collab` | Collaborator or group | `collab:theath-manning`, `collab:finishing-school` |
-
-## Tag-Driven Collections
-
-### Directory Structure
-
-```
-docs/
-├── workbook/
-│   ├── obsidian-heart.md
-│   ├── the-place-where-gods-are-born.md
-│   └── ...
-├── collections/
-│   ├── video-synthesis.md
-│   ├── collaborations.md
-│   ├── digital.md
-│   └── ...
-└── ...
-```
-
-### Collection Definition with Tag Queries
-
-```yaml
----
-title: Video Synthesis Works
-description: Experimental video works created with analog and digital synthesis techniques
-featured: true
-image: /media/collections/video-synthesis-featured.jpg
-order: 1
-tagQuery:
-  includes: 
-    - tech:video-synth
-  excludes:
-    - status:abandoned
-groupBy: project
-sortBy: year
-sortDirection: desc
----
-
-# Video Synthesis Works
-
-This collection showcases my video synthesis projects created using various analog and digital techniques. Video synthesis is a technique that uses electronic processing to generate and manipulate visual imagery without traditional cameras or pre-recorded footage.
-```
-
-## Implementation Components
-
-### 1. Core Configuration Functions
-
-```javascript
-/**
- * Parse structured tags in the format key:value
- */
-function parseTags(tags) {
-  const result = {
-    type: [],
-    tech: [],
-    tool: [],
-    status: [],
-    medium: [],
-    project: [],
-    collab: [],
-    other: []
-  };
-  
-  if (!tags || !Array.isArray(tags)) return result;
-  
-  tags.forEach(tag => {
-    if (typeof tag !== 'string') return;
-    
-    const [prefix, value] = tag.includes(':') ? tag.split(':', 2) : ['other', tag];
-    
-    if (result[prefix]) {
-      result[prefix].push(value);
-    } else {
-      result.other.push(tag);
-    }
-  });
-  
-  return result;
-}
-
-/**
- * Function to gather collections data at build time
- */
-function getCollections() {
-  const collectionsDir = path.resolve(process.cwd(), 'docs/collections')
-  
-  // Create the collections directory if it doesn't exist
-  if (!fs.existsSync(collectionsDir)) {
-    console.log(`Creating collections directory: ${collectionsDir}`)
-    fs.mkdirSync(collectionsDir, { recursive: true })
-  }
-  
-  // Get all .md files in the collections directory except index.md
-  const files = fs.existsSync(collectionsDir) 
-    ? fs.readdirSync(collectionsDir).filter(file => 
-        file.endsWith('.md') && file !== 'index.md'
-      )
-    : []
-  
-  // Parse each collection file
-  const collections = files.map(file => {
-    const filePath = path.join(collectionsDir, file)
-    const content = fs.readFileSync(filePath, 'utf-8')
-    const { data: frontmatter, content: description } = matter(content)
-    const slug = file.replace(/\.md$/, '')
-    
-    return {
-      title: frontmatter.title || slug,
-      slug,
-      description: frontmatter.description || '',
-      featured: frontmatter.featured || false,
-      image: frontmatter.image || '',
-      order: frontmatter.order || 999,
-      tagQuery: frontmatter.tagQuery || null,
-      groupBy: frontmatter.groupBy || null,
-      sortBy: frontmatter.sortBy || 'year',
-      sortDirection: frontmatter.sortDirection || 'desc',
-      path: `/collections/${slug}`,
-      content: description,
-      lastUpdated: lastModified
-    }
-  })
-  
-  // Sort collections by order property
-  return collections.sort((a, b) => a.order - b.order)
-}
-
-/**
- * Process collections to include their matching items
- */
-function processCollections(collections, workbookItems) {
-  return collections.map(collection => {
-    // If collection doesn't have a tag query, return as is
-    if (!collection.tagQuery) {
-      return collection;
-    }
-    
-    // Find items matching the tag query
-    const matchingItems = workbookItems.filter(item => {
-      // Check if item has all required tags
-      if (collection.tagQuery.includes) {
-        const matches = collection.tagQuery.includes.every(tag => {
-          return item.tags.includes(tag);
-        });
-        
-        if (!matches) return false;
-      }
-      
-      // Check if item has any excluded tags
-      if (collection.tagQuery.excludes) {
-        const hasExcluded = collection.tagQuery.excludes.some(tag => {
-          return item.tags.includes(tag);
-        });
-        
-        if (hasExcluded) return false;
-      }
-      
-      return true;
-    });
-    
-    // Group items if groupBy is specified
-    let groupedItems = null;
-    if (collection.groupBy) {
-      groupedItems = {};
-      
-      sortedItems.forEach(item => {
-        const groupValues = [];
-        
-        // Get grouping values from parsed tags
-        if (item.parsedTags && item.parsedTags[collection.groupBy]) {
-          groupValues.push(...item.parsedTags[collection.groupBy]);
-        } else if (item[collection.groupBy]) {
-          // If grouping by a direct property like year
-          groupValues.push(item[collection.groupBy]);
-        }
-        
-        // If no group value, add to "Other"
-        if (groupValues.length === 0) {
-          const otherGroup = groupedItems['Other'] || [];
-          otherGroup.push(item);
-          groupedItems['Other'] = otherGroup;
-        } else {
-          // Add to each group
-          groupValues.forEach(groupValue => {
-            const group = groupedItems[groupValue] || [];
-            group.push(item);
-            groupedItems[groupValue] = group;
-          });
-        }
-      });
-    }
-    
-    // Return the collection with matched items
-    return {
-      ...collection,
-      items: sortedItems,
-      groupedItems,
-      totalItems: sortedItems.length
-    };
-  });
-}
-```
-
-### 2. Key Vue Components
-
-#### 1. StructuredTagsDisplay.vue
-Component to display structured tags organized by category with appropriate styling.
-
-#### 2. CollectionLayout.vue
-Dynamic layout for collection pages, displaying items grouped by specified criteria.
-
-#### 3. TagFilter.vue
-Advanced filtering component for workbook items with multi-category filtering.
-
-#### 4. TagVisualization.vue
-Interactive visualization to explore relationships between tags and categories.
-
-#### 5. CollectionsGallery.vue
-Grid display of collections with filtering options and featured collections.
-
-### 3. VitePress Theme Integration
-
-```javascript
-// In themeConfig section of config.mts
-export default defineConfig({
-  // ... existing configuration
-  
-  themeConfig: {
-    // ... existing themeConfig
-    
-    // Get workbook items first
-    workbookItems: getWorkbookItems(),
-    
-    // Then get and process collections with workbook items
-    collections: processCollections(getCollections(), getWorkbookItems()),
-  }
-})
-```
-```

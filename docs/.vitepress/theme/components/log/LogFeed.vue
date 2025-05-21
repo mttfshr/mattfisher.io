@@ -2,7 +2,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import LogUpdate from './LogUpdate.vue'
-import LogPin from './LogPin.vue'
+import LogSession from './LogSession.vue'
 
 const props = defineProps({
   entries: {
@@ -16,6 +16,8 @@ const props = defineProps({
 })
 
 const activeFilter = ref('all')
+const activeTypeFilter = ref('all')
+
 const uniqueTags = computed(() => {
   const tags = new Set()
   props.entries.forEach(entry => {
@@ -27,12 +29,22 @@ const uniqueTags = computed(() => {
 })
 
 const filteredEntries = computed(() => {
+  // First filter by type (all, updates, sessions)
+  let typeFiltered = props.entries
+  
+  if (activeTypeFilter.value === 'updates') {
+    typeFiltered = props.entries.filter(entry => !entry.isClaudeSession)
+  } else if (activeTypeFilter.value === 'sessions') {
+    typeFiltered = props.entries.filter(entry => entry.isClaudeSession)
+  }
+  
+  // Then filter by tags
   if (activeFilter.value === 'all') {
-    return sortedEntries.value
+    return typeFiltered
   }
   
   // Filter by tag
-  return sortedEntries.value.filter(entry => 
+  return typeFiltered.filter(entry => 
     entry.tags && entry.tags.includes(activeFilter.value)
   )
 })
@@ -40,8 +52,8 @@ const filteredEntries = computed(() => {
 // Sort entries by date, newest first
 const sortedEntries = computed(() => {
   return [...props.entries].sort((a, b) => {
-    const dateA = a.type === 'update' ? new Date(a.timestamp) : new Date(a.pinnedAt)
-    const dateB = b.type === 'update' ? new Date(b.timestamp) : new Date(b.pinnedAt)
+    const dateA = new Date(a.timestamp)
+    const dateB = new Date(b.timestamp)
     return dateB - dateA
   })
 })
@@ -50,14 +62,16 @@ function setFilter(filter) {
   activeFilter.value = filter
 }
 
+function setTypeFilter(filter) {
+  activeTypeFilter.value = filter
+}
+
 // Group entries by month/year for timeline display
 const groupedByMonth = computed(() => {
   const groups = {}
   
   filteredEntries.value.forEach(entry => {
-    const date = entry.type === 'update' 
-      ? new Date(entry.timestamp) 
-      : new Date(entry.pinnedAt)
+    const date = new Date(entry.timestamp)
     
     const key = `${date.getFullYear()}-${date.getMonth() + 1}`
     const label = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
@@ -91,26 +105,52 @@ const groupedByMonth = computed(() => {
 
 <template>
   <div class="log-feed">
-    <div v-if="showFilters && uniqueTags.length > 0" class="log-filters">
-      <button 
-        class="filter-button" 
-        :class="{ active: activeFilter === 'all' }"
-        @click="setFilter('all')"
-      >
-        All
-      </button>
+    <div v-if="showFilters" class="log-filters">
+      <div class="filters-section">
+        <div class="filter-label">Type:</div>
+        <button 
+          class="filter-button type-filter" 
+          :class="{ active: activeTypeFilter === 'all' }"
+          @click="setTypeFilter('all')"
+        >
+          All
+        </button>
+        <button 
+          class="filter-button type-filter" 
+          :class="{ active: activeTypeFilter === 'updates' }"
+          @click="setTypeFilter('updates')"
+        >
+          Updates
+        </button>
+        <button 
+          class="filter-button type-filter" 
+          :class="{ active: activeTypeFilter === 'sessions' }"
+          @click="setTypeFilter('sessions')"
+        >
+          Sessions
+        </button>
+      </div>
       
-      <div v-if="uniqueTags.length > 0" class="filter-divider"></div>
-      
-      <button 
-        v-for="tag in uniqueTags" 
-        :key="tag"
-        class="filter-button tag-filter" 
-        :class="{ active: activeFilter === tag }"
-        @click="setFilter(tag)"
-      >
-        #{{ tag }}
-      </button>
+      <div v-if="uniqueTags.length > 0" class="filters-section">
+        <div class="filter-label">Tags:</div>
+        <button 
+          class="filter-button" 
+          :class="{ active: activeFilter === 'all' }"
+          @click="setFilter('all')"
+        >
+          All
+        </button>
+        
+        <button 
+          v-for="tag in uniqueTags" 
+          :key="tag"
+          class="filter-button tag-filter" 
+          :class="{ active: activeFilter === tag }"
+          @click="setFilter(tag)"
+        >
+          #{{ tag }}
+        </button>
+      </div>
     </div>
     
     <div v-if="filteredEntries.length === 0" class="no-entries">
@@ -123,25 +163,24 @@ const groupedByMonth = computed(() => {
         
         <div class="timeline-entries">
           <template v-for="entry in group.entries" :key="entry.id">
-            <LogUpdate 
-              v-if="entry.type === 'update'" 
+            <LogSession
+              v-if="entry.isClaudeSession"
               :content="entry.content"
               :timestamp="entry.timestamp"
               :tags="entry.tags"
               :images="entry.images"
-            />
-            
-            <LogPin 
-              v-else-if="entry.type === 'pin'" 
+              :id="entry.id"
               :title="entry.title"
-              :url="entry.url"
-              :description="entry.description"
-              :image-url="entry.imageUrl"
-              :favicon="entry.favicon"
-              :site-name="entry.siteName"
-              :pinned-at="entry.pinnedAt"
+            />
+            <LogUpdate
+              v-else
+              :content="entry.content"
+              :timestamp="entry.timestamp"
               :tags="entry.tags"
-              :note="entry.note"
+              :images="entry.images"
+              :id="entry.id"
+              :title="entry.title"
+              :is-claude-session="entry.isClaudeSession"
             />
           </template>
         </div>
@@ -158,11 +197,25 @@ const groupedByMonth = computed(() => {
 
 .log-filters {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 1rem;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.filters-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--vp-c-text-2);
+  margin-right: 0.5rem;
 }
 
 .filter-button {
@@ -190,11 +243,12 @@ const groupedByMonth = computed(() => {
   background-color: var(--vp-c-bg-alt);
 }
 
-.filter-divider {
-  width: 1px;
-  height: 24px;
-  background-color: var(--vp-c-divider);
-  margin: 0 0.5rem;
+.type-filter {
+  background-color: var(--vp-c-bg-mute);
+}
+
+.type-filter.active {
+  background-color: var(--vp-c-brand);
 }
 
 .no-entries {
@@ -228,8 +282,14 @@ const groupedByMonth = computed(() => {
 }
 
 @media (max-width: 640px) {
-  .filter-divider {
-    display: none;
+  .filters-section {
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+  
+  .filter-label {
+    width: 100%;
+    margin-bottom: 0.25rem;
   }
 }
 </style>

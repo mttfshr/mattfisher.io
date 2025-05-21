@@ -22,54 +22,40 @@ This document serves as a "crib note" for Claude in each new conversation. Due t
 
 ## Current Task
 
-**Working on:** Collections Integration in Workbook Section
-**Status:** Completed Initial Implementation
+**Working on:** Media Storage Strategy Implementation
+**Status:** Planning Phase
 **Progress:**
-- ✅ Fixed year frontmatter display in workbook items
-- ✅ Enhanced workbook item component to display year correctly
-- ✅ Simplified workbook item markdown files structure
-- ✅ Designed structured tagging system with key:value pairs
-- ✅ Created comprehensive plan for tag-driven collections
-- ✅ Designed collection components architecture
-- ✅ Created collection visualization and filtering system
-- ✅ Integrated collections within workbook section
-- ✅ Implemented tabbed navigation between items and collections
-- ✅ Created full-width layout for workbook and collection pages
+- ✅ Analyzed current media handling approach
+- ✅ Evaluated options for image and video storage
+- ✅ Decided on Cloudflare Images for all static media
+- ✅ Keeping Vimeo for video hosting
+- ✅ Designed unified workflow for NAS-to-web publishing
+- ✅ Created plan for video thumbnail automation
 
 **Implementation Details:**
-- Moved collections directory from `/docs/collections` to `/docs/workbook/collections`
-- Updated navigation to remove collections as top-level item
-- Created WorkbookPage.vue component for tabbed interface
-- Implemented URL fragment navigation (#collections)
-- Added breadcrumb navigation in collection pages
-- Created automatic file copying mechanism for collection files
-- Fixed layout and rendering issues with Vue components
-- Added detailed error handling and debugging information
+- Will use Cloudflare Images for all site images and video thumbnails
+- Continuing to use Vimeo for video hosting with embeds
+- Creating automation scripts for image uploading from NAS
+- Implementing hybrid workflow for Obsidian-to-VitePress content creation
+- Planning automatic thumbnail generation from Vimeo/YouTube videos
 
 ## Next Steps
 
-### 1. Implement Tag-Driven Collections System
-- ✅ Create collections directory for tag-query based collections
-- ✅ Add tag parsing functionality to config.mts
-- ✅ Implement collection processing to match items based on tags
-- ✅ Create CollectionLayout.vue component with grouping functionality
-- ✅ Update workbook items with structured tags (key:value format)
+### 1. Implement Media Storage Strategy
+- Create Cloudflare Images account and configure API access
+- Implement image upload utility for NAS to Cloudflare
+- Create markdown processor to update local links to Cloudflare URLs
+- Implement video thumbnail automation for Vimeo/YouTube embeds
+- Update components to use Cloudflare Image URLs
 
-### 2. Create Collection Components
-- ✅ Create StructuredTagsDisplay.vue for organized tag presentation
-- ✅ Develop TagFilter.vue for advanced workbook filtering
-- ✅ Build CollectionsGallery.vue for browsing collections
-- ✅ Create TagVisualization.vue for tag relationship visualization
-- ✅ Update WorkbookViewer.vue to display structured tags
-
-### 3. Enhance Workbook & Collections Integration
+### 2. Enhance Workbook & Collections Integration
 - Add FeaturedCollectionsPreview component to the Items tab
 - Implement localStorage-based tab state persistence
 - Add transition effects between tabs using CSS animations
 - Enhance collection filtering with more dynamic options
 - Build a recommendation system for related collections
 
-### 4. Improve Relationship Handling
+### 3. Improve Relationship Handling
 - Implement enhanced related works functionality
 - Create clearer relationship visualization
 - Enable browsing by relationships between works
@@ -88,6 +74,42 @@ This document serves as a "crib note" for Claude in each new conversation. Due t
 ## Session Notes
 
 **Note**: Only the 5 most recent sessions are kept here. Older sessions are archived in `docs/log/entries.md`.
+
+### May 20, 2025 - Session 40 Summary
+- Enhanced log display with more accessible formatting and improved organization
+- Separated log entries into two files:
+  - entries.md: Regular updates in log format
+  - sessions.md: Development session notes written by Claude
+- Removed LogPin component as pins now have their own dedicated section
+- Removed time display from log entries which showed incorrect 5:00am timestamps
+- Created dedicated LogSession component to better style development session notes
+- Added "Notes by Claude" indicator for session entries
+- Added title display for entries to show text after colon in the first line
+- Implemented deep linking capability to individual log entries via anchor links
+- Added filtering system to show only updates, only sessions, or all entries
+- Created type filters that can be combined with existing tag filters
+- Added entry statistics (total entries, updates, sessions) to log page
+- Improved mobile responsiveness of filter sections
+
+### May 18, 2025 - Session 39 Summary
+- Strategized media storage approach for the website
+- Decided on Cloudflare Images for static images and video thumbnails
+- Continuing with Vimeo for video hosting due to its social features and bandwidth advantages
+- Designed hybrid workflow for Obsidian/NAS to web publishing:
+  - Create content in Obsidian with local NAS image links
+  - Process markdown files to upload images to Cloudflare when ready to publish
+  - Automatically update links in markdown from local to Cloudflare URLs
+- Developed plan for automating video thumbnail generation:
+  - Extract video IDs from Vimeo/YouTube URLs
+  - Fetch thumbnails from respective video platforms
+  - Upload to Cloudflare Images
+  - Create catalog for easy reference
+- Planned to create scripts and utilities:
+  - Markdown processor for handling image replacements
+  - Image upload utility for NAS to Cloudflare
+  - Video thumbnail automation
+  - Vue components for consistent media display
+- Emphasized maintaining a streamlined workflow between local content creation and web publishing
 
 ### May 18, 2025 - Session 38 Summary
 - Integrated collections within the workbook section rather than as a separate top-level navigation item
@@ -179,24 +201,3 @@ This document serves as a "crib note" for Claude in each new conversation. Due t
   - Updated instructions and screenshots
   - Clarified differences from native player controls
   - Documented keyboard shortcuts and URL parameters
-
-### May 17, 2025 - Session 34 Summary
-- Fixed styling issues with DebugLayout affecting site-wide appearance
-  - Added `scoped` attribute to prevent global style leakage
-  - Made selector more specific with `.debug-layout .content`
-  - Fixed white background affecting entire site
-- Updated WorkbookItemView layout to prioritize media content
-  - Media now appears at top of view with title and descriptive text below
-  - Enhanced media presentation with better styling and visual hierarchy
-  - Added visual separation between media and content sections
-  - Improved responsive behavior for all screen sizes
-- Refined WorkbookViewer component with similar media-first approach
-  - Restructured layout to match the updated WorkbookItemView pattern
-  - Made typography and text elements more subtle
-  - Reduced heading sizes and font weights throughout
-  - Optimized spacing and visual hierarchy
-  - Improved mobile responsiveness with adjusted font sizes
-- Added unified styling patterns across workbook components
-  - Consistent spacing and visual treatment for related items
-  - Harmonized technical details and metadata sections
-  - Improved shadow and border radius on media elements

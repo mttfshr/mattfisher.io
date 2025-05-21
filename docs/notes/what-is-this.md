@@ -1,8 +1,9 @@
 ---
 title: What is this?
-description: ''
-layout: note
+description: 'A place to collect and share ideas, projects, and notes between formal releases.'
 ---
+
+# What is this?
 
 I've written starter explanations just like this one many many times before. 
 
@@ -20,5 +21,4 @@ But on the other, there's something really, well, insidious about social media a
 
 So, this site is some kind of experment that sits in the middle. Not a document of completed projects, but still some kind of breadcrumb for where my head's at. Not a social media platform, but still some place to collect and share things. Sort of a blog, sort of a portfolio, sort of a sketchbook.
 
-Some of what I'm putting here is my own digital work, some of it is pinned bookmarks, some of it is notes. 
-
+Some of what I'm putting here is my own digital work, some of it is pinned bookmarks, some of it is notes.
