@@ -159,10 +159,16 @@ function extractVimeoId(url) {
   return match ? match[1] : null;
 }
 
-// Get thumbnail URL
+// Get thumbnail URL - prioritize Cloudflare Images
 const thumbnailUrl = computed(() => {
   if (!workbookItem.value?.media) return '';
   
+  // First, check if there's a Cloudflare thumbnail URL in the media object
+  if (workbookItem.value.media.thumbnail) {
+    return workbookItem.value.media.thumbnail;
+  }
+  
+  // Fallback to static thumbnails for backward compatibility
   const { type, provider, url } = workbookItem.value.media;
   
   if (type === 'video' && provider === 'vimeo') {

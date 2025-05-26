@@ -21,24 +21,6 @@ const regularEntries = computed(() => logEntries.value.filter(entry => !entry.is
 
 # Log
 
-<div class="log-intro">
-  <p>This log includes personal updates and development session notes.</p>
-  <div class="log-stats">
-    <div class="stat-item">
-      <span class="stat-value">{{ totalEntries }}</span>
-      <span class="stat-label">Total Entries</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-value">{{ regularEntries.length }}</span>
-      <span class="stat-label">Updates</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-value">{{ sessionEntries.length }}</span>
-      <span class="stat-label">Development Sessions</span>
-    </div>
-  </div>
-</div>
-
 <LogFeed :entries="logEntries" />
 
 <style scoped>

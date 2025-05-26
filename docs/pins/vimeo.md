@@ -1,5 +1,21 @@
 # Vimeo Favorites
 
+- [DROP CITY (6:48)](https://vimeo.com/326204191) #collection:vimeo
+
+- [Ccconvolve (8:00)](https://vimeo.com/224796385) #collection:vimeo
+
+- [Jim Campbell, Wandering, 2024 (1:30)](https://vimeo.com/1084017669) #collection:vimeo
+
+- [Two Figures (0:59)](https://vimeo.com/1084758891) #collection:vimeo
+
+- [Goodnight Moon (1:00)](https://vimeo.com/751232855) #collection:vimeo
+
+- [NORTH STAR (1:00)](https://vimeo.com/822672602) #collection:vimeo
+
+- [Outer Reaches (0:53)](https://vimeo.com/1036383212) #collection:vimeo
+
+- [Open Eyes (1:00)](https://vimeo.com/jakefried/openeyes) #collection:vimeo
+
 - [MIMT (3:58)](https://vimeo.com/952721889) #collection:vimeo
 
 - [CAVE EXITS (installation preview) (1:10)](https://vimeo.com/125600771) #collection:vimeo
@@ -56,8 +72,6 @@
 
 - [Bottom Feeders (2:48)](https://vimeo.com/mattreynolds/bottomfeeders) #collection:vimeo
 
-- [Takeshi Murata, Monster Movie, 2005 (4:20)](https://vimeo.com/147761897/4136247465) #collection:vimeo
-
 - [wac.performance (11:06)](https://vimeo.com/345397816) #collection:vimeo
 
 - [Jardins d'Été -- Process (1:07)](https://vimeo.com/196743416) #collection:vimeo
@@ -73,8 +87,6 @@
 - [Seed - Selection From (1:52)](https://vimeo.com/415094954) #collection:vimeo
 
 - [Fixing a Hole (3:10)](https://vimeo.com/399094317) #collection:vimeo
-
-- [Motorik Innervisions (8:22)](https://vimeo.com/428114112/a39120f798) #collection:vimeo
 
 - [L'Heure Bleue (part 1 & 2 - spanish subtitles) (6:16)](https://vimeo.com/522750815) #collection:vimeo
 
@@ -137,8 +149,6 @@
 - [Purely Iconic • A Serial Cut™ Film (14:05)](https://vimeo.com/358017730) #collection:vimeo
 
 - [Binkbeats - In Dust / In Us (4:00)](https://vimeo.com/235884577) #collection:vimeo
-
-- [JARDIN DE MINUIT (10:27)](https://vimeo.com/173599997) #collection:vimeo
 
 - [Tune-Yards | Heart Attack | Official Music Video (3:57)](https://vimeo.com/250196726) #collection:vimeo
 
@@ -322,8 +332,6 @@
 
 - [Cube Research (5:43)](https://vimeo.com/192353700) #collection:vimeo
 
-- [- - - entropy - - - (2:33)](https://vimeo.com/171644333) #collection:vimeo
-
 - [dokidoki my heart, also a rabbit (1:22)](https://vimeo.com/192437970) #collection:vimeo
 
 - [Magisterial test (5:28)](https://vimeo.com/194133499) #collection:vimeo
@@ -374,8 +382,6 @@
 
 - [E.S.P. TV #59 (27:43)](https://vimeo.com/88887883) #collection:vimeo
 
-- [BLACK MOVES - Film -volume III- by CARLA CHAN (7:40)](https://vimeo.com/160739807) #collection:vimeo
-
 - [Bug-Eyed Ramrod (5:58)](https://vimeo.com/19708551) #collection:vimeo
 
 - [JB 720 XNS 25911 Project + (21:35)](https://vimeo.com/187181957) #collection:vimeo
@@ -389,8 +395,6 @@
 - [MORPHOSIS - part .1 (65:53)](https://vimeo.com/99653000) #collection:vimeo
 
 - [lux Natura I (2:12)](https://vimeo.com/117108992) #collection:vimeo
-
-- [Henry Plotnick - Field 5 (5:54)](https://vimeo.com/83407362) #collection:vimeo
 
 - [Doug Aitken - Altered Earth Performance with Terry Riley 2012 (4:22)](https://vimeo.com/53344030) #collection:vimeo
 

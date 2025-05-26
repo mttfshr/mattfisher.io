@@ -95,12 +95,18 @@ function getThumbnail(item) {
     return item.thumbnailUrl;
   }
 
+  // Check if the item has a Cloudflare thumbnail URL in media object
+  if (item.media?.thumbnail) {
+    console.log('Using Cloudflare thumbnail:', item.media.thumbnail);
+    return item.media.thumbnail;
+  }
+
   // If the item doesn't have media, use a placeholder
   if (!item.media) {
     return '/media/video-placeholder.svg';
   }
   
-  // Process based on media type
+  // Process based on media type - fallback to static thumbnails
   if (item.media.type === 'video') {
     // Handle Vimeo videos
     if (item.media.provider === 'vimeo') {
@@ -109,9 +115,7 @@ function getThumbnail(item) {
       if (vimeoId) {
         // Use path that matches VitePress public directory structure
         const thumbnailUrl = `/media/thumbnails/vimeo-${vimeoId}.jpg`;
-        console.log('Using thumbnail URL:', thumbnailUrl);
-        // Diagnostic: Log the full thumbnail URL to check what's happening
-        console.log('TESTING thumbnail full URL:', location.origin + thumbnailUrl);
+        console.log('Using fallback thumbnail URL:', thumbnailUrl);
         return thumbnailUrl;
       }
     }

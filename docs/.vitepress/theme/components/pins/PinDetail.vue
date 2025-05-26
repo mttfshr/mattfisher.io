@@ -179,7 +179,7 @@
 
 <script setup>
 import { computed } from 'vue';
-import { getCollectionById, getMetadataConfig, getMetadataValueIcon as getValueIcon } from '../../../utils/tagConfig';
+import { getCollectionById, getMetadataConfig, getMetadataValueIcon as getValueIcon } from '../../../utils/services/content/metadata';
 
 const props = defineProps({
   pin: {

@@ -2,6 +2,10 @@
 
 This is a personal website built with [VitePress](https://vitepress.dev/), a static site generator powered by Vue.js.
 
+## Project Documentation
+
+For project-level documentation including setup guides, implementation details, and development notes, see the [`project/`](./project/) directory.
+
 ## Features
 
 ### Log

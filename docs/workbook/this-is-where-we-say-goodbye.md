@@ -1,6 +1,8 @@
 ---
 title: This Is Where We Say Goodbye
-description: Video synth for the track "This Is Where We Say Goodbye" by THEATH and Marc Manning.
+description: >-
+  Video synth for the track "This Is Where We Say Goodbye" by THEATH and Marc
+  Manning.
 year: 2021
 sidebar: false
 tags:
@@ -8,10 +10,12 @@ tags:
 media:
   type: video
   provider: vimeo
-  url: https://vimeo.com/553179389
+  url: 'https://vimeo.com/553179389'
   embed: true
   presentation:
     enabled: true
+  thumbnail: >-
+    https://imagedelivery.net/S8BTb48LSulaEJtfMH0J6Q/2995d91d-695b-4684-9d92-86480ecc8900/public
 ---
 
 <ClientOnly>

@@ -16,6 +16,7 @@ import './styles/pins.css'
 import './styles/workbook.css'
 
 // Import custom components
+import CloudflareImage from './components/common/CloudflareImage.vue'
 import EnhancedMarkdown from './components/common/EnhancedMarkdown.vue'
 import EnhancedNote from './components/notes/EnhancedNote.vue'
 import MediaEmbed from './components/common/MediaEmbed.vue'
@@ -79,5 +80,8 @@ export default {
     app.component('TagFilter', TagFilter)
     app.component('TagVisualization', TagVisualization)
     app.component('StructuredTagsDisplay', StructuredTagsDisplay)
+    
+    // Register Cloudflare Images component
+    app.component('CloudflareImage', CloudflareImage)
   }
 }

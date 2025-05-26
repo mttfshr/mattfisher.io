@@ -8,6 +8,12 @@
         :alt="pin.title" 
         loading="lazy"
       />
+      <img 
+        v-else-if="isVimeoPin(pin.url)" 
+        :src="getVimeoThumbnailUrl(pin.url)" 
+        :alt="pin.title" 
+        loading="lazy"
+      />
       <div v-else class="fallback-thumbnail" :class="[`type-${pin.contentType}`]">
         <div class="content-type-icon">
           <component :is="getContentTypeIcon(pin.contentType)" />
@@ -93,7 +99,7 @@
 
 <script setup>
 import { h, computed } from 'vue';
-import { getCollectionById, getMetadataConfig, getMetadataValueIcon as getValueIcon, getHighlightedMetadataKeys } from '../../../utils/tagConfig';
+import { getCollectionById, getMetadataConfig, getMetadataValueIcon as getValueIcon, getHighlightedMetadataKeys } from '../../../utils/services/content/metadata';
 
 const props = defineProps({
   pin: {
@@ -126,6 +132,32 @@ const getDomainName = (url) => {
   } catch (error) {
     return url;
   }
+};
+
+// Check if pin is from Vimeo
+const isVimeoPin = (url) => {
+  try {
+    const hostname = new URL(url).hostname;
+    return hostname.includes('vimeo.com');
+  } catch (error) {
+    return false;
+  }
+};
+
+// Get Vimeo thumbnail URL from pin URL
+const getVimeoThumbnailUrl = (url) => {
+  try {
+    // Extract Vimeo ID
+    const match = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)/);
+    if (match && match[1]) {
+      const vimeoId = match[1];
+      return `/media/thumbnails/vimeo-${vimeoId}.jpg`;
+    }
+  } catch (error) {
+    console.error('Error getting Vimeo thumbnail:', error);
+  }
+  
+  return null;
 };
 
 // Get collection information

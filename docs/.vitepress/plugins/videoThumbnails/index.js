@@ -16,7 +16,7 @@ export function videoThumbnailsPlugin() {
       
       try {
         // Import the workbookItems directly from the config
-        import('../../config.mts').then(({ default: config }) => {
+        import('../../config.js').then(({ default: config }) => {
           const workbookItems = config?.themeConfig?.workbookItems || [];
           
           if (workbookItems.length === 0) {

@@ -8,10 +8,12 @@ tags:
 media:
   type: video
   provider: vimeo
-  url: https://vimeo.com/553619218
+  url: 'https://vimeo.com/553619218'
   embed: true
   presentation:
     enabled: true
+  thumbnail: >-
+    https://imagedelivery.net/S8BTb48LSulaEJtfMH0J6Q/64e33b81-a615-4fb2-9618-c8e3f0c82300/public
 ---
 
 <ClientOnly>

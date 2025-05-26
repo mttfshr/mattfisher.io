@@ -2,4 +2,4 @@
 layout: home
 
 hero:
-  tagline: "it's a process"
+  tagline: "in progress, expect bumps and changes"

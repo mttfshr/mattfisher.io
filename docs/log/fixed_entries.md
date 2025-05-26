@@ -165,5 +165,5 @@
   - Implementing main connector orchestration script
   - Updating build process to run connectors before build
   - Adding service credentials setup documentation
-- Updated PROJECT_SUMMARY.md with new implementation plan
+- Updated project/PROJECT_SUMMARY.md with new implementation plan
 - Prioritized API connectors as the next development task
