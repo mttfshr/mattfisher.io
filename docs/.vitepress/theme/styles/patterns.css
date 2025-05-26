@@ -1,0 +1,673 @@
+/* ===================================================================
+   ADVANCED COMPONENT PATTERNS
+   Sophisticated component classes for complex UI patterns
+   Built on the design token foundation
+   =================================================================== */
+
+/* ===================================================================
+   PRESENTATION & VIEWER PATTERNS
+   For media-rich presentation interfaces
+   =================================================================== */
+
+/* Unified viewer controls for all media players */
+.viewer-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+  padding: var(--space-6) var(--space-5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0;
+  transition: var(--transition-base);
+  pointer-events: none;
+}
+
+.viewer-controls.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.viewer-controls-primary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.viewer-controls-secondary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Media progress bar pattern */
+.media-progress {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-sm);
+  position: relative;
+  cursor: pointer;
+  margin-bottom: var(--space-4);
+  transition: height var(--duration-fast) var(--ease-out);
+}
+
+.media-progress:hover {
+  height: 8px;
+}
+
+.media-progress-track {
+  height: 100%;
+  background: var(--vp-c-brand);
+  border-radius: var(--radius-sm);
+  transition: width var(--duration-fast) var(--ease-out);
+}
+
+.media-progress-handle {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  background: var(--vp-c-brand);
+  border-radius: var(--radius-full);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: var(--transition-fast);
+}
+
+.media-progress:hover .media-progress-handle {
+  opacity: 1;
+}
+
+/* Presentation overlay pattern */
+.presentation-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fade-in var(--duration-base) var(--ease-out);
+}
+
+/* ===================================================================
+   LAYOUT COMPOSITION PATTERNS
+   For complex layout arrangements
+   =================================================================== */
+
+/* Folio layout for content presentation */
+.folio-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-12);
+  align-items: start;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.folio-layout.single-column {
+  grid-template-columns: 1fr;
+  max-width: 800px;
+}
+
+.folio-media {
+  position: sticky;
+  top: var(--space-8);
+}
+
+.folio-content {
+  padding: var(--space-6) 0;
+}
+
+/* Sidebar layout pattern */
+.sidebar-layout {
+  display: flex;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.sidebar-layout-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-layout-aside {
+  flex: 0 0 280px;
+  position: sticky;
+  top: var(--space-16);
+  height: calc(100vh - var(--space-16));
+  overflow-y: auto;
+}
+
+/* Gallery flow patterns */
+.gallery-flow {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.gallery-flow.grid {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.gallery-flow.masonry {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-auto-rows: masonry;
+}
+
+.gallery-flow.large {
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: var(--space-8);
+}
+
+/* Content sections with consistent spacing */
+.content-section {
+  margin-bottom: var(--space-12);
+}
+
+.content-section:last-child {
+  margin-bottom: 0;
+}
+
+.content-section-header {
+  margin-bottom: var(--space-6);
+}
+
+.content-section-title {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-tight);
+  margin: 0 0 var(--space-3);
+}
+
+.content-section-subtitle {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ===================================================================
+   INTERACTIVE ELEMENT PATTERNS
+   For user interaction components
+   =================================================================== */
+
+/* Filter group pattern */
+.filter-group {
+  margin-bottom: var(--space-6);
+}
+
+.filter-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-width) solid var(--border-secondary);
+}
+
+.filter-group-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.filter-group-count {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  background: var(--surface-tertiary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+}
+
+.filter-group-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* Navigation cluster pattern */
+.nav-cluster {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--surface-secondary);
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  border: var(--border-width) solid var(--border-primary);
+}
+
+.nav-cluster-item {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-base);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition-fast);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.nav-cluster-item:hover {
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+}
+
+.nav-cluster-item.active {
+  background: var(--vp-c-brand);
+  color: white;
+}
+
+/* Media overlay pattern */
+.media-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: var(--transition-base);
+  backdrop-filter: blur(2px);
+}
+
+.media-overlay.visible {
+  opacity: 1;
+}
+
+.media-overlay-content {
+  text-align: center;
+  color: white;
+}
+
+.media-overlay-button {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: var(--radius-full);
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-2xl);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  margin: 0 auto var(--space-3);
+}
+
+.media-overlay-button:hover {
+  background: white;
+  transform: scale(1.1);
+}
+
+/* ===================================================================
+   TIMELINE & PROGRESSION PATTERNS
+   For temporal and sequential content
+   =================================================================== */
+
+/* Timeline element pattern */
+.timeline-element {
+  position: relative;
+  padding-left: var(--space-8);
+}
+
+.timeline-element::before {
+  content: '';
+  position: absolute;
+  left: var(--space-3);
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-primary);
+}
+
+.timeline-element:last-child::before {
+  height: var(--space-6);
+}
+
+.timeline-marker {
+  position: absolute;
+  left: 0;
+  top: var(--space-2);
+  width: var(--space-6);
+  height: var(--space-6);
+  background: var(--surface-primary);
+  border: 2px solid var(--vp-c-brand);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeline-marker.active {
+  background: var(--vp-c-brand);
+  color: white;
+}
+
+.timeline-content {
+  padding-bottom: var(--space-8);
+}
+
+.timeline-date {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  font-weight: var(--font-medium);
+  margin-bottom: var(--space-2);
+}
+
+/* Progress indicator pattern */
+.progress-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.progress-step {
+  flex: 1;
+  height: 4px;
+  background: var(--surface-tertiary);
+  border-radius: var(--radius-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-step.completed {
+  background: var(--vp-c-brand);
+}
+
+.progress-step.active {
+  background: var(--vp-c-brand-soft);
+}
+
+.progress-step.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  background: var(--vp-c-brand);
+  animation: progress-pulse 1s ease-in-out infinite alternate;
+}
+
+/* ===================================================================
+   MODAL & OVERLAY PATTERNS
+   For layered content presentation
+   =================================================================== */
+
+/* Enhanced modal pattern */
+.modal-enhanced {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  animation: fade-in var(--duration-base) var(--ease-out);
+}
+
+.modal-container {
+  position: relative;
+  background: var(--surface-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-2xl);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: scale-in var(--duration-base) var(--ease-out);
+}
+
+.modal-header {
+  padding: var(--space-6) var(--space-6) var(--space-4);
+  border-bottom: var(--border-width) solid var(--border-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-semibold);
+  margin: 0;
+}
+
+.modal-close {
+  background: var(--surface-secondary);
+  border: none;
+  border-radius: var(--radius-full);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.modal-close:hover {
+  background: var(--surface-tertiary);
+}
+
+.modal-body {
+  padding: var(--space-6);
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: var(--space-4) var(--space-6);
+  border-top: var(--border-width) solid var(--border-primary);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+/* ===================================================================
+   ANIMATION UTILITIES
+   Enhanced micro-interactions
+   =================================================================== */
+
+@keyframes progress-pulse {
+  to { width: 100%; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { 
+    opacity: 0; 
+    transform: scale(0.9); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+@keyframes slide-up {
+  from { 
+    opacity: 0; 
+    transform: translateY(var(--space-4)); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* Enhanced animation classes */
+.animate-fade-in {
+  animation: fade-in var(--duration-base) var(--ease-out);
+}
+
+.animate-scale-in {
+  animation: scale-in var(--duration-base) var(--ease-out);
+}
+
+.animate-slide-up {
+  animation: slide-up var(--duration-slow) var(--ease-out);
+}
+
+.animate-delayed {
+  animation-delay: var(--duration-fast);
+}
+
+/* ===================================================================
+   RESPONSIVE BEHAVIOR PATTERNS
+   Mobile-optimized component behaviors
+   =================================================================== */
+
+@media (max-width: 768px) {
+  .folio-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+  
+  .folio-media {
+    position: static;
+  }
+  
+  .sidebar-layout {
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  
+  .sidebar-layout-aside {
+    position: static;
+    height: auto;
+    flex: none;
+  }
+  
+  .gallery-flow.masonry,
+  .gallery-flow.large {
+    grid-template-columns: 1fr;
+  }
+  
+  .nav-cluster {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .nav-cluster-item {
+    text-align: center;
+  }
+  
+  .modal-container {
+    margin: var(--space-4);
+    max-width: none;
+  }
+  
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .timeline-element {
+    padding-left: var(--space-6);
+  }
+  
+  .timeline-marker {
+    width: var(--space-4);
+    height: var(--space-4);
+  }
+  
+  .content-section-title {
+    font-size: var(--text-2xl);
+  }
+  
+  .viewer-controls {
+    padding: var(--space-4) var(--space-3);
+  }
+  
+  .viewer-controls-primary,
+  .viewer-controls-secondary {
+    gap: var(--space-2);
+  }
+}
+
+/* ===================================================================
+   COMPONENT STATE PATTERNS
+   Consistent state management across components
+   =================================================================== */
+
+/* Loading states */
+.loading-state {
+  position: relative;
+  pointer-events: none;
+}
+
+.loading-state::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--surface-primary);
+  opacity: 0.8;
+  border-radius: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Empty states */
+.empty-state-pattern {
+  text-align: center;
+  padding: var(--space-12) var(--space-6);
+  color: var(--text-secondary);
+}
+
+.empty-state-icon {
+  font-size: var(--text-5xl);
+  margin-bottom: var(--space-4);
+  opacity: 0.6;
+}
+
+.empty-state-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  margin: 0 0 var(--space-2);
+}
+
+.empty-state-description {
+  margin: 0 0 var(--space-6);
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Error states */
+.error-state {
+  border: var(--border-width) solid var(--color-error);
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-error);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+/* Success states */
+.success-state {
+  border: var(--border-width) solid var(--color-success);
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--color-success);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}

@@ -81,10 +81,51 @@ mattfisher.io/
 
 ## Implementation Roadmap
 
-### Phase 0: VitePress Utils Reorganization (Current Priority - 3-4 weeks)
+### Phase 0A: Design Token System Implementation (IMMEDIATE PRIORITY - 1 week)
 
-#### 0.1 Microservices-Inspired Architecture Implementation
-**IMMEDIATE PRIORITY**: Reorganize `.vitepress/utils/` for better maintainability
+#### 0A.1 Comprehensive Design Token System
+**HIGHEST PRIORITY**: Implement design token system for consistency and maintainability
+```
+docs/.vitepress/theme/
+├── tokens/           # Design token definitions
+│   ├── spacing.css      # 8px grid-based spacing scale
+│   ├── colors.css       # Semantic colors extending VitePress theme
+│   ├── typography.css   # Minor third (1.2) ratio typography scale
+│   ├── shadows.css      # Layered shadow system for depth
+│   ├── transitions.css  # Consistent motion language
+│   └── index.css        # Token aggregation and exports
+├── components/       # Component pattern classes
+│   ├── buttons.css      # .btn component patterns
+│   ├── cards.css        # .card component patterns
+│   ├── badges.css       # .badge component patterns
+│   └── index.css        # Component class aggregation
+└── utilities/        # Common layout and styling utilities
+    ├── layout.css       # Flexbox/grid utilities
+    ├── spacing.css      # Margin/padding utilities using tokens
+    └── index.css        # Utility class aggregation
+```
+
+**Expected Impact**:
+- **60% CSS reduction** through consolidation
+- **80% faster development** for new components  
+- **95% consistency** in spacing and typography
+- **70% easier maintenance** with centralized tokens
+
+**3-Week Implementation Plan**:
+- **Week 1 - Phase 1**: High-impact components (WorkbookGallery.vue, PinCard.vue, WorkbookViewer.vue)
+- **Week 2 - Phase 2**: Systematic migration (remaining workbook, pin, log components)
+- **Week 3 - Phase 3**: Polish and validation (remove unused CSS, performance testing, documentation)
+
+**Integration Benefits**:
+- **Works with VitePress**: Extends existing theme variables seamlessly
+- **Supports dark mode**: Semantic color tokens with CSS custom properties
+- **Scales gracefully**: Add new tokens as needed without breaking changes
+- **Improves accessibility**: Better focus states and contrast ratios
+
+### Phase 0B: VitePress Utils Reorganization (After Design Tokens - 3-4 weeks)
+
+#### 0B.1 Microservices-Inspired Architecture Implementation  
+**SECONDARY PRIORITY**: Reorganize `.vitepress/utils/` for better maintainability
 ```
 docs/.vitepress/utils/
 ├── services/         # Core business logic (content, media, cache, external)
@@ -105,9 +146,9 @@ docs/.vitepress/utils/
 - Phase 3: Cleanup and consolidation
 - Phase 4: Testing and validation
 
-This reorganization is **blocking workbook gallery development** and will provide a much better foundation for future features.
+This reorganization is **secondary to design token implementation** and will provide a much better foundation for future features after CSS architecture is established.
 
-### Phase 1: Workbook Folio Foundation (After Utils Reorganization)
+### Phase 1: Workbook Folio Foundation (After Design Tokens & Utils Reorganization)
 
 #### 1.1 Complete Workbook Gallery Experience
 - **READY**: Implement chronological workbook folio view with focused presentation
@@ -266,25 +307,44 @@ The site succeeds when:
 
 ## Next Concrete Steps
 
-### Week 1-4: VitePress Utils Reorganization (Current Focus)
+### Week 1: Design Token System Implementation (NEW HIGHEST PRIORITY)
+1. **Create Design Token Foundation**: Implement spacing, color, typography, shadow, and transition token systems
+2. **High-Impact Component Migration**: Update WorkbookGallery.vue (23 instances), PinCard.vue (18 instances), WorkbookViewer.vue (21 instances)
+3. **Component Pattern Classes**: Implement reusable .btn, .card, .badge classes
+4. **Utility Classes**: Create layout and spacing utilities using design tokens
+5. **Dark Mode Integration**: Ensure semantic color tokens work with VitePress dark mode
+
+### Week 2: Systematic Design Token Migration
+1. **Remaining Workbook Components**: Migrate all workbook-related components to use design tokens
+2. **Pin and Log Components**: Update pin and log components with token system
+3. **Collection Components**: Migrate collection-related components
+4. **CSS Consolidation**: Remove duplicate CSS and unused styles
+
+### Week 3: Design Token Polish & Validation
+1. **Performance Testing**: Measure CSS reduction and load time improvements
+2. **Accessibility Audit**: Validate focus states and contrast improvements
+3. **Documentation**: Create design token usage guide for future development
+4. **System Validation**: Ensure 95% consistency in spacing/typography achieved
+
+### Week 4-7: VitePress Utils Reorganization (After Design Tokens)
 1. **Phase 1**: Create core services (media, content, cache)
 2. **Phase 2**: Implement workflow orchestration layer
 3. **Phase 3**: Cleanup and consolidate duplicate files  
 4. **Phase 4**: Testing and validation
 
-### Week 5-6: Workbook Gallery Focus (After Reorganization)
+### Week 8-9: Workbook Gallery Focus (After Foundation Work)
 1. Complete Cloudflare Images testing
 2. Implement gallery grid view
 3. Add type filtering (video/prints)
 4. Ensure shop links work well
 
-### Week 7-8: Log Simplification  
+### Week 10-11: Log Simplification  
 1. Establish simple log format
 2. Create chronological display
 3. Make adding entries frictionless
 4. Style for readability
 
-### Week 9-10: Polish & Integration
+### Week 12-13: Polish & Integration
 1. Ensure natural links work between sections
 2. Polish presentation mode
 3. Test everything with real content

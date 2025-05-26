@@ -7,6 +7,7 @@ import { getCollections, processCollections } from './utils/services/content/col
 import { getWorkbookItems } from './utils/services/content/workbook.js'
 import { getNotes } from './utils/services/content/notes.js'
 import { getLogEntries } from './utils/services/content/log.js'
+import { getSessions } from './utils/services/content/sessions.js'
 import { getPins } from './utils/services/content/pins.js'
 
 // Ensure the VitePress public directory exists and create media directories
@@ -84,6 +85,9 @@ export default defineConfig({
     
     // Gather all log entries at build time
     logEntries: await getLogEntries(),
+    
+    // Gather session notes from individual files
+    sessions: await getSessions(),
     
     // Gather all pins at build time using our new function
     pins: getPins()

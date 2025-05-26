@@ -261,15 +261,15 @@ function getMediaTypeDisplay(item) {
   display: block;
   text-decoration: none;
   color: inherit;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: var(--transition-base);
+  box-shadow: var(--shadow-sm);
 }
 
 .gallery-item:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-lg);
 }
 
 .item-media {
@@ -290,11 +290,11 @@ function getMediaTypeDisplay(item) {
 
 .media-badge {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: var(--space-2);
+  right: var(--space-2);
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   width: 32px;
   height: 32px;
   display: flex;
@@ -315,22 +315,22 @@ function getMediaTypeDisplay(item) {
   height: 100%;
   background-color: var(--vp-c-bg-alt);
   color: var(--vp-c-text-2);
-  font-size: 1.2rem;
+  font-size: var(--text-xl);
 }
 
 .item-details {
-  padding: 1rem;
+  padding: var(--space-4);
 }
 
 .item-title {
-  margin: 0 0 0.5rem;
-  font-size: 1.2rem;
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-xl);
 }
 
 .item-description {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   color: var(--vp-c-text-2);
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-2);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -338,35 +338,35 @@ function getMediaTypeDisplay(item) {
 }
 
 .item-date {
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   color: var(--vp-c-text-3);
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-2);
 }
 
 .item-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem;
+  gap: var(--space-1);
   align-items: center;
 }
 
 .item-tag {
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   background-color: var(--vp-c-bg-soft);
-  padding: 0.1rem 0.4rem;
-  border-radius: 3px;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
 }
 
 .more-tags {
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   color: var(--vp-c-text-3);
-  margin-left: 0.3rem;
+  margin-left: var(--space-1);
 }
 
 @media (max-width: 768px) {
   .gallery-grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
+    gap: var(--space-6);
   }
 }
 </style>

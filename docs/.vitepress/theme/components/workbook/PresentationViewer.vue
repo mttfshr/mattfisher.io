@@ -1351,7 +1351,7 @@ watch(isPlaying, (newValue) => {
   max-width: 800px;
   height: 200px;
   background-color: rgba(20, 20, 20, 0.5);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -1368,7 +1368,7 @@ watch(isPlaying, (newValue) => {
   width: 80%;
   height: 80px;
   background: linear-gradient(90deg, var(--vp-c-brand) 0%, var(--vp-c-brand-light) 100%);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   opacity: 0.5;
 }
 
@@ -1396,7 +1396,7 @@ watch(isPlaying, (newValue) => {
   pointer-events: auto;
   display: flex;
   align-items: center;
-  padding: 20px;
+  padding: var(--space-5);
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
 }
 
@@ -1405,18 +1405,18 @@ watch(isPlaying, (newValue) => {
   justify-content: space-between;
   flex-direction: column;
   width: 100%;
-  padding-top: 30px;
+  padding-top: var(--space-8);
 }
 
 .progress-bar-container {
   width: 100%;
   height: 6px;
   background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   position: relative;
   cursor: pointer;
   transition: height 0.2s ease;
-  margin-bottom: 10px;
+  margin-bottom: var(--space-3);
 }
 
 .progress-bar-container:hover {
@@ -1430,7 +1430,7 @@ watch(isPlaying, (newValue) => {
   width: 100%;
   height: 100%;
   background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 
 .progress-bar-loaded {
@@ -1439,7 +1439,7 @@ watch(isPlaying, (newValue) => {
   left: 0;
   height: 100%;
   background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   transition: width 0.2s ease;
 }
 
@@ -1449,7 +1449,7 @@ watch(isPlaying, (newValue) => {
   left: 0;
   height: 100%;
   background-color: var(--vp-c-brand, #3eaf7c);
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   transition: width 0.1s linear;
 }
 
@@ -1473,15 +1473,15 @@ watch(isPlaying, (newValue) => {
 }
 
 .time-display {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 10px;
+  margin-bottom: var(--space-3);
   align-self: flex-start;
-  margin-left: 10px;
+  margin-left: var(--space-3);
 }
 
 .time-separator {
-  margin: 0 5px;
+  margin: 0 var(--space-1);
   opacity: 0.7;
 }
 
@@ -1491,7 +1491,7 @@ watch(isPlaying, (newValue) => {
 
 .media-title {
   color: white;
-  font-size: 1.2rem;
+  font-size: var(--text-xl);
   margin: 0;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
@@ -1502,8 +1502,8 @@ button {
   color: white;
   cursor: pointer;
   margin: 0;
-  padding: 8px;
-  border-radius: 50%;
+  padding: var(--space-2);
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1566,18 +1566,18 @@ button:focus {
 .playback-controls, .volume-control {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-left: 10px;
-  margin-bottom: 10px;
+  gap: var(--space-3);
+  margin-left: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
 .secondary-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   position: absolute;
-  right: 20px;
-  bottom: 20px;
+  right: var(--space-5);
+  bottom: var(--space-5);
 }
 
 .volume-slider {
@@ -1585,7 +1585,7 @@ button:focus {
   height: 4px;
   -webkit-appearance: none;
   background: rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   outline: none;
   transition: all 0.2s ease;
   cursor: pointer;
@@ -1648,7 +1648,7 @@ button:focus {
 
 .technical-details-button {
   position: absolute;
-  top: 20px;
+  top: var(--space-5);
   right: 70px;
   color: white;
 }
@@ -1660,7 +1660,7 @@ button:focus {
   }
   
   .media-title {
-    font-size: 1rem;
+    font-size: var(--text-base);
     max-width: 70%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1668,31 +1668,31 @@ button:focus {
   }
   
   .top-controls, .bottom-controls {
-    padding: 10px;
+    padding: var(--space-3);
   }
   
   .bottom-controls {
-    padding-top: 20px;
+    padding-top: var(--space-5);
   }
   
   .progress-bar-container {
     height: 4px;
-    margin-bottom: 6px;
+    margin-bottom: var(--space-2);
   }
   
   .progress-handle {
-    width: 10px;
-    height: 10px;
+    width: var(--space-3);
+    height: var(--space-3);
   }
   
   .progress-bar-container:hover .progress-handle {
-    width: 12px;
-    height: 12px;
+    width: var(--space-3);
+    height: var(--space-3);
   }
   
   .time-display {
-    font-size: 0.75rem;
-    margin-bottom: 6px;
+    font-size: var(--text-xs);
+    margin-bottom: var(--space-2);
   }
   
   .close-button, .fullscreen-button, .mute-button, .cast-button {
@@ -1714,7 +1714,7 @@ button:focus {
   }
   
   .secondary-controls {
-    right: 10px;
+    right: var(--space-3);
     bottom: 15px;
   }
 }

@@ -9,19 +9,59 @@ import { computed } from 'vue'
 import LogFeed from '../.vitepress/theme/components/log/LogFeed.vue'
 import { useData } from 'vitepress'
 
-// Get the log entries data from theme config
+// Get the log entries and sessions data from theme config
 const { theme } = useData();
 const logEntries = computed(() => theme.value.logEntries || [])
+const sessions = computed(() => {
+  console.log('Sessions loaded:', theme.value.sessions?.length || 0)
+  if (theme.value.sessions?.length > 0) {
+    console.log('First session:', theme.value.sessions[0])
+  }
+  return theme.value.sessions || []
+})
+
+// Combine and sort all log content
+const allLogContent = computed(() => {
+  console.log('Building allLogContent with:', {
+    logEntries: logEntries.value.length,
+    sessions: sessions.value.length
+  })
+  
+  const entries = logEntries.value.map(entry => ({
+    ...entry,
+    type: 'entry',
+    sortDate: new Date(entry.timestamp || entry.date)
+  }));
+  
+  const sessionItems = sessions.value.map(session => {
+    console.log('Processing session:', session.session, 'date:', session.date)
+    return {
+      ...session,
+      type: 'session',
+      // Keep the natural date field, don't force timestamp
+      sortDate: new Date(session.date),
+      isClaudeSession: true,
+      id: `session-${session.session}`,
+      title: `Session ${session.session} Summary`
+    }
+  });
+  
+  const combined = [...entries, ...sessionItems]
+    .sort((a, b) => b.sortDate - a.sortDate); // Newest first
+    
+  console.log('Combined entries:', combined.length)
+  return combined
+});
 
 // Calculate number of entries by type
-const totalEntries = computed(() => logEntries.value.length);
-const sessionEntries = computed(() => logEntries.value.filter(entry => entry.isClaudeSession));
-const regularEntries = computed(() => logEntries.value.filter(entry => !entry.isClaudeSession));
+const totalEntries = computed(() => allLogContent.value.length);
+const sessionEntries = computed(() => allLogContent.value.filter(entry => entry.type === 'session'));
+const regularEntries = computed(() => allLogContent.value.filter(entry => entry.type === 'entry'));
 </script>
 
 # Log
 
-<LogFeed :entries="logEntries" />
+<LogFeed :entries="allLogContent" />
 
 <style scoped>
 .log-intro {

@@ -46,8 +46,8 @@ onBeforeUnmount(() => {
 .pins-layout-notice p {
   background-color: #ffeeee;
   color: #990000;
-  padding: 0.5rem;
-  margin: 0 0 1rem;
+  padding: var(--space-2);
+  margin: 0 0 var(--space-4);
   display: none;
 }
 </style>
@@ -84,8 +84,8 @@ onBeforeUnmount(() => {
 .pins-layout-notice p {
   background-color: #ffeeee;
   color: #990000;
-  padding: 0.5rem;
-  margin: 0 0 1rem;
+  padding: var(--space-2);
+  margin: 0 0 var(--space-4);
   display: none;
 }
 </style>

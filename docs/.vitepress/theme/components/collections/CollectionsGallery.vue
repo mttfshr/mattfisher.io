@@ -183,46 +183,46 @@ function formatTag(tag) {
 
 <style scoped>
 .collections-gallery {
-  margin: 2rem 0;
+  margin: var(--space-8) 0;
 }
 
 .featured-collections,
 .all-collections {
-  margin-bottom: 3rem;
+  margin-bottom: var(--space-12);
 }
 
 h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  font-weight: 500;
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-4);
+  font-weight: var(--font-medium);
   color: var(--vp-c-text-1);
 }
 
 .filter-options {
-  margin: 1.5rem 0;
+  margin: var(--space-6) 0;
 }
 
 .filter-group {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .filter-label {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   color: var(--vp-c-text-2);
 }
 
 .filter-button {
-  padding: 0.25rem 0.75rem;
-  font-size: 0.85rem;
-  border-radius: 16px;
-  border: 1px solid var(--vp-c-divider);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-sm);
+  border-radius: var(--radius-xl);
+  border: var(--border-width) solid var(--vp-c-divider);
   background-color: transparent;
   color: var(--vp-c-text-2);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition-base);
 }
 
 .filter-button:hover {
@@ -239,15 +239,15 @@ h2 {
 .collection-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1.5rem;
+  gap: var(--space-6);
+  margin-top: var(--space-6);
 }
 
 .collection-card {
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   background-color: var(--vp-c-bg-soft);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: var(--transition-base);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -255,7 +255,7 @@ h2 {
 
 .collection-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-xl);
 }
 
 .collection-card a {
@@ -284,12 +284,12 @@ h2 {
   left: 0;
   right: 0;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-  padding: 1rem;
+  padding: var(--space-4);
   color: white;
 }
 
 .collection-info {
-  padding: 1rem;
+  padding: var(--space-4);
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -297,42 +297,42 @@ h2 {
 
 .description {
   color: var(--vp-c-text-2);
-  font-size: 0.9rem;
-  margin: 0.5rem 0 1rem;
+  font-size: var(--text-sm);
+  margin: var(--space-2) 0 var(--space-4);
   flex-grow: 1;
 }
 
 .item-count {
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   color: var(--vp-c-text-3);
-  font-weight: 500;
-  margin-bottom: 0.75rem;
+  font-weight: var(--font-medium);
+  margin-bottom: var(--space-3);
 }
 
 .tag-query {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 .tag {
   background-color: var(--vp-c-brand-soft);
   color: var(--vp-c-brand-dark);
-  font-size: 0.75rem;
-  padding: 0.1rem 0.5rem;
-  border-radius: 12px;
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-lg);
 }
 
 .more-tag {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--vp-c-text-3);
 }
 
 h3 {
-  font-size: 1.2rem;
+  font-size: var(--text-xl);
   margin: 0;
-  font-weight: 500;
+  font-weight: var(--font-medium);
 }
 
 @media (max-width: 768px) {

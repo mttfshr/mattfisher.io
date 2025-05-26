@@ -293,13 +293,13 @@ watch(() => props.items, (newItems) => {
 
 <style scoped>
 .tag-filter {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-8);
 }
 
 .filter-controls {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
 }
 
 .search-box {
@@ -309,10 +309,10 @@ watch(() => props.items, (newItems) => {
 
 .search-box input {
   width: 100%;
-  padding: 0.5rem 2rem 0.5rem 0.75rem;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 4px;
-  font-size: 0.95rem;
+  padding: var(--space-2) var(--space-8) var(--space-2) var(--space-3);
+  border: var(--border-width) solid var(--vp-c-divider);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-lg);
   color: var(--vp-c-text-1);
   background-color: var(--vp-c-bg);
 }
@@ -324,16 +324,16 @@ watch(() => props.items, (newItems) => {
 
 .clear-button {
   position: absolute;
-  right: 0.5rem;
+  right: var(--space-2);
   top: 50%;
   transform: translateY(-50%);
-  width: 1.5rem;
-  height: 1.5rem;
+  width: var(--space-6);
+  height: var(--space-6);
   border: none;
   background: transparent;
   color: var(--vp-c-text-3);
-  font-size: 1.2rem;
-  font-weight: bold;
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -345,11 +345,11 @@ watch(() => props.items, (newItems) => {
   flex: 2;
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .tag-category {
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--space-3);
   max-width: 300px;
 }
 
@@ -357,14 +357,14 @@ watch(() => props.items, (newItems) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
   color: var(--vp-c-text-2);
   cursor: pointer;
-  padding: 0.4rem;
+  padding: var(--space-2);
   background-color: var(--vp-c-bg-soft);
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-2);
 }
 
 .category-header:hover {
@@ -372,26 +372,26 @@ watch(() => props.items, (newItems) => {
 }
 
 .category-header .icon {
-  font-weight: bold;
-  font-size: 1rem;
+  font-weight: var(--font-bold);
+  font-size: var(--text-base);
 }
 
 .category-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 0.25rem;
+  gap: var(--space-2);
+  padding: var(--space-1);
 }
 
 .tag-button {
   background-color: var(--vp-c-bg-soft);
-  border: 1px solid var(--vp-c-divider);
+  border: var(--border-width) solid var(--vp-c-divider);
   color: var(--vp-c-text-2);
-  font-size: 0.8rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition-base);
   display: flex;
   align-items: center;
 }
@@ -408,8 +408,8 @@ watch(() => props.items, (newItems) => {
 }
 
 .tag-button .count {
-  font-size: 0.75rem;
-  margin-left: 0.3rem;
+  font-size: var(--text-xs);
+  margin-left: var(--space-1);
   opacity: 0.7;
 }
 
@@ -417,23 +417,23 @@ watch(() => props.items, (newItems) => {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--space-3);
   background-color: var(--vp-c-bg-soft);
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  margin-bottom: 1.5rem;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-base);
+  margin-bottom: var(--space-6);
 }
 
 .summary-label {
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
   color: var(--vp-c-text-2);
 }
 
 .active-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--space-3);
   flex: 1;
 }
 
@@ -441,23 +441,23 @@ watch(() => props.items, (newItems) => {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.35rem;
+  gap: var(--space-1);
 }
 
 .filter-group .category {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--vp-c-text-2);
 }
 
 .filter-tag {
   background-color: var(--vp-c-brand-soft);
   color: var(--vp-c-brand-dark);
-  font-size: 0.8rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 4px;
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
   border: none;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition-base);
 }
 
 .filter-tag:hover {
@@ -466,13 +466,13 @@ watch(() => props.items, (newItems) => {
 }
 
 .clear-all {
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   color: var(--vp-c-text-3);
   background: none;
   border: none;
   cursor: pointer;
   text-decoration: underline;
-  padding: 0.25rem 0.5rem;
+  padding: var(--space-1) var(--space-2);
 }
 
 .clear-all:hover {
@@ -480,9 +480,9 @@ watch(() => props.items, (newItems) => {
 }
 
 .results-info {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--vp-c-text-3);
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 /* Responsive styles */

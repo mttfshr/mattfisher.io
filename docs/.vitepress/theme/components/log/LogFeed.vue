@@ -52,8 +52,9 @@ const filteredEntries = computed(() => {
 // Sort entries by date, newest first
 const sortedEntries = computed(() => {
   return [...props.entries].sort((a, b) => {
-    const dateA = new Date(a.timestamp)
-    const dateB = new Date(b.timestamp)
+    // Handle both timestamp and date fields
+    const dateA = new Date(a.timestamp || a.date)
+    const dateB = new Date(b.timestamp || b.date)
     return dateB - dateA
   })
 })
@@ -71,7 +72,15 @@ const groupedByMonth = computed(() => {
   const groups = {}
   
   filteredEntries.value.forEach(entry => {
-    const date = new Date(entry.timestamp)
+    // Handle both timestamp and date fields
+    const dateValue = entry.timestamp || entry.date
+    const date = new Date(dateValue)
+    
+    // Skip invalid dates
+    if (isNaN(date.getTime())) {
+      console.warn('Invalid date found:', dateValue, 'for entry:', entry.id || entry.title)
+      return
+    }
     
     const key = `${date.getFullYear()}-${date.getMonth() + 1}`
     const label = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
@@ -166,7 +175,7 @@ const groupedByMonth = computed(() => {
             <LogSession
               v-if="entry.isClaudeSession"
               :content="entry.content"
-              :timestamp="entry.timestamp"
+              :date="entry.date"
               :tags="entry.tags"
               :images="entry.images"
               :id="entry.id"

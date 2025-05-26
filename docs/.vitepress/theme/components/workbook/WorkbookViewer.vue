@@ -375,7 +375,7 @@ onBeforeUnmount(() => {
 }
 
 .related-item {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-2);
 }
 
 .related-item a {
@@ -383,7 +383,7 @@ onBeforeUnmount(() => {
   align-items: center;
   color: var(--vp-c-brand);
   text-decoration: none;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .related-item a:hover {
@@ -391,12 +391,12 @@ onBeforeUnmount(() => {
 }
 
 .relationship-tag {
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   background-color: var(--vp-c-brand-soft);
   color: var(--vp-c-brand-dark);
-  padding: 0.1rem 0.35rem;
-  border-radius: 3px;
-  margin-right: 0.4rem;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  margin-right: var(--space-2);
 }
 
 /* Ensure VitePress theme integration */

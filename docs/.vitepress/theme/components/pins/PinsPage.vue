@@ -407,21 +407,21 @@ const relatedPins = computed(() => {
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 var(--space-4);
 }
 
 .pins-layout {
   display: flex;
-  gap: 2rem;
+  gap: var(--space-8);
 }
 
 /* Left sidebar with filters */
 .filters-sidebar {
   flex: 0 0 280px;
   position: sticky;
-  top: 4rem;
-  height: calc(100vh - 4rem);
-  padding-right: 1rem;
+  top: var(--space-16);
+  height: calc(100vh - var(--space-16));
+  padding-right: var(--space-4);
   overflow-y: auto;
 }
 
@@ -434,17 +434,17 @@ const relatedPins = computed(() => {
 /* Search input */
 .search-container {
   position: relative;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-6);
 }
 
 .search-input {
   width: 100%;
-  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  padding: var(--space-3) var(--space-10) var(--space-3) var(--space-4);
   background-color: var(--vp-c-bg-soft);
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: all 0.2s ease;
+  border: var(--border-width) solid var(--vp-c-divider);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  transition: var(--transition-fast);
 }
 
 .search-input:focus {
@@ -454,12 +454,12 @@ const relatedPins = computed(() => {
 
 .clear-search {
   position: absolute;
-  right: 0.75rem;
+  right: var(--space-3);
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
   color: var(--vp-c-text-3);
   cursor: pointer;
   padding: 0;
@@ -469,21 +469,21 @@ const relatedPins = computed(() => {
 .view-controls {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 .layout-controls {
   display: flex;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .layout-button {
-  padding: 0.4rem;
+  padding: var(--space-2);
   background-color: var(--vp-c-bg-soft);
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 4px;
+  border: var(--border-width) solid var(--vp-c-divider);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
 }
 
 .layout-button:hover {
@@ -498,36 +498,36 @@ const relatedPins = computed(() => {
 
 /* Empty state */
 .empty-state {
-  padding: 3rem 2rem;
+  padding: var(--space-12) var(--space-8);
   background-color: var(--vp-c-bg-soft);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   text-align: center;
-  margin: 2rem 0;
+  margin: var(--space-8) 0;
 }
 
 .empty-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
+  font-size: var(--text-5xl);
+  margin-bottom: var(--space-4);
 }
 
 .empty-state h3 {
-  margin: 0 0 0.5rem;
+  margin: 0 0 var(--space-2);
 }
 
 .empty-state p {
   color: var(--vp-c-text-2);
-  margin: 0 0 1rem;
+  margin: 0 0 var(--space-4);
 }
 
 .clear-all-button {
-  padding: 0.5rem 1rem;
+  padding: var(--space-2) var(--space-4);
   background-color: var(--vp-c-brand);
   color: var(--vp-c-white);
   border: none;
-  border-radius: 6px;
-  font-size: 0.95rem;
+  border-radius: var(--radius-base);
+  font-size: var(--text-sm);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-fast);
 }
 
 /* Pin detail modal */
@@ -559,28 +559,28 @@ const relatedPins = computed(() => {
   max-width: 1000px;
   max-height: 90vh;
   background-color: var(--vp-c-bg);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow-y: auto;
   z-index: 101;
 }
 
 .modal-close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: var(--space-4);
+  right: var(--space-4);
   background: var(--vp-c-bg-soft);
   border: none;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   width: 32px;
   height: 32px;
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 102;
-  transition: background-color 0.2s ease;
+  transition: var(--transition-fast);
 }
 
 .modal-close:hover {
@@ -589,17 +589,17 @@ const relatedPins = computed(() => {
 
 /* Debug info */
 .debug-info {
-  margin-bottom: 2rem;
-  padding: 1rem;
+  margin-bottom: var(--space-8);
+  padding: var(--space-4);
   background-color: var(--vp-c-danger-soft);
-  border-radius: 8px;
-  font-size: 0.9rem;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
 }
 
 .debug-info pre {
   background-color: var(--vp-c-bg);
-  padding: 0.5rem;
-  border-radius: 4px;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
   overflow-x: auto;
 }
 
@@ -607,13 +607,13 @@ const relatedPins = computed(() => {
 .mobile-filter-toggle {
   display: none;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  padding: 0.5rem 1rem;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  padding: var(--space-2) var(--space-4);
   background-color: var(--vp-c-bg-soft);
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  font-size: 0.95rem;
+  border: var(--border-width) solid var(--vp-c-divider);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
   cursor: pointer;
 }
 
@@ -627,7 +627,7 @@ const relatedPins = computed(() => {
 @media (max-width: 768px) {
   .pins-layout {
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--space-4);
   }
   
   .filters-sidebar {
@@ -637,14 +637,14 @@ const relatedPins = computed(() => {
     max-height: 0;
     overflow: hidden;
     padding: 0;
-    transition: max-height 0.3s ease, padding 0.3s ease;
+    transition: var(--transition-slow);
   }
   
   .filters-sidebar.visible {
     max-height: 1000px;
-    padding-bottom: 1.5rem;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid var(--vp-c-divider);
+    padding-bottom: var(--space-6);
+    margin-bottom: var(--space-4);
+    border-bottom: var(--border-width) solid var(--vp-c-divider);
   }
   
   .mobile-filter-toggle {

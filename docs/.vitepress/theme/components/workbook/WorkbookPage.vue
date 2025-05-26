@@ -10,18 +10,33 @@
     <div class="workbook-tabs">
       <button 
         class="tab-button" 
+        :class="{ active: activeTab === 'folio' }" 
+        @click="setTab('folio')"
+      >
+        📖 Folio
+      </button>
+      <button 
+        class="tab-button" 
         :class="{ active: activeTab === 'items' }" 
         @click="setTab('items')"
       >
-        All Items
+        ⚏ Gallery
       </button>
       <button 
         class="tab-button" 
         :class="{ active: activeTab === 'collections' }" 
         @click="setTab('collections')"
       >
-        Collections
+        🏷️ Collections
       </button>
+    </div>
+    
+    <div v-show="activeTab === 'folio'" class="tab-content">
+      <WorkbookFolio 
+        :items="sortedWorkbookItems" 
+        @openPresentation="openPresentationMode"
+        @navigateToItem="navigateToItem"
+      />
     </div>
     
     <div v-show="activeTab === 'items'" class="tab-content">
@@ -51,6 +66,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useData, useRoute } from 'vitepress';
 import WorkbookGallery from './WorkbookGallery.vue';
+import WorkbookFolio from './WorkbookFolio.vue';
 import TagFilter from '../collections/TagFilter.vue';
 import CollectionsGallery from '../collections/CollectionsGallery.vue';
 
@@ -65,8 +81,25 @@ const filteredItems = ref([]);
 
 // Tab state - check URL for initial tab
 const hash = typeof window !== 'undefined' ? window.location.hash : '';
-const initialTab = hash === '#collections' ? 'collections' : 'items';
+const initialTab = hash === '#collections' ? 'collections' : 'folio';
 const activeTab = ref(initialTab);
+
+// Computed properties
+const sortedWorkbookItems = computed(() => {
+  const items = [...workbookItems.value];
+  return items.sort((a, b) => (b.year || 0) - (a.year || 0)); // Newest first
+});
+
+// Actions
+function openPresentationMode(item) {
+  console.log('Opening presentation for:', item.title);
+  // TODO: Implement presentation modal
+}
+
+function navigateToItem(item) {
+  console.log('Navigating to item:', item.title);
+  // The folio component handles this internally
+}
 
 // Watch for tab changes and update URL
 function setTab(tab) {
@@ -74,6 +107,8 @@ function setTab(tab) {
   if (typeof window !== 'undefined') {
     if (tab === 'collections') {
       window.history.replaceState({}, '', '#collections');
+    } else if (tab === 'items') {
+      window.history.replaceState({}, '', '#items');
     } else {
       window.history.replaceState({}, '', '#');
     }

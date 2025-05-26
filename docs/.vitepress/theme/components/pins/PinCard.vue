@@ -282,10 +282,10 @@ const getContentTypeIcon = (type) => {
 <style scoped>
 .pin-card {
   background-color: var(--vp-c-bg-soft);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-base);
   cursor: pointer;
   height: 100%;
   display: flex;
@@ -294,7 +294,7 @@ const getContentTypeIcon = (type) => {
 
 .pin-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-md);
 }
 
 .pin-thumbnail {
@@ -350,31 +350,31 @@ const getContentTypeIcon = (type) => {
 }
 
 .content-type-icon {
-  font-size: 2rem;
+  font-size: var(--text-3xl);
 }
 
 .pin-info {
-  padding: 1rem;
+  padding: var(--space-4);
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
 
 .pin-header {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-2);
 }
 
 .pin-title {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem;
-  line-height: 1.4;
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  margin: 0 0 var(--space-1);
+  line-height: var(--leading-tight);
 }
 
 .pin-source {
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   color: var(--vp-c-text-2);
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-2);
   display: flex;
   align-items: center;
 }
@@ -382,55 +382,55 @@ const getContentTypeIcon = (type) => {
 .site-favicon {
   width: 14px;
   height: 14px;
-  margin-right: 5px;
+  margin-right: var(--space-1);
   object-fit: contain;
 }
 
 .pin-description {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   color: var(--vp-c-text-2);
-  margin: 0 0 0.75rem;
+  margin: 0 0 var(--space-3);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;  
   overflow: hidden;
-  line-height: 1.5;
+  line-height: var(--leading-normal);
 }
 
 .pin-notes {
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   font-style: italic;
   color: var(--vp-c-text-1);
-  margin: 0.5rem 0;
-  padding: 0.5rem;
+  margin: var(--space-2) 0;
+  padding: var(--space-2);
   background-color: rgba(0, 0, 0, 0.03);
   border-left: 3px solid var(--vp-c-brand);
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
 /* Structured metadata styles */
 .structured-metadata {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin: 0.5rem 0;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
 }
 
 .metadata-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: var(--space-2);
 }
 
 .metadata-tag {
   display: inline-flex;
   align-items: center;
-  font-size: 0.7rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: 12px;
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-lg);
   background-color: var(--vp-c-bg-alt);
   color: var(--vp-c-text-2);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: var(--transition-fast);
 }
 
 .metadata-tag:hover {
@@ -439,7 +439,7 @@ const getContentTypeIcon = (type) => {
 }
 
 .metadata-icon {
-  margin-right: 0.25rem;
+  margin-right: var(--space-1);
 }
 
 .metadata-value {
@@ -450,9 +450,9 @@ const getContentTypeIcon = (type) => {
 }
 
 .more-metadata {
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   color: var(--vp-c-text-3);
-  padding: 0.2rem 0.4rem;
+  padding: var(--space-1) var(--space-2);
 }
 
 /* Type-specific styling */
@@ -489,19 +489,19 @@ const getContentTypeIcon = (type) => {
 .pin-collections {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0.5rem 0;
+  gap: var(--space-2);
+  margin: var(--space-2) 0;
 }
 
 .collection-tag {
   display: inline-flex;
   align-items: center;
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 16px;
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-xl);
   background-color: var(--vp-c-brand-soft);
   color: var(--vp-c-brand-dark);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: var(--transition-fast);
 }
 
 .collection-tag:hover {
@@ -510,7 +510,7 @@ const getContentTypeIcon = (type) => {
 }
 
 .collection-icon {
-  margin-right: 0.3rem;
+  margin-right: var(--space-1);
 }
 
 .collection-name {
@@ -521,9 +521,9 @@ const getContentTypeIcon = (type) => {
 }
 
 .more-collections {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--vp-c-text-3);
-  padding: 0.25rem 0.5rem;
+  padding: var(--space-1) var(--space-2);
 }
 
 /* Traditional tags */
@@ -531,17 +531,17 @@ const getContentTypeIcon = (type) => {
   margin-top: auto;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: var(--space-2);
 }
 
 .pin-tag {
   display: inline-block;
-  font-size: 0.75rem;
-  padding: 0.2rem 0.5rem;
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-2);
   background-color: var(--vp-c-bg-alt);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   color: var(--vp-c-text-2);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: var(--transition-fast);
 }
 
 .pin-tag:hover {
@@ -550,8 +550,8 @@ const getContentTypeIcon = (type) => {
 }
 
 .more-tags {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--vp-c-text-3);
-  padding: 0.2rem 0.4rem;
+  padding: var(--space-1) var(--space-2);
 }
 </style>

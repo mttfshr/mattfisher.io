@@ -291,19 +291,19 @@ const getTypeIcon = (type) => {
 
 <style scoped>
 .pin-detail {
-  padding: 1.5rem;
+  padding: var(--space-6);
   max-width: 100%;
 }
 
 .pin-header {
   display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
 }
 
 .pin-image-container {
   flex: 0 0 40%;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   background-color: var(--vp-c-bg-alt);
 }
@@ -319,24 +319,24 @@ const getTypeIcon = (type) => {
 }
 
 .pin-title {
-  margin: 0 0 0.5rem;
-  font-size: 1.5rem;
-  line-height: 1.3;
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-3xl);
+  line-height: var(--leading-tight);
 }
 
 .pin-source {
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
+  margin-bottom: var(--space-4);
+  font-size: var(--text-sm);
   color: var(--vp-c-text-2);
 }
 
 .source-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: var(--space-1);
   color: var(--vp-c-text-2);
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .source-link:hover {
@@ -354,74 +354,74 @@ const getTypeIcon = (type) => {
 }
 
 .pin-description {
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
   color: var(--vp-c-text-1);
   margin: 0;
 }
 
 .pin-notes {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-6);
 }
 
 .pin-notes h3 {
-  font-size: 1.1rem;
-  margin: 0 0 0.5rem;
+  font-size: var(--text-lg);
+  margin: 0 0 var(--space-2);
 }
 
 .pin-notes blockquote {
   margin: 0;
-  padding: 0.75rem 1rem;
+  padding: var(--space-3) var(--space-4);
   border-left: 4px solid var(--vp-c-brand);
   background-color: var(--vp-c-bg-soft);
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   font-style: italic;
 }
 
 .pin-metadata {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-8);
 }
 
 .metadata-section h3 {
-  font-size: 1.1rem;
-  margin: 0 0 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--vp-c-divider);
+  font-size: var(--text-lg);
+  margin: 0 0 var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-width) solid var(--vp-c-divider);
 }
 
 .metadata-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: var(--space-6);
 }
 
 .metadata-group {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 .metadata-group h4 {
-  font-size: 0.9rem;
-  margin: 0 0 0.5rem;
-  font-weight: 600;
+  font-size: var(--text-sm);
+  margin: 0 0 var(--space-2);
+  font-weight: var(--font-semibold);
   color: var(--vp-c-text-2);
 }
 
 .collections-list, .tags-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .collection-tag {
   display: inline-flex;
   align-items: center;
-  padding: 0.35rem 0.75rem;
-  border-radius: 16px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-xl);
   background-color: var(--vp-c-brand-soft);
   color: var(--vp-c-brand-dark);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .collection-tag:hover {
@@ -430,55 +430,55 @@ const getTypeIcon = (type) => {
 }
 
 .collection-icon {
-  margin-right: 0.4rem;
+  margin-right: var(--space-2);
 }
 
 .metadata-category {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-6);
 }
 
 .metadata-category h4 {
   display: flex;
   align-items: center;
-  margin-bottom: 0.75rem;
-  font-size: 0.9rem;
+  margin-bottom: var(--space-3);
+  font-size: var(--text-sm);
   color: var(--vp-c-text-1);
 }
 
 .category-icon {
-  margin-right: 0.5rem;
+  margin-right: var(--space-2);
 }
 
 .metadata-key {
   display: flex;
   align-items: center;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--vp-c-text-2);
-  margin-bottom: 0.3rem;
+  margin-bottom: var(--space-1);
 }
 
 .key-icon {
-  margin-right: 0.3rem;
+  margin-right: var(--space-1);
 }
 
 .metadata-values {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: 0.75rem;
-  padding-left: 0.5rem;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  padding-left: var(--space-2);
 }
 
 .metadata-tag {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.5rem;
-  border-radius: 12px;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-lg);
   background-color: var(--vp-c-bg-alt);
   color: var(--vp-c-text-1);
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .metadata-tag:hover {
@@ -487,7 +487,7 @@ const getTypeIcon = (type) => {
 }
 
 .metadata-icon {
-  margin-right: 0.3rem;
+  margin-right: var(--space-1);
 }
 
 /* Type-specific styling */
@@ -523,13 +523,13 @@ const getTypeIcon = (type) => {
 .pin-tag {
   display: inline-flex;
   align-items: center;
-  padding: 0.25rem 0.6rem;
-  border-radius: 12px;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-lg);
   background-color: var(--vp-c-bg-alt);
   color: var(--vp-c-text-2);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition-base);
 }
 
 .pin-tag:hover {
@@ -539,33 +539,33 @@ const getTypeIcon = (type) => {
 
 /* Related pins */
 .related-pins h3 {
-  font-size: 1.1rem;
-  margin: 0 0 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--vp-c-divider);
+  font-size: var(--text-lg);
+  margin: 0 0 var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-width) solid var(--vp-c-divider);
 }
 
 .related-pins-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .related-pin-card {
   display: flex;
   flex-direction: column;
   background-color: var(--vp-c-bg-soft);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: var(--shadow-xs);
+  transition: var(--transition-base);
   cursor: pointer;
   height: 100%;
 }
 
 .related-pin-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .related-pin-thumbnail {
@@ -591,7 +591,7 @@ const getTypeIcon = (type) => {
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 2rem;
+  font-size: var(--text-3xl);
 }
 
 .fallback-thumbnail.type-music {
@@ -619,22 +619,22 @@ const getTypeIcon = (type) => {
 }
 
 .related-pin-info {
-  padding: 0.75rem;
+  padding: var(--space-3);
 }
 
 .related-pin-title {
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin: 0 0 0.25rem;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  margin: 0 0 var(--space-1);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;  
   overflow: hidden;
-  line-height: 1.4;
+  line-height: var(--leading-tight);
 }
 
 .related-pin-source {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--vp-c-text-2);
 }
 
@@ -648,7 +648,7 @@ const getTypeIcon = (type) => {
     flex: none;
     width: 100%;
     max-height: 300px;
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-4);
   }
   
   .pin-image {

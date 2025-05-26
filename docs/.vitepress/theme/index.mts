@@ -12,6 +12,12 @@ import '@fontsource-variable/source-sans-3';
 import '@fontsource/ibm-plex-mono/400.css'
 import '@fontsource/ibm-plex-mono/600.css'
 import './style.css'
+// Design Token System
+import './styles/design-tokens.css'
+import './styles/utilities.css'
+import './styles/components.css'
+import './styles/patterns.css'
+// Component-specific styles
 import './styles/pins.css'
 import './styles/workbook.css'
 

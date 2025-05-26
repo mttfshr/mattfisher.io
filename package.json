@@ -18,6 +18,7 @@
     "update-vimeo-thumbnails": "node docs/.vitepress/utils/services/media/thumbnails.js --vimeo",
     "update-youtube-full": "node docs/.vitepress/utils/workflows/update-youtube-pins.js",
     "update-youtube-thumbnails": "node docs/.vitepress/utils/services/media/thumbnails.js --youtube",
+    "create-session": "node docs/.vitepress/utils/maintenance/createSessionNote.js",
     "archive-sessions": "node docs/.vitepress/utils/maintenance/archiveSessionNotes.js",
     "auth": "node docs/.vitepress/utils/services/external/auth.js",
     "verify": "node docs/.vitepress/utils/services/external/verify.js",

@@ -201,22 +201,22 @@ const mediaTypeIcon = computed(() => {
 }
 
 .item-title {
-  margin: 0 0 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  line-height: 1.4;
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-tight);
 }
 
 .item-date {
-  font-size: 0.85rem;
-  margin-bottom: 8px;
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-2);
   color: var(--vp-c-text-2);
 }
 
 .item-description {
-  font-size: 0.9rem;
-  line-height: 1.5;
-  margin: 0 0 12px;
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  margin: 0 0 var(--space-3);
   color: var(--vp-c-text-2);
   
   /* Limit to 3 lines with ellipsis */
@@ -229,14 +229,14 @@ const mediaTypeIcon = computed(() => {
 .item-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .tag {
-  font-size: 0.75rem;
-  padding: 2px 8px;
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-2);
   background-color: var(--vp-c-bg-alt);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   color: var(--vp-c-text-2);
 }
 </style>

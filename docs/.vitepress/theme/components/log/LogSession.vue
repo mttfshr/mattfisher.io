@@ -11,7 +11,7 @@ const props = defineProps({
     type: String,
     required: true
   },
-  timestamp: {
+  date: {
     type: [String, Date],
     required: true
   },
@@ -30,7 +30,7 @@ const props = defineProps({
 })
 
 const formattedDate = computed(() => {
-  const date = props.timestamp instanceof Date ? props.timestamp : new Date(props.timestamp)
+  const date = props.date instanceof Date ? props.date : new Date(props.date)
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -116,10 +116,10 @@ const sessionInfo = computed(() => {
 <style scoped>
 .log-session {
   display: flex;
-  gap: 1.5rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid var(--vp-c-divider);
-  margin-bottom: 2rem;
+  gap: var(--space-6);
+  padding-bottom: var(--space-8);
+  border-bottom: var(--border-width) solid var(--vp-c-divider);
+  margin-bottom: var(--space-8);
 }
 
 .session-header {
@@ -132,9 +132,9 @@ const sessionInfo = computed(() => {
 }
 
 .date-link {
-  font-weight: 500;
+  font-weight: var(--font-medium);
   color: var(--vp-c-text-2);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   text-decoration: none;
 }
 
@@ -150,55 +150,55 @@ const sessionInfo = computed(() => {
 .session-title {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.75rem;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
 .session-title h3 {
   margin: 0;
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
 }
 
 .session-badge {
   background-color: var(--vp-c-brand);
   color: white;
-  font-size: 0.75rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  font-weight: 500;
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-medium);
 }
 
 .claude-indicator {
   display: inline-block;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
+  margin-bottom: var(--space-4);
+  font-size: var(--text-sm);
   color: var(--vp-c-text-2);
-  padding: 0.2rem 0.5rem;
+  padding: var(--space-1) var(--space-2);
   background-color: var(--vp-c-bg-soft);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 .content-text {
-  line-height: 1.6;
-  margin-bottom: 1rem;
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-4);
 }
 
 .content-text :deep(a) {
   color: var(--vp-c-brand);
   text-decoration: none;
-  border-bottom: 1px dotted var(--vp-c-brand);
+  border-bottom: var(--border-width) dotted var(--vp-c-brand);
 }
 
 .content-text :deep(a:hover) {
   color: var(--vp-c-brand-dark);
-  border-bottom: 1px solid var(--vp-c-brand-dark);
+  border-bottom: var(--border-width) solid var(--vp-c-brand-dark);
 }
 
 .session-images {
   display: grid;
-  gap: 0.5rem;
-  margin: 1rem 0;
+  gap: var(--space-2);
+  margin: var(--space-4) 0;
 }
 
 .session-images.single {
@@ -210,7 +210,7 @@ const sessionInfo = computed(() => {
 }
 
 .image-wrapper {
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 
@@ -232,19 +232,19 @@ const sessionInfo = computed(() => {
 .session-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
 }
 
 .tag {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--vp-c-brand);
 }
 
 @media (max-width: 640px) {
   .log-session {
     flex-direction: column;
-    gap: 0.75rem;
+    gap: var(--space-3);
   }
   
   .session-header {
@@ -258,7 +258,7 @@ const sessionInfo = computed(() => {
   .session-title {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.4rem;
+    gap: var(--space-2);
   }
 }
 </style>

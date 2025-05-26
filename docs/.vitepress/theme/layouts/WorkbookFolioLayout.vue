@@ -98,13 +98,13 @@ const nextPage = computed(() => currentIndex.value + 1)
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: var(--space-8);
   text-align: center;
 }
 
 .media-container {
   max-width: 90%;
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
 .media-image {
@@ -115,7 +115,7 @@ const nextPage = computed(() => currentIndex.value + 1)
 }
 
 .caption {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-8);
 }
 
 .navigation {
@@ -128,14 +128,15 @@ const nextPage = computed(() => currentIndex.value + 1)
 }
 
 .nav-button {
-  padding: 0.5rem 1rem;
-  background-color: #42b983;
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--vp-c-brand);
   color: #fff;
   text-decoration: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-base);
 }
 
 .nav-button:hover {
-  background-color: #2c8a66;
+  background-color: var(--vp-c-brand-dark);
 }
 </style>
