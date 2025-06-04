@@ -103,8 +103,8 @@ const getCollectionTags = (collection) => {
   <div class="collections-gallery">
     <div v-if="featuredCollections.length" class="featured-collections">
       <h2>Featured Collections</h2>
-      <!-- Use semantic gallery grid with larger spacing -->
-      <div class="gallery-grid-large spacing-comfortable">
+      <!-- Use enhanced gallery grid with larger, more prominent thumbnails -->
+      <div class="gallery-grid-xlarge spacing-comfortable">
         <div 
           v-for="collection in featuredCollections" 
           :key="collection.slug" 

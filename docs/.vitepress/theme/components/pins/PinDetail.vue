@@ -50,7 +50,7 @@
                 class="badge badge-primary interactive"
                 @click="emit('tag-click', `collection:${collectionId}`)"
               >
-                <span class="collection-icon">{{ getCollectionIcon(collectionId) }}</span>
+                <Icon :name="getCollectionIcon(collectionId)" :size="16" icon-class="collection-icon" />
                 {{ getCollectionName(collectionId) }}
               </div>
             </div>
@@ -163,7 +163,7 @@
               class="fallback-thumbnail" 
               :class="`type-${relatedPin.contentType}`"
             >
-              <span class="related-type-icon">{{ getTypeIcon(relatedPin.contentType) }}</span>
+              <Icon :name="getTypeIcon(relatedPin.contentType)" :size="24" icon-class="related-type-icon" />
             </div>
           </div>
           
@@ -179,6 +179,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import Icon from '../common/Icon.vue';
 import { getCollectionById, getMetadataConfig, getMetadataValueIcon as getValueIcon } from '../../../utils/services/content/metadata';
 
 const props = defineProps({
@@ -257,7 +258,7 @@ const getCollectionName = (collectionId) => {
 
 const getCollectionIcon = (collectionId) => {
   const collection = getCollectionById(collectionId);
-  return collection ? collection.icon : '📁';
+  return collection ? collection.icon : 'Folder';
 };
 
 const getMetadataLabel = (key) => {
@@ -276,13 +277,13 @@ const getMetadataValueIcon = (key, value) => {
 
 const getTypeIcon = (type) => {
   switch (type) {
-    case 'music': return '🎵';
-    case 'video': return '🎬';
-    case 'article': return '📝';
-    case 'code': return '💻';
-    case 'design': return '🎨';
-    case 'image': return '🖼️';
-    case 'document': return '📑';
+    case 'music': return 'Music';
+    case 'video': return 'Video';
+    case 'article': return 'FileText';
+    case 'code': return 'Code';
+    case 'design': return 'Palette';
+    case 'image': return 'Image';
+    case 'document': return 'File';
     case 'social': return '💬';
     default: return '🔗';
   }

@@ -1,7 +1,9 @@
 ---
 title: Pins
 description: Bookmarks
-layout: pins
+sidebar: false
 ---
 
-<PinsPage />
+<div class="page-full-width">
+  <pins-page />
+</div>

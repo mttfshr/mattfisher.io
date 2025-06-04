@@ -1,11 +1,9 @@
 <!-- docs/.vitepress/theme/layouts/Layout.vue -->
 <script setup>
-import DefaultTheme from 'vitepress/theme'
-
-const { Layout } = DefaultTheme
+import GlobalLayout from './GlobalLayout.vue'
 </script>
 
 <template>
-  <!-- Use standard VitePress layout -->
-  <Layout />
+  <!-- Use our global layout with rail navigation -->
+  <GlobalLayout />
 </template>

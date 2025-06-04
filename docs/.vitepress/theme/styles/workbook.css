@@ -1,5 +1,27 @@
 /* docs/.vitepress/theme/styles/workbook.css */
 
+/* Workbook Layout Overrides */
+/* Hide VitePress aside/sidebar for workbook pages */
+.workbook-page .VPSidebar,
+.workbook-page .VPDoc .aside,
+.workbook-page .VPDocAside,
+.workbook-page .VPDocAsideOutline {
+  display: none !important;
+  width: 0 !important;
+}
+
+/* Reset container layout to use full width */
+.workbook-page .VPDoc.has-aside .content-container {
+  max-width: 100% !important;
+}
+
+/* Adjust workbook layout to use full width */
+.workbook-page .workbook-container,
+.workbook-page .workbook-content {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
 /* Workbook Styles */
 .workbook-viewer {
   --workbook-bg-color: transparent;

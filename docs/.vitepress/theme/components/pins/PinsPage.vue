@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import PinGrid from './PinGrid.vue'
 import PinDetail from './PinDetail.vue'
 import PinsPagination from './PinsPagination.vue'
@@ -137,7 +137,7 @@ const selectedPin = ref(null)
 const selectedTypes = ref([])
 const selectedCollection = ref(null)
 const showMobileFilters = ref(false)
-const drawerOpen = ref(false) // Renamed from sidebarCollapsed, inverted logic
+const drawerOpen = ref(false) // Controlled by global layout
 
 // Filter pins based on selected types, collections, and search query
 const filteredPins = computed(() => {
@@ -231,6 +231,19 @@ const toggleDrawer = () => {
   drawerOpen.value = !drawerOpen.value
 }
 
+// Listen for global app bar actions
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('pins-layout-change', (e) => {
+      layout.value = e.detail
+    })
+    
+    window.addEventListener('pins-drawer-toggle', (e) => {
+      drawerOpen.value = e.detail
+    })
+  }
+})
+
 // Get related pins when a pin is selected
 const relatedPins = computed(() => {
   if (!selectedPin.value) return [];
@@ -273,48 +286,7 @@ const relatedPins = computed(() => {
     <!-- Pins UI only shown if we have data -->
     <div v-if="pinsData.pins && pinsData.pins.length > 0">
       <!-- Page header with drawer trigger -->
-      <header class="page-header-adaptive">
-        <div class="page-header-layout">
-          <h1 class="text-2xl font-semibold">Pins</h1>
-          <div class="view-selector">
-            <button 
-              @click="layout = 'grid'" 
-              :class="['btn btn-ghost', { 'btn-primary': layout === 'grid' }]"
-              title="Grid view"
-            >
-              <span class="view-icon">▦</span>
-            </button>
-            
-            <button 
-              @click="layout = 'masonry'" 
-              :class="['btn btn-ghost', { 'btn-primary': layout === 'masonry' }]"
-              title="Masonry view"
-            >
-              <span class="view-icon">◫</span>
-            </button>
-            
-            <button 
-              @click="layout = 'list'" 
-              :class="['btn btn-ghost', { 'btn-primary': layout === 'list' }]"
-              title="List view"
-            >
-              <span class="view-icon">≡</span>
-            </button>
-            
-            <!-- Navigation drawer trigger -->
-            <button 
-              class="nav-drawer-trigger btn btn-ghost"
-              :class="{ active: drawerOpen }"
-              @click="toggleDrawer"
-              aria-label="Toggle filters"
-            >
-              <span class="view-icon">⚙️</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <!-- Main content -->
+      <!-- Main content (header removed, actions moved to global app bar) -->
       <main class="page-content" :class="{ 'drawer-open': drawerOpen }">
         <!-- Active filters display -->
         <ActiveFilters 
@@ -364,7 +336,10 @@ const relatedPins = computed(() => {
       <NavigationDrawer
         :is-open="drawerOpen"
         title="Filter Pins"
-        @close="drawerOpen = false"
+        @close="() => {
+          drawerOpen = false
+          window.dispatchEvent(new CustomEvent('pins-drawer-close'))
+        }"
       >
         <!-- Search -->
         <div class="search-container">

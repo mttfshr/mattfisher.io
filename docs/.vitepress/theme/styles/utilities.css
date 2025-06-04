@@ -26,6 +26,22 @@
 .gap-6 { gap: var(--space-6); }
 .gap-8 { gap: var(--space-8); }
 
+/* Icon Utilities */
+.icon-sm { width: 16px; height: 16px; }
+.icon-base { width: 20px; height: 20px; }
+.icon-lg { width: 24px; height: 24px; }
+.icon-xl { width: 32px; height: 32px; }
+
+.icon-primary { color: var(--text-primary); }
+.icon-secondary { color: var(--text-secondary); }
+.icon-muted { color: var(--text-tertiary); }
+.icon-accent { color: var(--accent-primary); }
+
+/* Thinner stroke for all Lucide icons */
+.icon {
+  stroke-width: 1.5px; /* Default is 2px, making it thinner */
+}
+
 /* Layout Utilities */
 .flex { display: flex; }
 .flex-col { flex-direction: column; }

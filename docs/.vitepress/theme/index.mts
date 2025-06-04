@@ -52,6 +52,10 @@ import PinsPage from './components/pins/PinsPage.vue'
 
 // Import common components
 import NavigationDrawer from './components/common/NavigationDrawer.vue'
+import AppBar from './components/common/AppBar.vue'
+import RailNav from './components/common/RailNav.vue'
+import Icon from './components/common/Icon.vue'
+import MainLayout from './components/common/MainLayout.vue'
 
 // Import collection components
 import CollectionsGallery from './components/collections/CollectionsGallery.vue'
@@ -83,11 +87,16 @@ export default {
     app.component('AssetDiagnostics', AssetDiagnostics)
     app.component('PinsPage', PinsPage)
     app.component('Pins', PinsPage) // Also register as 'Pins' component
+    app.component('pins-page', PinsPage) // Also register with kebab-case for VitePress markdown
     app.component('WorkbookPage', WorkbookPage) // Register WorkbookPage component
     app.component('workbook-page', WorkbookPage) // Also register with kebab-case
     
     // Register common components
     app.component('NavigationDrawer', NavigationDrawer)
+    app.component('AppBar', AppBar)
+    app.component('RailNav', RailNav)
+    app.component('Icon', Icon)
+    app.component('MainLayout', MainLayout)
     
     // Register collection components
     app.component('CollectionsGallery', CollectionsGallery)

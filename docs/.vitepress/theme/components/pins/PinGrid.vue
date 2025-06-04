@@ -16,6 +16,7 @@
             v-for="pin in groupPins"
             :key="pin.id"
             :pin="pin"
+            :layout="layout"
             @click="emit('pin-click', pin)"
             @tag-click="emit('tag-click', $event)"
           />
@@ -30,6 +31,7 @@
           v-for="pin in pins"
           :key="pin.id"
           :pin="pin"
+          :layout="layout"
           @click="emit('pin-click', pin)"
           @tag-click="emit('tag-click', $event)"
         />
@@ -54,8 +56,8 @@ const props = defineProps({
   },
   layout: {
     type: String,
-    default: 'grid', // 'grid', 'masonry', 'list'
-    validator: (val) => ['grid', 'masonry', 'list'].includes(val)
+    default: 'compact', // 'compact' = thumbnails only, 'detailed' = thumbnails + metadata
+    validator: (val) => ['compact', 'detailed'].includes(val)
   },
   groupBy: {
     type: String,
@@ -130,51 +132,38 @@ const getGroupId = (name) => {
   border-bottom: 1px solid var(--vp-c-divider);
 }
 
-/* Grid layout - optimized for 4 columns */
-.pin-grid.grid .pins-container {
+/* Compact layout - thumbnails only, more columns */
+.pin-grid.compact .pins-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-3);
 }
 
-/* Masonry layout - optimized for 4 columns */
-.pin-grid.masonry .pins-container {
-  column-count: 4;
-  column-gap: var(--space-4);
-}
-
-/* Additional columns for larger screens */
-@media (min-width: 1600px) {
-  .pin-grid.masonry .pins-container {
-    column-count: 5;
-  }
-}
-
-.pin-grid.masonry .pins-container > * {
-  break-inside: avoid;
-  margin-bottom: var(--space-4);
-}
-
-/* List layout */
-.pin-grid.list .pins-container {
-  display: flex;
-  flex-direction: column;
+/* Detailed layout - thumbnails + metadata, fewer columns */
+.pin-grid.detailed .pins-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: var(--space-4);
 }
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
-  .pin-grid.masonry .pins-container {
-    column-count: 3;
+  .pin-grid.compact .pins-container {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+  
+  .pin-grid.detailed .pins-container {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
-  .pin-grid.masonry .pins-container {
-    column-count: 1;
+  .pin-grid.compact .pins-container {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--space-2);
   }
   
-  .pin-grid.grid .pins-container {
+  .pin-grid.detailed .pins-container {
     grid-template-columns: 1fr;
   }
 }

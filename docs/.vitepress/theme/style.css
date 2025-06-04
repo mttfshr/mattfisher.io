@@ -69,3 +69,63 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 0.5rem;
   }
 }
+/* ===================================================================
+   GLOBAL NAVIGATION OVERRIDES - PHASE 4 COMPLETION
+   Hide VitePress default navigation in favor of rail navigation
+   =================================================================== */
+
+/* Hide default VitePress navigation globally */
+.VPNav,
+.VPLocalNav,
+.VPSidebar {
+  display: none !important;
+}
+
+/* Override VitePress content positioning for rail navigation */
+.VPDoc {
+  padding-left: 0 !important;
+  padding-top: 0 !important;
+}
+
+.VPDoc .container {
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Ensure content doesn't overlap with our app bar */
+.VPDoc .content {
+  padding-top: var(--space-4) !important;
+}
+
+/* Override VitePress VPContent default nav padding */
+.VPContent {
+  padding-top: 0 !important;
+}
+
+/* More specific override for scoped VPContent */
+.VPContent[data-v-98ddab3d] {
+  padding-top: 0 !important;
+}
+
+/* Global dark mode enforcement with softer background */
+:root {
+  color-scheme: dark !important;
+}
+
+html.dark,
+html {
+  --vp-c-bg: #1a1a1a !important; /* Softer dark gray background */
+  --vp-c-bg-soft: #242424 !important; /* Slightly lighter for cards */
+  --vp-c-bg-alt: #2e2e2e !important; /* Interactive states */
+  --vp-c-bg-elv: #323232 !important; /* Elevated surfaces */
+  --vp-c-text-1: var(--text-primary) !important;
+  --vp-c-text-2: var(--text-secondary) !important;
+  --vp-c-text-3: var(--text-tertiary) !important;
+}
+
+/* Button states for app bar actions */
+.btn-icon.active {
+  background: var(--surface-accent-subtle) !important;
+  color: var(--accent-primary) !important;
+}

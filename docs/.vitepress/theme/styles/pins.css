@@ -1,42 +1,21 @@
-/* Global styles for the pins page */
+/* Component-specific styles for pins page */
+/* Layout handled by semantic page-full-width utility */
 
-/* Set max width for VitePress containers */
-.pins-page .VPDoc .container,
-.pins-page .VPContent .container {
-  max-width: 100% !important;
-  padding-left: 24px !important;
-  padding-right: 24px !important;
+/* Pins-specific visual enhancements */
+.pins-container {
+  /* Add any pins-specific container styling here if needed */
 }
 
-/* Reset container layout to use full width */
-.pins-page .VPDoc.has-aside .content-container {
-  max-width: 100% !important;
+.pin-collections {
+  /* Add any collection-specific styling here if needed */
 }
 
-/* Hide sidebar and aside */
-.pins-page .VPSidebar,
-.pins-page .VPDoc .aside,
-.pins-page .VPDocAsideOutline {
-  display: none !important;
-  width: 0 !important;
+/* Pin card hover effects and interactions */
+.pin-card {
+  /* Pin-specific card styling */
 }
 
-/* Adjust pins layout */
-.pins-page .pins-container,
-.pins-page .pin-collections {
-  width: 100% !important;
-  max-width: 100% !important;
-}
-
-/* Stretch content to full width */
-.pins-page .VPDoc.has-aside .content {
-  max-width: 100% !important;
-}
-
-/* Responsive padding adjustments */
-@media (min-width: 1440px) {
-  .pins-page .VPDoc .container {
-    padding-left: 32px !important;
-    padding-right: 32px !important;
-  }
+/* Mobile-specific pins adjustments */
+@media (max-width: 768px) {
+  /* Any mobile-specific pins styling */
 }

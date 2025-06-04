@@ -1,18 +1,31 @@
 <!-- PinCard.vue - Transformed using semantic atomic design system -->
 <script setup>
-import { h, computed } from 'vue'
+import { h, computed, ref } from 'vue'
 import MediaThumbnail from '../common/MediaThumbnail.vue'
 import TagDisplay from '../common/TagDisplay.vue'
+import Icon from '../common/Icon.vue'
 import { getCollectionById, getMetadataConfig, getMetadataValueIcon as getValueIcon, getHighlightedMetadataKeys } from '../../../utils/services/content/metadata'
 
 const props = defineProps({
   pin: {
     type: Object,
     required: true
+  },
+  layout: {
+    type: String,
+    default: 'detailed', // 'compact' or 'detailed'
+    validator: (val) => ['compact', 'detailed'].includes(val)
   }
 })
 
 const emit = defineEmits(['click', 'tag-click'])
+
+// Local state for tag expansion
+const tagsExpanded = ref(false)
+
+const toggleTags = () => {
+  tagsExpanded.value = !tagsExpanded.value
+}
 
 // Check if pin has structured metadata
 const hasMetadata = computed(() => {
@@ -37,6 +50,34 @@ const getDomainName = (url) => {
     return url
   }
 }
+
+// Smart link icon detection
+const getLinkIcon = (url) => {
+  try {
+    const hostname = new URL(url).hostname.toLowerCase()
+    
+    if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+      return 'Youtube'
+    } else if (hostname.includes('vimeo.com')) {
+      return 'Video'
+    } else if (hostname.includes('spotify.com')) {
+      return 'Music'
+    } else if (hostname.includes('github.com')) {
+      return 'Github'
+    } else if (hostname.includes('twitter.com') || hostname.includes('x.com')) {
+      return 'Twitter'
+    } else if (hostname.includes('instagram.com')) {
+      return 'Instagram'
+    } else {
+      return 'ExternalLink'
+    }
+  } catch (error) {
+    return 'ExternalLink'
+  }
+}
+
+// Check if this is a compact layout
+const isCompactLayout = computed(() => props.layout === 'compact')
 
 // Get thumbnail URL for MediaThumbnail component
 const getThumbnailUrl = (pin) => {
@@ -115,7 +156,7 @@ const getCollectionName = (collectionId) => {
 
 const getCollectionIcon = (collectionId) => {
   const collection = getCollectionById(collectionId)
-  return collection ? collection.icon : '📁'
+  return collection ? collection.icon : 'Folder'
 }
 
 // Get metadata value icon
@@ -150,21 +191,22 @@ const allTags = computed(() => {
 </script>
 
 <template>
-  <div class="pin-card card-interactive" :class="[`type-${pin.contentType}`]" @click="emit('click', pin)">
+  <div class="pin-card card-interactive" :class="[`type-${pin.contentType}`, `layout-${layout}`]" @click="emit('click', pin)">
     <!-- Reusable media thumbnail component -->
     <MediaThumbnail
       :thumbnail-url="getThumbnailUrl(pin)"
       :type="getMediaType(pin)"
       :alt="pin.title || 'Untitled'"
       :fallback-text="getFallbackText(pin)"
-      aspect-ratio="wide"
+      :aspect-ratio="isCompactLayout ? 'square' : 'wide'"
     />
     
-    <!-- Card content -->
-    <div class="card-content">
+    <!-- Card content - only show in detailed layout -->
+    <div v-if="!isCompactLayout" class="card-content">
       <div class="pin-header">
         <h3 class="pin-title">{{ pin.title || 'Untitled' }}</h3>
         <div class="pin-source">
+          <Icon :name="getLinkIcon(pin.url)" :size="14" class="link-icon" />
           <img v-if="pin.favicon" :src="pin.favicon" class="site-favicon" alt="Site icon" />
           {{ getDomainName(pin.url) }}
         </div>
@@ -176,33 +218,99 @@ const allTags = computed(() => {
         "{{ pin.notes }}"
       </div>
       
-      <!-- Reusable tag display component -->
-      <TagDisplay 
-        :tags="allTags" 
-        :collapsible="true"
-        :initially-expanded="false"
-        :max-visible="5"
-        @tag-click="(tag) => emit('tag-click', tag)"
-      />
+      <!-- Collapsible tag display -->
+      <div class="pin-tags">
+        <div class="tags-trigger" @click.stop="toggleTags" v-if="allTags.length > 0">
+          <Icon name="Tag" :size="14" />
+          <span class="tags-count">{{ allTags.length }}</span>
+          <div v-if="tagsExpanded" class="tags-expanded">
+            <TagDisplay 
+              :tags="allTags" 
+              :collapsible="false"
+              :initially-expanded="true"
+              @tag-click="(tag) => emit('tag-click', tag)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Compact layout overlay (only show title on hover) -->
+    <div v-if="isCompactLayout" class="compact-overlay">
+      <div class="compact-content">
+        <h3 class="compact-title">{{ pin.title || 'Untitled' }}</h3>
+        <div class="compact-source">
+          <Icon :name="getLinkIcon(pin.url)" :size="12" class="link-icon" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* Minimal component-specific styles only */
+/* Base pin card styles */
 .pin-card {
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
-.card-content {
+/* Detailed layout card content */
+.pin-card.layout-detailed .card-content {
   padding: var(--space-4);
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
 
+/* Compact layout - no content padding, overlay on hover */
+.pin-card.layout-compact {
+  position: relative;
+}
+
+.compact-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-3);
+  pointer-events: none;
+}
+
+.pin-card.layout-compact:hover .compact-overlay {
+  opacity: 1;
+}
+
+.compact-content {
+  width: 100%;
+}
+
+.compact-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: white;
+  margin: 0 0 var(--space-1);
+  line-height: var(--leading-tight);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.compact-source {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Detailed layout content styles */
 .pin-header {
   margin-bottom: var(--space-2);
 }
@@ -220,12 +328,16 @@ const allTags = computed(() => {
   margin-bottom: var(--space-2);
   display: flex;
   align-items: center;
+  gap: var(--space-1);
+}
+
+.link-icon {
+  color: var(--text-tertiary);
 }
 
 .site-favicon {
   width: 14px;
   height: 14px;
-  margin-right: var(--space-1);
   object-fit: contain;
 }
 
@@ -251,24 +363,58 @@ const allTags = computed(() => {
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
-/* Type-specific styling for content types */
-.pin-card.type-music {
-  /* Music-specific styling handled by MediaThumbnail fallback */
+/* Collapsible tags */
+.pin-tags {
+  margin-top: auto;
+  position: relative;
 }
 
-.pin-card.type-video {
-  /* Video-specific styling handled by MediaThumbnail */  
+.tags-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--surface-tertiary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  transition: all var(--transition-base);
+  user-select: none;
 }
 
-.pin-card.type-article {
-  /* Article-specific styling handled by MediaThumbnail */
+.tags-trigger:hover {
+  background-color: var(--surface-secondary);
+  color: var(--text-primary);
 }
 
-.pin-card.type-code {
-  /* Code-specific styling handled by MediaThumbnail */
+.tags-count {
+  font-weight: var(--font-medium);
 }
 
-.pin-card.type-design {
-  /* Design-specific styling handled by MediaThumbnail */
+.tags-expanded {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-base);
+  padding: var(--space-3);
+  margin-bottom: var(--space-1);
+  box-shadow: var(--shadow-lg);
+  z-index: 10;
+  animation: slideUp var(--transition-base) ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

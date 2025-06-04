@@ -109,6 +109,98 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Component uses semantic utilities from layout.css */
-/* No additional styles needed - all styling handled by utility classes */
+/* Backdrop */
+.nav-drawer-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  z-index: 100;
+  pointer-events: none;
+}
+
+.nav-drawer-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Drawer Container */
+.nav-drawer-container {
+  position: fixed;
+  top: 56px; /* Below app bar */
+  right: 0;
+  bottom: 0;
+  width: 320px;
+  background: var(--surface-primary);
+  border-left: 1px solid var(--border-subtle);
+  transform: translateX(100%);
+  transition: transform var(--transition-base), border-left var(--transition-base);
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.nav-drawer-container.open {
+  transform: translateX(0);
+  border-left: 0.25px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Header */
+.nav-drawer-header {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.nav-drawer-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.nav-drawer-close {
+  padding: var(--space-2);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition-fast);
+  font-size: var(--text-lg);
+  line-height: 1;
+}
+
+.nav-drawer-close:hover {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+}
+
+.nav-drawer-close:focus {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Content */
+.nav-drawer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .nav-drawer-container {
+    width: 100%;
+    max-width: 320px;
+  }
+}
 </style>

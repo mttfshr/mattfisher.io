@@ -56,25 +56,16 @@ export default defineConfig({
   ],
   
   themeConfig: {
-    // https://vitepress.dev/reference/default-theme-config
-    nav: [
-      { text: 'Workbook', link: '/workbook' },
-      { text: 'Notes', link: '/notes' },
-      { text: 'Log', link: '/log' },
-      { text: 'Pins', link: '/pins/' },
-      { text: 'Links', items: 
-        [
-          { text: 'studio', link: 'https://mattfisherstudio.com' },
-          { text: 'finishing school', link: 'https://finishing-school-art.net' },
-          { text: 'github', link: 'https://github.com/mttfshr' },
-          { text: 'bluesky', link: 'https://bsky.app/profile/mattfisher.io' },
-          { text: 'vimeo', link: 'https://vimeo.com/mattfisherstudio' },
-          { text: 'youtube', link: 'https://www.youtube.com/@mttfshr' },
-          { text: 'spotify', link: 'https://open.spotify.com/user/gradientfade' },
-          { text: 'bandcamp', link: 'https://bandcamp.com/mattfisher' },
-          { text: 'discord', link: 'https://discordapp.com/users/476778097404805145' }
-        ]
-      }
+    // Force dark mode only
+    appearance: 'dark',
+    
+    // Remove default navigation (handled by our rail nav)
+    nav: [],
+    sidebar: false,
+    
+    // Social links in footer only
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/mttfshr' }
     ],
     
     // Gather all notes at build time

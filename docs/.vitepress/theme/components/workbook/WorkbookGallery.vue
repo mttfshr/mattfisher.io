@@ -95,21 +95,21 @@ function getAspectRatio(item) {
 
 <template>
   <div class="workbook-gallery">
-    <!-- Semantic gallery grid with 3-column layout to match pins spacing -->
-    <div class="gallery-grid-large spacing-scaled">
+    <!-- Enhanced gallery grid with larger, more prominent thumbnails -->
+    <div class="gallery-grid-xlarge spacing-scaled">
       <div 
         v-for="item in props.items" 
         :key="item.slug"
         class="card-interactive"
         @click="emit('item-click', item)"
       >
-        <!-- Reusable media thumbnail component -->
+        <!-- Enhanced media thumbnail with hero aspect ratio -->
         <MediaThumbnail
           :thumbnail-url="getThumbnail(item)"
           :type="item.media?.type"
           :alt="item.title"
           :fallback-text="getMediaFallbackText(item)"
-          :aspect-ratio="getAspectRatio(item)"
+          aspect-ratio="hero"
         />
         
         <!-- Card content -->

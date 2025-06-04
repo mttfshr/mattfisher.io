@@ -21,13 +21,17 @@ const props = defineProps({
   },
   aspectRatio: {
     type: String,
-    default: 'standard', // 'standard', 'square', 'wide', 'tall'
-    validator: (value) => ['standard', 'square', 'wide', 'tall'].includes(value)
+    default: 'standard', // 'standard', 'square', 'wide', 'tall', 'hero'
+    validator: (value) => ['standard', 'square', 'wide', 'tall', 'hero'].includes(value)
   }
 })
 
 const containerClass = computed(() => {
   const baseClass = 'media-container'
+  // Use hero container for enhanced visual impact
+  if (props.aspectRatio === 'hero') {
+    return 'media-container-hero'
+  }
   const aspectClass = props.aspectRatio !== 'standard' ? `media-container-${props.aspectRatio}` : ''
   return [baseClass, aspectClass].filter(Boolean).join(' ')
 })

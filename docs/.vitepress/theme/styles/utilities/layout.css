@@ -695,3 +695,109 @@ body:has(.page-full-width) .VPDoc,
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ===================================================================
+   ENHANCED GALLERY GRID UTILITIES - PHASE 4
+   Media-first gallery layouts with larger, more prominent thumbnails
+   =================================================================== */
+
+/* Enhanced Gallery Grids */
+.gallery-grid-xlarge {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: var(--space-8);
+}
+
+.gallery-grid-hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  gap: var(--space-12);
+}
+
+/* Enhanced Media Containers */
+.media-container-hero {
+  aspect-ratio: 16/10; /* Golden ratio-ish for better visual impact */
+  overflow: hidden;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition-slow);
+}
+
+.media-container-hero:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Media-First Content Sections */
+.content-section-media {
+  padding: var(--space-16) 0;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.content-flow-media > * + * {
+  margin-top: var(--space-12);
+}
+
+/* ===================================================================
+   HOVER-REVEALED METADATA SYSTEM - PHASE 4
+   Reduce visual clutter by hiding metadata until hover
+   =================================================================== */
+
+/* Card content initially hidden/minimal */
+.card-interactive .card-content {
+  opacity: 0.8;
+  transition: var(--transition-fast);
+}
+
+.card-interactive:hover .card-content {  
+  opacity: 1;
+}
+
+/* Item descriptions hidden by default, shown on hover */
+.item-description {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: var(--transition-base);
+}
+
+.card-interactive:hover .item-description {
+  opacity: 0.8;
+  max-height: 3em;
+}
+
+/* Metadata overlays for gallery items */
+.media-meta-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  color: white;
+  padding: var(--space-4);
+  transform: translateY(100%);
+  transition: var(--transition-base);
+}
+
+.card-interactive:hover .media-meta-overlay {
+  transform: translateY(0);
+}
+
+/* Enhanced card hover states */
+.card-interactive {
+  transition: var(--transition-slow);
+  cursor: pointer;
+}
+
+.card-interactive:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Focus states for accessibility */
+.card-interactive:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
