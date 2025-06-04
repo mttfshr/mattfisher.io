@@ -14,6 +14,27 @@ docs/.vitepress/.temp/
 # Vitepress specific
 docs/.vitepress/cache/
 
+# Media files - Keep repository media-free (CRITICAL POLICY)
+docs/public/media/thumbnails/
+docs/public/cache/images/
+docs/.vitepress/dist/cache/images/
+docs/.vitepress/dist/media/
+docs/public/media/collections/
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.svg
+# Exception: Allow essential theme assets and favicons only
+!docs/public/icons/
+!docs/public/manifest.json
+!docs/.vitepress/theme/assets/
+!**/favicon.*
+# Exception: Allow video placeholder
+!docs/public/video-placeholder.svg
+!docs/public/media/video-placeholder.svg
+
 # Editor directories and files
 .vscode/
 .idea/

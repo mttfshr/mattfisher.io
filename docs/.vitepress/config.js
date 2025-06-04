@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitepress'
-import { videoThumbnailsPlugin } from './plugins/videoThumbnails/index.js'
+// import { videoThumbnailsPlugin } from './plugins/videoThumbnails/index.js' // DISABLED
 import { cloudflareImagesPlugin } from './plugins/cloudflare-images.js'
 import path from 'path'
 import { createMediaDirectories, migrateCollectionFiles } from './utils/shared/filesystem.js'
@@ -10,8 +10,8 @@ import { getLogEntries } from './utils/services/content/log.js'
 import { getSessions } from './utils/services/content/sessions.js'
 import { getPins } from './utils/services/content/pins.js'
 
-// Ensure the VitePress public directory exists and create media directories
-const { publicDir, mediaDir, thumbnailsDir } = createMediaDirectories();
+// Ensure the VitePress public directory exists (but NOT media directories - zero media policy)
+// const { publicDir, mediaDir, thumbnailsDir } = createMediaDirectories(); // DISABLED
 
 // Migrate collection files if needed
 migrateCollectionFiles();
@@ -101,10 +101,10 @@ export default defineConfig({
   // Don't exclude the media directory
   srcExclude: [],
   
-  // Configure VitePress with simplified media handling
+  // Configure VitePress with zero-media-in-repo policy
   vite: {
     plugins: [
-      videoThumbnailsPlugin(),
+      // videoThumbnailsPlugin(), // DISABLED: No local media storage
       cloudflareImagesPlugin()
     ],
     // Disable asset inlining

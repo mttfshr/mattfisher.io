@@ -29,7 +29,37 @@
 **Completed**:
 - **Navigation Drawer Enhancement**: [NAV_DRAWER_ENHANCEMENT_PLAN.md](NAV_DRAWER_ENHANCEMENT_PLAN.md) - Unified right-side drawers ✅
 
-### Phase 3: Video System Modernization (PLANNED)
+### Phase 3: Media Storage Elimination (CRITICAL PRIORITY)
+**Status**: Critical architectural issue - 811+ media files stored in repo despite Cloudflare Images integration
+
+**Core Problem**: Local thumbnail/media storage defeating zero-media-in-repo goal
+- **Current Issue**: 2.7MB+ of thumbnails stored in `docs/public/media/thumbnails/`
+- **Architectural Conflict**: Cloudflare Images integration exists but system still downloads/stores locally
+- **Repository Bloat**: 811 media files tracked in git (opposite of intended architecture)
+
+**Root Cause Analysis Needed**:
+1. **Thumbnail Generation**: Multiple scripts still downloading thumbnails locally
+2. **Fallback Logic**: Components may be falling back to local files instead of Cloudflare URLs
+3. **Build Process**: VitePress build may be requiring local thumbnails
+4. **Component Logic**: MediaThumbnail/video components not fully using Cloudflare-first approach
+
+**Solution Strategy**:
+1. **Audit Current Media Flow**: Map exactly where local storage is happening
+2. **Cloudflare-First Architecture**: Ensure all components use Cloudflare Images URLs directly
+3. **Remove Local Fallbacks**: Eliminate all local thumbnail storage/generation
+4. **Build Process Update**: Modify build to not require local media files
+5. **Git Cleanup**: Remove all media files from repository and add to .gitignore
+
+**Success Criteria**:
+- ✅ **Zero media files** stored in repository
+- ✅ **All thumbnails** served from Cloudflare Images
+- ✅ **No local generation** of thumbnails/media
+- ✅ **Faster builds** without media processing
+- ✅ **Smaller repository** size
+
+**Priority Level**: Critical - Goes against core architectural principle
+
+### Phase 4: Video System Modernization (HIGH PRIORITY)
 **Status**: Address video aspect ratio issues and simplify video architecture
 
 **Core Problem**: Current video player hardcodes 16:9 aspect ratios, causing letterboxing of square videos (1:1)
@@ -100,6 +130,7 @@ The Semantic Atomic Design System has achieved all success criteria:
 |---------|--------|----------|---------|
 | Semantic Design System | Critical | 🌟🌟🌟🌟🌟 | ✅ **COMPLETE** |
 | Component Optimization | High | 🌟🌟🌟🌟🌟 | ✅ **COMPLETE** |
+| Media Storage Elimination | Critical | 🌟🌟🌟🌟🌟 | 🚨 **URGENT** |
 | Video System Modernization | High | 🌟🌟🌟🌟 | 🔄 **Ready to Begin** |
 | Natural Linking | Medium | 🌟🌟🌟 | 🔄 **Ready to Begin** |
 | Status Indicators | Low | 🌟🌟 | 🔄 **Ready to Begin** |
@@ -107,25 +138,27 @@ The Semantic Atomic Design System has achieved all success criteria:
 | Performance Optimizations | Medium | 🌟🌟🌟 | 🔄 **Future Phase** |
 | Advanced Animations | Low | 🌟🌟 | 🔄 **Future Phase** |
 
-## Next Steps - PHASES 2 & 3 READY
+## Next Steps - URGENT MEDIA CLEANUP
 
-With Phase 1 (Semantic Atomic Design System) complete, the project has two high-priority paths:
+**IMMEDIATE PRIORITY: Phase 3 - Media Storage Elimination**
 
-**Phase 2: Layout & Semantic HTML Cleanup**
-1. **Navigation Drawer Enhancement**: Unified right-side drawers
-2. **HTML Structure Cleanup**: Systematic semantic improvements
-3. **Layout Pattern Consistency**: Standardized page structures
+This is a **critical architectural violation** that needs immediate attention:
 
-**Phase 3: Video System Modernization** (High Priority)
-1. **VimeoEmbed Component**: Replace complex custom video player
-2. **Aspect Ratio Fix**: Solve square video letterboxing immediately  
-3. **Architecture Simplification**: 87% code reduction in video handling
-4. **User Experience**: Professional Vimeo player integration
+**Current Problem:**
+- 🚨 **811 media files** stored in repository
+- 🚨 **2.7MB+ thumbnails** in `docs/public/media/thumbnails/`  
+- 🚨 **Growing media storage** despite Cloudflare Images integration
+- 🚨 **Repository bloat** contradicting zero-media-in-repo principle
 
-**Future (Phase 4+): Content Enhancement Features**
-1. **Natural Linking System**: Cross-references between notes and workbook items
-2. **Status Indicators**: Evolution tracking for notes and content
-3. **Enhanced Search**: Advanced filtering and discovery features
-4. **Dynamic Collections**: Smart collections based on content patterns
+**Action Required:**
+1. **Media Flow Audit**: Identify exactly where/why local storage is happening
+2. **Cloudflare-First Refactor**: Update all components to use Cloudflare URLs directly
+3. **Local Storage Elimination**: Remove all thumbnail generation/storage scripts
+4. **Repository Cleanup**: Purge existing media files and update .gitignore
 
-The solid foundation established in Phase 1 enables rapid development of these advanced features.
+**Other Ready Phases:**
+- **Phase 2**: Layout & HTML Cleanup (In Progress)
+- **Phase 4**: Video System Modernization (High Priority) 
+- **Phase 5+**: Content Enhancement Features (Future)
+
+The media storage issue should be resolved before proceeding with other enhancements to prevent further architectural debt.

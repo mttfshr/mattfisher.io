@@ -249,50 +249,14 @@ function getMetaContent(metaTags, name) {
 }
 
 /**
- * Cache downloaded images locally
+ * Cache downloaded images locally - DISABLED FOR ZERO-MEDIA-IN-REPO ARCHITECTURE
+ * Images will be served directly from original URLs
  */
 async function cacheImage(imageUrl, pinUrl) {
-  if (!imageUrl) return null;
-  
-  try {
-    // Create a unique filename based on the URL
-    const urlHash = slugify(pinUrl).substring(0, 40);
-    const extension = imageUrl.split('.').pop().split('?')[0].toLowerCase();
-    const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    const fileExtension = validExtensions.includes(extension) ? extension : 'jpg';
-    
-    const localFileName = `${urlHash}.${fileExtension}`;
-    const localFilePath = path.join(publicCacheDir, 'images', localFileName);
-    const localFileDir = path.dirname(localFilePath);
-    
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(localFileDir)) {
-      fs.mkdirSync(localFileDir, { recursive: true });
-    }
-    
-    // Check if we already have this image cached
-    if (fs.existsSync(localFilePath)) {
-      console.log(`Image already cached: ${localFilePath}`);
-      return `/cache/images/${localFileName}`;
-    }
-    
-    // Download the image
-    console.log(`Downloading image: ${imageUrl}`);
-    const response = await fetch(imageUrl, { timeout: 10000 });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
-    }
-    
-    const buffer = await response.buffer();
-    fs.writeFileSync(localFilePath, buffer);
-    
-    console.log(`Cached image at: ${localFilePath}`);
-    return `/cache/images/${localFileName}`;
-  } catch (error) {
-    console.error(`Error caching image for ${pinUrl}:`, error.message);
-    return null;
-  }
+  // DISABLED: No longer cache images locally to keep repo clean
+  // If image is unavailable from original source, that's acceptable
+  console.log(`Skipping local image cache for: ${imageUrl} (zero-media-in-repo policy)`);
+  return null;
 }
 
 /**
@@ -345,13 +309,7 @@ export async function generateOgCache(forceRefresh = false, targetFiles = []) {
   
   // Get all pin URLs directly from markdown files
   const pinUrls = getAllPins(targetFiles);
-  console.log(`Processing ${pinUrls.length} pin URLs for OG data...`);
-  
-  // Create images directory if it doesn't exist
-  const imagesDir = path.join(publicCacheDir, 'images');
-  if (!fs.existsSync(imagesDir)) {
-    fs.mkdirSync(imagesDir, { recursive: true });
-  }
+  console.log(`Processing ${pinUrls.length} pin URLs for OG data (no image caching)...`);
   
   // Process each pin URL to get OG data
   let newEntries = 0;
@@ -377,14 +335,11 @@ export async function generateOgCache(forceRefresh = false, targetFiles = []) {
       // Fetch OG data
       const ogData = await fetchOgData(url);
       
-      // Try to cache the image locally
+      // Try to cache the image locally - DISABLED
       if (ogData.imageUrl) {
-        const localImagePath = await cacheImage(ogData.imageUrl, url);
-        if (localImagePath) {
-          // Keep both the original URL and the local path
-          ogData.originalImageUrl = ogData.imageUrl;
-          ogData.localImageUrl = localImagePath;
-        }
+        // No longer cache images locally - use original URLs directly
+        // If original image is unavailable, components should handle gracefully
+        console.log(`Using original image URL: ${ogData.imageUrl} (no local caching)`);
       }
       
       // Save to both caches

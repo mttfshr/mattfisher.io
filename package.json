@@ -9,8 +9,7 @@
     "test:ui": "vitest --ui",
     "test:workbook": "vitest run tests/unit/workbookIntegration.test.js",
     "rebuild": "npm run docs:build && npm run docs:preview",
-    "generate-og-cache": "node docs/.vitepress/utils/services/cache/opengraph.js",
-    "generate-og-cache:force": "node docs/.vitepress/utils/services/cache/opengraph.js --force",
+
     "update-pins": "node docs/.vitepress/utils/services/external/index.js all",
     "update-pins:spotify": "node docs/.vitepress/utils/services/external/index.js spotify",
     "update-pins:vimeo": "node docs/.vitepress/utils/services/external/index.js vimeo",
@@ -28,7 +27,7 @@
     "pins:refresh-og-data": "node docs/.vitepress/utils/workflows/refresh-og-data.js",
     "pins:audit-coverage": "node -e \"import('./docs/.vitepress/utils/services/content/pins.js').then(m => m.auditVideoThumbnailCoverage())\"",
     "pins:health-check": "npm run pins:validate-thumbnails && npm run pins:audit-coverage",
-    "prebuild": "npm run update-pins && npm run generate-og-cache && npm run ensure-cache && npm run generate-favicons",
+    "prebuild": "npm run update-pins && npm run ensure-cache && npm run generate-favicons",
     "prebuild:minimal": "npm run ensure-cache && npm run generate-favicons",
     "verify-build": "node docs/.vitepress/utils/maintenance/verifyBuild.js",
     "upload-media": "node scripts/upload-media.js",
