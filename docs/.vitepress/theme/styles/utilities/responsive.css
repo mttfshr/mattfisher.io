@@ -1,0 +1,193 @@
+/* ===================================================================
+   SEMANTIC RESPONSIVE UTILITIES
+   Behavior-based responsive patterns
+   =================================================================== */
+
+/* ===================================================================
+   GALLERY GRID RESPONSIVE BEHAVIOR
+   Progressive column reduction for optimal readability
+   =================================================================== */
+
+@media (max-width: 1200px) {
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .gallery-grid-large {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .gallery-grid-compact {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .gallery-grid-large {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+  
+  .gallery-grid-compact {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  /* Responsive spacing adjustments */
+  .spacing-scaled {
+    gap: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .gallery-grid-compact {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+  
+  /* Mobile spacing refinements */
+  .spacing-scaled {
+    gap: var(--space-3);
+  }
+  
+  .spacing-comfortable {
+    gap: var(--space-4);
+  }
+  
+  .spacing-generous {
+    gap: var(--space-6);
+  }
+}
+
+/* ===================================================================
+   CONTENT LAYOUT RESPONSIVE BEHAVIOR
+   Adaptive content organization patterns
+   =================================================================== */
+
+@media (max-width: 768px) {
+  .content-responsive {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+  
+  /* Mobile nav drawer adjustments */
+  .content-with-sidebar.pins-layout,
+  .content-with-sidebar.pins-layout.sidebar-collapsed {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar-collapsible.nav-drawer-right {
+    width: 90vw;
+    max-width: 320px;
+  }
+  
+  .nav-adaptive {
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: stretch;
+  }
+  
+  .filter-controls {
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: stretch;
+  }
+  
+  .stack-horizontal {
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: stretch;
+  }
+}
+
+/* ===================================================================
+   CONTAINER QUERIES
+   Modern responsive behavior based on container size
+   =================================================================== */
+
+.container-adaptive {
+  container-type: inline-size;
+}
+
+@container (max-width: 800px) {
+  .gallery-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@container (max-width: 500px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+}
+
+@container (max-width: 300px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===================================================================
+   MOBILE-SPECIFIC BEHAVIORS
+   Touch-friendly interactions and layouts
+   =================================================================== */
+
+@media (max-width: 768px) {
+  .card-interactive:hover {
+    /* Reduce hover effects on touch devices */
+    transform: none;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .card-interactive:active {
+    transform: scale(0.98);
+    box-shadow: var(--shadow-base);
+  }
+  
+  .media-container {
+    height: 180px; /* Smaller media containers on mobile */
+  }
+  
+  .interactive-lift:hover {
+    transform: none; /* Disable lift on touch devices */
+  }
+  
+  .interactive-scale:hover {
+    transform: none; /* Disable scale on touch devices */
+  }
+}
+
+/* ===================================================================
+   ACCESSIBILITY RESPONSIVE PATTERNS
+   Respect user preferences
+   =================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .card-interactive,
+  .interactive-lift,
+  .interactive-scale,
+  .loading-pulse {
+    animation: none;
+    transition: none;
+  }
+  
+  .card-interactive:hover,
+  .interactive-lift:hover,
+  .interactive-scale:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .media-badge {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+}

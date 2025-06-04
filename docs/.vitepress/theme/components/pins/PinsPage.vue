@@ -6,6 +6,7 @@ import PinsPagination from './PinsPagination.vue'
 import TypeFilter from './TypeFilter.vue'
 import CollectionsBrowser from './CollectionsBrowser.vue'
 import ActiveFilters from './ActiveFilters.vue'
+import NavigationDrawer from '../common/NavigationDrawer.vue'
 import { useData } from 'vitepress'
 
 // Get data from VitePress
@@ -136,6 +137,7 @@ const selectedPin = ref(null)
 const selectedTypes = ref([])
 const selectedCollection = ref(null)
 const showMobileFilters = ref(false)
+const drawerOpen = ref(false) // Renamed from sidebarCollapsed, inverted logic
 
 // Filter pins based on selected types, collections, and search query
 const filteredPins = computed(() => {
@@ -225,6 +227,10 @@ const toggleMobileFilters = () => {
   showMobileFilters.value = !showMobileFilters.value
 }
 
+const toggleDrawer = () => {
+  drawerOpen.value = !drawerOpen.value
+}
+
 // Get related pins when a pin is selected
 const relatedPins = computed(() => {
   if (!selectedPin.value) return [];
@@ -252,12 +258,12 @@ const relatedPins = computed(() => {
 </script>
 
 <template>
-  <div class="pins-dashboard">
+  <div class="container-responsive">
     <!-- Debug output -->
-    <div v-if="pinsData.pins && pinsData.pins.length === 0" class="debug-info">
+    <div v-if="pinsData.pins && pinsData.pins.length === 0" class="card bg-surface-soft p-4 m-4">
       <h3>Debug Info</h3>
       <p>No pins data found. Check if theme.pins is properly configured in config.mts.</p>
-      <pre>{{ JSON.stringify({
+      <pre class="text-xs">{{ JSON.stringify({
         pinsCount: pinsData.pins.length,
         contentTypeNames: pinsData.contentTypes,
         collectionNames: pinsData.collections
@@ -266,50 +272,50 @@ const relatedPins = computed(() => {
     
     <!-- Pins UI only shown if we have data -->
     <div v-if="pinsData.pins && pinsData.pins.length > 0">
-      <!-- Mobile filter toggle button -->
-      <button 
-        @click="toggleMobileFilters" 
-        class="mobile-filter-toggle"
-        :class="{ 'active': showMobileFilters }"
-      >
-        <span class="toggle-icon">{{ showMobileFilters ? '✕' : '🔍' }}</span>
-        <span class="toggle-text">{{ showMobileFilters ? 'Hide Filters' : 'Show Filters' }}</span>
-      </button>
-    
-    <div class="pins-layout">
-      <!-- Left sidebar with filters -->
-      <div 
-        class="filters-sidebar"
-        :class="{ 'visible': showMobileFilters }"
-      >
-        <div class="search-container">
-          <input 
-            type="text" 
-            v-model="searchQuery" 
-            placeholder="Search pins..." 
-            class="search-input"
-          />
-          <button 
-            v-if="searchQuery" 
-            @click="searchQuery = ''" 
-            class="clear-search"
-            title="Clear search"
-          >×</button>
+      <!-- Page header with drawer trigger -->
+      <header class="page-header-adaptive">
+        <div class="page-header-layout">
+          <h1 class="text-2xl font-semibold">Pins</h1>
+          <div class="view-selector">
+            <button 
+              @click="layout = 'grid'" 
+              :class="['btn btn-ghost', { 'btn-primary': layout === 'grid' }]"
+              title="Grid view"
+            >
+              <span class="view-icon">▦</span>
+            </button>
+            
+            <button 
+              @click="layout = 'masonry'" 
+              :class="['btn btn-ghost', { 'btn-primary': layout === 'masonry' }]"
+              title="Masonry view"
+            >
+              <span class="view-icon">◫</span>
+            </button>
+            
+            <button 
+              @click="layout = 'list'" 
+              :class="['btn btn-ghost', { 'btn-primary': layout === 'list' }]"
+              title="List view"
+            >
+              <span class="view-icon">≡</span>
+            </button>
+            
+            <!-- Navigation drawer trigger -->
+            <button 
+              class="nav-drawer-trigger btn btn-ghost"
+              :class="{ active: drawerOpen }"
+              @click="toggleDrawer"
+              aria-label="Toggle filters"
+            >
+              <span class="view-icon">⚙️</span>
+            </button>
+          </div>
         </div>
-        
-        <TypeFilter 
-          :contentTypes="formattedContentTypes" 
-          v-model:selectedTypes="selectedTypes"
-        />
-        
-        <CollectionsBrowser 
-          :collections="formattedCollections" 
-          v-model:selectedCollection="selectedCollection"
-        />
-      </div>
-      
-      <!-- Main content area -->
-      <div class="pins-content">
+      </header>
+
+      <!-- Main content -->
+      <main class="page-content" :class="{ 'drawer-open': drawerOpen }">
         <!-- Active filters display -->
         <ActiveFilters 
           :selectedTypes="selectedTypes"
@@ -323,35 +329,6 @@ const relatedPins = computed(() => {
           @clearAllFilters="clearAllFilters"
         />
         
-        <!-- View controls -->
-        <div class="view-controls">
-          <div class="layout-controls">
-            <button 
-              @click="layout = 'grid'" 
-              :class="['layout-button', { active: layout === 'grid' }]"
-              title="Grid view"
-            >
-              <span class="layout-icon">▦</span>
-            </button>
-            
-            <button 
-              @click="layout = 'masonry'" 
-              :class="['layout-button', { active: layout === 'masonry' }]"
-              title="Masonry view"
-            >
-              <span class="layout-icon">◫</span>
-            </button>
-            
-            <button 
-              @click="layout = 'list'" 
-              :class="['layout-button', { active: layout === 'list' }]"
-              title="List view"
-            >
-              <span class="layout-icon">≡</span>
-            </button>
-          </div>
-        </div>
-        
         <!-- Pagination at top -->
         <PinsPagination
           v-model:currentPage="currentPage"
@@ -360,18 +337,18 @@ const relatedPins = computed(() => {
         />
         
         <!-- Pins grid -->
-        <div class="pins-grid-container">
+        <div class="gallery-container">
           <PinGrid
             :pins="paginatedPins"
             :layout="layout"
             @pin-click="openPinDetail"
           />
           
-          <div v-if="paginatedPins.length === 0" class="empty-state">
-            <div class="empty-icon">🔍</div>
-            <h3>No pins found</h3>
-            <p>Try adjusting your search or filters.</p>
-            <button @click="clearAllFilters" class="clear-all-button">Clear All Filters</button>
+          <div v-if="paginatedPins.length === 0" class="card empty-state-pattern">
+            <div class="empty-state-icon">🔍</div>
+            <h3 class="empty-state-title">No pins found</h3>
+            <p class="empty-state-description text-secondary">Try adjusting your search or filters.</p>
+            <button @click="clearAllFilters" class="btn btn-primary">Clear All Filters</button>
           </div>
         </div>
         
@@ -381,274 +358,85 @@ const relatedPins = computed(() => {
           v-model:pageSize="pageSize"
           :totalPages="totalPages"
         />
-      </div>
-    </div>
-    
-    <!-- Pin detail modal -->
-    <div v-if="selectedPin" class="pin-detail-modal">
-      <div class="modal-overlay" @click="closePinDetail"></div>
-      <div class="modal-container">
-        <button class="modal-close" @click="closePinDetail">×</button>
-        <PinDetail
-          :pin="selectedPin"
-          :relatedPins="relatedPins"
-          @pin-click="openPinDetail"
+      </main>
+
+      <!-- Navigation Drawer -->
+      <NavigationDrawer
+        :is-open="drawerOpen"
+        title="Filter Pins"
+        @close="drawerOpen = false"
+      >
+        <!-- Search -->
+        <div class="search-container">
+          <input 
+            type="text" 
+            v-model="searchQuery" 
+            placeholder="Search pins..." 
+            class="input search-input"
+          />
+          <button 
+            v-if="searchQuery" 
+            @click="searchQuery = ''" 
+            class="search-clear"
+          >×</button>
+        </div>
+        
+        <!-- Filter controls moved from sidebar -->
+        <TypeFilter 
+          :contentTypes="formattedContentTypes" 
+          v-model:selectedTypes="selectedTypes"
         />
+        
+        <CollectionsBrowser 
+          :collections="formattedCollections" 
+          v-model:selectedCollection="selectedCollection"
+        />
+      </NavigationDrawer>
+    
+      <!-- Pin detail modal -->
+      <div v-if="selectedPin" class="modal-overlay" @click="closePinDetail">
+        <div class="modal card animate-scale-in" @click.stop>
+          <button class="modal-close btn btn-ghost" @click="closePinDetail">×</button>
+          <PinDetail
+            :pin="selectedPin"
+            :relatedPins="relatedPins"
+            @pin-click="openPinDetail"
+          />
+        </div>
       </div>
-    </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* Scoped to this component */
-/* Main layout */
-.pins-dashboard {
-  width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 0 var(--space-4);
-}
-
-.pins-layout {
-  display: flex;
-  gap: var(--space-8);
-}
-
-/* Left sidebar with filters */
-.filters-sidebar {
-  flex: 0 0 280px;
-  position: sticky;
-  top: var(--space-16);
-  height: calc(100vh - var(--space-16));
-  padding-right: var(--space-4);
-  overflow-y: auto;
-}
-
-/* Main content area */
-.pins-content {
-  flex: 1;
-  min-width: 0; /* Prevents flex children from overflowing */
-}
-
-/* Search input */
-.search-container {
-  position: relative;
-  margin-bottom: var(--space-6);
-}
-
-.search-input {
-  width: 100%;
-  padding: var(--space-3) var(--space-10) var(--space-3) var(--space-4);
-  background-color: var(--vp-c-bg-soft);
-  border: var(--border-width) solid var(--vp-c-divider);
-  border-radius: var(--radius-md);
-  font-size: var(--text-base);
-  transition: var(--transition-fast);
-}
-
-.search-input:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--vp-c-brand-soft);
-}
-
-.clear-search {
-  position: absolute;
-  right: var(--space-3);
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  font-size: var(--text-xl);
-  color: var(--vp-c-text-3);
-  cursor: pointer;
-  padding: 0;
-}
-
-/* View controls */
-.view-controls {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: var(--space-4);
-}
-
-.layout-controls {
-  display: flex;
-  gap: var(--space-1);
-}
-
-.layout-button {
-  padding: var(--space-2);
-  background-color: var(--vp-c-bg-soft);
-  border: var(--border-width) solid var(--vp-c-divider);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.layout-button:hover {
-  background-color: var(--vp-c-bg-alt);
-}
-
-.layout-button.active {
-  background-color: var(--vp-c-brand);
-  color: var(--vp-c-white);
-  border-color: var(--vp-c-brand);
-}
-
-/* Empty state */
-.empty-state {
-  padding: var(--space-12) var(--space-8);
-  background-color: var(--vp-c-bg-soft);
-  border-radius: var(--radius-md);
-  text-align: center;
-  margin: var(--space-8) 0;
-}
-
-.empty-icon {
-  font-size: var(--text-5xl);
-  margin-bottom: var(--space-4);
-}
-
-.empty-state h3 {
-  margin: 0 0 var(--space-2);
-}
-
-.empty-state p {
-  color: var(--vp-c-text-2);
-  margin: 0 0 var(--space-4);
-}
-
-.clear-all-button {
-  padding: var(--space-2) var(--space-4);
-  background-color: var(--vp-c-brand);
-  color: var(--vp-c-white);
-  border: none;
-  border-radius: var(--radius-base);
-  font-size: var(--text-sm);
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-/* Pin detail modal */
-.pin-detail-modal {
+/* Component-specific styles only - Layout utilities moved to semantic system */
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 100;
+  z-index: var(--z-modal);
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.modal-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
 }
 
-.modal-container {
+.modal {
   position: relative;
   width: 90%;
   max-width: 1000px;
   max-height: 90vh;
-  background-color: var(--vp-c-bg);
-  border-radius: var(--radius-lg);
   overflow-y: auto;
-  z-index: 101;
+  z-index: var(--z-modal);
 }
 
 .modal-close {
   position: absolute;
   top: var(--space-4);
   right: var(--space-4);
-  background: var(--vp-c-bg-soft);
-  border: none;
-  border-radius: var(--radius-full);
-  width: 32px;
-  height: 32px;
-  font-size: var(--text-2xl);
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 102;
-  transition: var(--transition-fast);
-}
-
-.modal-close:hover {
-  background-color: var(--vp-c-bg-alt);
-}
-
-/* Debug info */
-.debug-info {
-  margin-bottom: var(--space-8);
-  padding: var(--space-4);
-  background-color: var(--vp-c-danger-soft);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-}
-
-.debug-info pre {
-  background-color: var(--vp-c-bg);
-  padding: var(--space-2);
-  border-radius: var(--radius-sm);
-  overflow-x: auto;
-}
-
-/* Mobile filter toggle button */
-.mobile-filter-toggle {
-  display: none;
-  align-items: center;
-  gap: var(--space-2);
-  margin-bottom: var(--space-4);
-  padding: var(--space-2) var(--space-4);
-  background-color: var(--vp-c-bg-soft);
-  border: var(--border-width) solid var(--vp-c-divider);
-  border-radius: var(--radius-md);
-  font-size: var(--text-sm);
-  cursor: pointer;
-}
-
-.mobile-filter-toggle.active {
-  background-color: var(--vp-c-brand);
-  color: white;
-  border-color: var(--vp-c-brand);
-}
-
-/* Responsive styling */
-@media (max-width: 768px) {
-  .pins-layout {
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-  
-  .filters-sidebar {
-    flex: none;
-    position: static;
-    height: auto;
-    max-height: 0;
-    overflow: hidden;
-    padding: 0;
-    transition: var(--transition-slow);
-  }
-  
-  .filters-sidebar.visible {
-    max-height: 1000px;
-    padding-bottom: var(--space-6);
-    margin-bottom: var(--space-4);
-    border-bottom: var(--border-width) solid var(--vp-c-divider);
-  }
-  
-  .mobile-filter-toggle {
-    display: flex;
-  }
+  z-index: var(--z-popover);
 }
 </style>

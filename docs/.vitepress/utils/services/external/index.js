@@ -12,8 +12,8 @@ dotenv.config();
 
 // Resolve paths relative to this file
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(__dirname, '../../../..');
-const docsDir = path.join(projectRoot, 'docs');
+const projectRoot = path.resolve(__dirname, '../../..');
+const docsDir = projectRoot;
 
 /**
  * Run a specific connector
@@ -97,8 +97,9 @@ async function runConnector(connector) {
       
       try {
         await fetchYouTubeLikedVideos(docsDir, {
-          fetchAll: true,  // Fetch all pages of liked videos
-          pageSize: 50     // 50 items per page (YouTube maximum)
+          fetchAll: true,      // Fetch all pages of liked videos
+          pageSize: 50,        // 50 items per page (YouTube maximum)
+          fetchThumbnails: false // Don't download thumbnails for pins - use OpenGraph URLs
         });
         console.log('✅ YouTube liked videos updated successfully!');
       } catch (error) {

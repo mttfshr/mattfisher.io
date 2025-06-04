@@ -1,11 +1,12 @@
 <template>
-  <div class="tag-filter">
-    <div class="filter-controls">
+  <div class="content-section" :class="{ 'sidebar-mode': sidebarLayout }">
+    <div class="filter-controls" :class="{ 'sidebar-controls': sidebarLayout }">
       <div class="search-box">
         <input 
           type="text" 
           v-model="searchQuery" 
           placeholder="Search..." 
+          class="input"
           @input="filterItems"
         />
         <button 
@@ -17,63 +18,66 @@
         </button>
       </div>
       
-      <div class="tag-filters">
+      <div class="tag-filters" :class="{ 'sidebar-filters': sidebarLayout }">
         <div 
           v-for="(tags, category) in groupedTags" 
           :key="category" 
-          class="tag-category"
+          class="filter-group"
         >
           <div 
-            class="category-header" 
+            class="filter-group-header interactive" 
             @click="toggleCategory(category)"
           >
-            <span class="label">{{ formatCategory(category) }}</span>
+            <span class="filter-group-title">{{ formatCategory(category) }}</span>
             <span class="icon">{{ expandedCategories[category] ? '−' : '+' }}</span>
           </div>
           
           <div 
             v-if="expandedCategories[category]" 
-            class="category-tags"
+            class="filter-group-items" 
+            :class="{ 'sidebar-items': sidebarLayout }"
           >
             <button 
               v-for="tag in tags" 
               :key="tag.value" 
-              :class="['tag-button', { active: isTagActive(category, tag.value) }]"
+              :class="['badge', 'interactive', { 'badge-primary': isTagActive(category, tag.value) }]"
               @click="toggleTag(category, tag.value)"
             >
               {{ formatTagValue(tag.value) }}
-              <span class="count">({{ tag.count }})</span>
+              <span class="filter-group-count">({{ tag.count }})</span>
             </button>
           </div>
         </div>
       </div>
     </div>
     
-    <div class="filter-summary" v-if="hasActiveFilters">
-      <span class="summary-label">Filters:</span>
-      <div class="active-filters">
-        <div 
-          v-for="(values, category) in activeFilters" 
-          :key="category" 
-          class="filter-group"
-          v-if="values.length"
-        >
-          <span class="category">{{ formatCategory(category) }}:</span>
-          <button 
-            v-for="value in values" 
-            :key="value" 
-            class="filter-tag"
-            @click="toggleTag(category, value)"
+    <div class="card card-body" v-if="hasActiveFilters">
+      <div class="stack-horizontal spacing-comfortable" :class="{ 'sidebar-active-filters': sidebarLayout }">
+        <span class="text-sm font-medium text-secondary">Filters:</span>
+        <div class="active-filters">
+          <div 
+            v-for="(values, category) in activeFilters" 
+            :key="category" 
+            class="stack-horizontal spacing-tight"
+            v-if="values.length"
           >
-            {{ formatTagValue(value) }} ×
-          </button>
+            <span class="text-sm text-secondary">{{ formatCategory(category) }}:</span>
+            <button 
+              v-for="value in values" 
+              :key="value" 
+              class="badge badge-primary interactive"
+              @click="toggleTag(category, value)"
+            >
+              {{ formatTagValue(value) }} ×
+            </button>
+          </div>
         </div>
+        <button class="btn btn-ghost btn-sm" @click="clearAllFilters">Clear all</button>
       </div>
-      <button class="clear-all" @click="clearAllFilters">Clear all</button>
     </div>
     
     <div class="results-info" v-if="filteredItems.length !== props.items.length">
-      <span>
+      <span class="text-sm text-tertiary">
         Showing {{ filteredItems.length }} of {{ props.items.length }} items
       </span>
     </div>
@@ -87,6 +91,10 @@ const props = defineProps({
   items: {
     type: Array,
     required: true
+  },
+  sidebarLayout: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -292,10 +300,7 @@ watch(() => props.items, (newItems) => {
 </script>
 
 <style scoped>
-.tag-filter {
-  margin-bottom: var(--space-8);
-}
-
+/* Component-specific styles only */
 .filter-controls {
   display: flex;
   gap: var(--space-4);
@@ -307,21 +312,6 @@ watch(() => props.items, (newItems) => {
   flex: 1;
 }
 
-.search-box input {
-  width: 100%;
-  padding: var(--space-2) var(--space-8) var(--space-2) var(--space-3);
-  border: var(--border-width) solid var(--vp-c-divider);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-lg);
-  color: var(--vp-c-text-1);
-  background-color: var(--vp-c-bg);
-}
-
-.search-box input:focus {
-  outline: none;
-  border-color: var(--vp-c-brand);
-}
-
 .clear-button {
   position: absolute;
   right: var(--space-2);
@@ -331,7 +321,7 @@ watch(() => props.items, (newItems) => {
   height: var(--space-6);
   border: none;
   background: transparent;
-  color: var(--vp-c-text-3);
+  color: var(--text-tertiary);
   font-size: var(--text-xl);
   font-weight: var(--font-bold);
   cursor: pointer;
@@ -341,6 +331,10 @@ watch(() => props.items, (newItems) => {
   padding: 0;
 }
 
+.clear-button:hover {
+  color: var(--text-primary);
+}
+
 .tag-filters {
   flex: 2;
   display: flex;
@@ -348,86 +342,33 @@ watch(() => props.items, (newItems) => {
   gap: var(--space-4);
 }
 
-.tag-category {
+.filter-group {
   margin-bottom: var(--space-3);
   max-width: 300px;
 }
 
-.category-header {
+.filter-group-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--vp-c-text-2);
-  cursor: pointer;
-  padding: var(--space-2);
-  background-color: var(--vp-c-bg-soft);
-  border-radius: var(--radius-sm);
-  margin-bottom: var(--space-2);
 }
 
-.category-header:hover {
-  background-color: var(--vp-c-bg-mute);
-}
-
-.category-header .icon {
+.icon {
   font-weight: var(--font-bold);
   font-size: var(--text-base);
 }
 
-.category-tags {
+.filter-group-items {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
   padding: var(--space-1);
 }
 
-.tag-button {
-  background-color: var(--vp-c-bg-soft);
-  border: var(--border-width) solid var(--vp-c-divider);
-  color: var(--vp-c-text-2);
-  font-size: var(--text-xs);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: var(--transition-base);
-  display: flex;
-  align-items: center;
-}
-
-.tag-button:hover {
-  border-color: var(--vp-c-brand-soft);
-  background-color: var(--vp-c-bg-mute);
-}
-
-.tag-button.active {
-  background-color: var(--vp-c-brand-soft);
-  color: var(--vp-c-brand-dark);
-  border-color: var(--vp-c-brand-soft);
-}
-
-.tag-button .count {
+.filter-group-count {
   font-size: var(--text-xs);
   margin-left: var(--space-1);
   opacity: 0.7;
-}
-
-.filter-summary {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-  background-color: var(--vp-c-bg-soft);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-base);
-  margin-bottom: var(--space-6);
-}
-
-.summary-label {
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: var(--vp-c-text-2);
 }
 
 .active-filters {
@@ -437,55 +378,55 @@ watch(() => props.items, (newItems) => {
   flex: 1;
 }
 
-.filter-group {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-}
-
-.filter-group .category {
-  font-size: var(--text-sm);
-  color: var(--vp-c-text-2);
-}
-
-.filter-tag {
-  background-color: var(--vp-c-brand-soft);
-  color: var(--vp-c-brand-dark);
-  font-size: var(--text-xs);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  border: none;
-  cursor: pointer;
-  transition: var(--transition-base);
-}
-
-.filter-tag:hover {
-  background-color: var(--vp-c-brand);
-  color: white;
-}
-
-.clear-all {
-  font-size: var(--text-xs);
-  color: var(--vp-c-text-3);
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: var(--space-1) var(--space-2);
-}
-
-.clear-all:hover {
-  color: var(--vp-c-text-1);
-}
-
 .results-info {
-  font-size: var(--text-sm);
-  color: var(--vp-c-text-3);
   margin-bottom: var(--space-4);
 }
 
-/* Responsive styles */
+/* Sidebar layout adaptations */
+.sidebar-mode .filter-controls.sidebar-controls {
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.sidebar-mode .search-box {
+  flex: none;
+}
+
+.sidebar-mode .tag-filters.sidebar-filters {
+  flex: none;
+  display: block;
+}
+
+.sidebar-mode .filter-group {
+  margin-bottom: var(--space-4);
+  max-width: none;
+  width: 100%;
+}
+
+.sidebar-mode .filter-group-items.sidebar-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2) 0;
+}
+
+.sidebar-mode .filter-group-items.sidebar-items .badge {
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar-mode .stack-horizontal.sidebar-active-filters {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.sidebar-mode .active-filters {
+  width: 100%;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .filter-controls {
     flex-direction: column;
@@ -495,7 +436,7 @@ watch(() => props.items, (newItems) => {
     width: 100%;
   }
   
-  .tag-category {
+  .filter-group {
     width: 100%;
     max-width: none;
   }

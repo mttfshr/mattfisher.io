@@ -130,17 +130,17 @@ const getGroupId = (name) => {
   border-bottom: 1px solid var(--vp-c-divider);
 }
 
-/* Grid layout */
+/* Grid layout - optimized for 4 columns */
 .pin-grid.grid .pins-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--space-4);
 }
 
-/* Masonry layout - basic implementation */
+/* Masonry layout - optimized for 4 columns */
 .pin-grid.masonry .pins-container {
   column-count: 4;
-  column-gap: 1.5rem;
+  column-gap: var(--space-4);
 }
 
 /* Additional columns for larger screens */
@@ -152,14 +152,14 @@ const getGroupId = (name) => {
 
 .pin-grid.masonry .pins-container > * {
   break-inside: avoid;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-4);
 }
 
 /* List layout */
 .pin-grid.list .pins-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: var(--space-4);
 }
 
 /* Responsive adjustments */

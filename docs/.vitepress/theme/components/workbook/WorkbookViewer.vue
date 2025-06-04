@@ -1,37 +1,36 @@
 <template>
-  <div class="workbook-viewer">
-    <!-- Presentation mode viewer -->
-    <PresentationViewer
-      v-if="showPresentationMode"
-      :media-type="workbookItem?.media?.type"
-      :media-url="workbookItem?.media?.url"
-      :media-provider="workbookItem?.media?.provider"
-      :thumbnail-url="thumbnailUrl"
-      :title="workbookItem?.title"
-      :presentation="presentationOptions"
-      :technical-details="technicalDetails"
-      @close="closePresentationMode"
-    />
+  <div class="container-centered">
+    <!-- Debug info -->
+    <div v-if="debugMode" class="card bg-surface-soft p-4 m-4">
+      <p><strong>Debug Info:</strong></p>
+      <p>Page relativePath: {{ page.relativePath }}</p>
+      <p>Extracted slug: {{ slug }}</p>
+      <p>Extracted filename: {{ filename }}</p>
+      <p>Found workbook item: {{ workbookItem ? workbookItem.title : 'None' }}</p>
+      <p>Available workbook items: {{ theme.workbookItems?.length || 0 }}</p>
+    </div>
     
     <!-- Standard view -->
-    <div v-else class="standard-view">
+    <div class="workbook-content">
       <!-- Media container using new component -->
       <MediaContainer
         v-if="workbookItem?.media"
         :media="workbookItem.media"
         :title="workbookItem.title"
         :thumbnail-url="thumbnailUrl"
-        @toggle-presentation="togglePresentationMode"
       />
       
       <!-- Content below the media -->
-      <div class="content-container">
-        <h1>{{ workbookItem?.title }}</h1>
-        <p class="description">{{ workbookItem?.description }}</p>
+      <div class="content-responsive">
+        <h1 class="text-4xl font-medium leading-tight text-primary m-0 mb-3">{{ workbookItem?.title || 'Item Not Found' }}</h1>
+        <p v-if="workbookItem?.description" class="text-lg text-secondary leading-relaxed mb-5">{{ workbookItem.description }}</p>
+        <p v-else-if="!workbookItem" class="card bg-surface-soft border-error p-4 text-secondary italic">
+          Workbook item not found. Please check the URL or contact support.
+        </p>
       
-        <div class="metadata">
+        <div v-if="workbookItem" class="stack-vertical spacing-comfortable">
           <!-- Show year if available, otherwise extract from date -->
-          <div v-if="workbookItem?.year || workbookItem?.date" class="year">
+          <div v-if="workbookItem?.year || workbookItem?.date" class="text-sm text-tertiary font-medium">
             {{ workbookItem?.year || getYearFromDate(workbookItem?.date) }}
           </div>
           
@@ -42,28 +41,26 @@
             :parsed-tags="parsedTags"
           />
           
-          <div v-if="technicalDetails.tools?.length || technicalDetails.format || technicalDetails.duration" class="technical-details">
-            <h3>Technical Details</h3>
-            <div v-if="technicalDetails.tools?.length" class="tools">
-              <strong>Tools:</strong> {{ technicalDetails.tools.join(', ') }}
+          <div v-if="technicalDetails.tools?.length || technicalDetails.format || technicalDetails.duration" class="card card-body">
+            <h3 class="text-lg font-medium text-primary m-0 mb-3">Technical Details</h3>
+            <div v-if="technicalDetails.tools?.length" class="mb-2">
+              <strong class="text-primary font-medium">Tools:</strong> <span class="text-secondary">{{ technicalDetails.tools.join(', ') }}</span>
             </div>
-            <div v-if="technicalDetails.format" class="format">
-              <strong>Format:</strong> {{ technicalDetails.format }}
+            <div v-if="technicalDetails.format" class="mb-2">
+              <strong class="text-primary font-medium">Format:</strong> <span class="text-secondary">{{ technicalDetails.format }}</span>
             </div>
-            <div v-if="technicalDetails.duration" class="duration">
-              <strong>Duration:</strong> {{ technicalDetails.duration }}
+            <div v-if="technicalDetails.duration" class="mb-2">
+              <strong class="text-primary font-medium">Duration:</strong> <span class="text-secondary">{{ technicalDetails.duration }}</span>
             </div>
           </div>
         </div>
         
-        <!-- DO NOT render page content to avoid infinite loop -->
-        
-        <div v-if="workbookItem?.media?.related?.length" class="related-items">
-          <h3>Related Items</h3>
-          <ul class="related-list">
+        <div v-if="workbookItem?.media?.related?.length" class="card card-body mt-6">
+          <h3 class="text-lg font-medium text-primary m-0 mb-3">Related Items</h3>
+          <ul class="stack-vertical spacing-tight list-none p-0 m-0">
             <li v-for="related in workbookItem.media.related" :key="related.slug" class="related-item">
-              <a :href="`/workbook/${related.slug}.html`">
-                <span v-if="related.relationship" class="relationship-tag">{{ related.relationship }}</span>
+              <a :href="related.path ? `${related.path}.html` : `/workbook/${related.slug}.html`" class="related-link">
+                <span v-if="related.relationship" class="badge badge-primary mr-2">{{ related.relationship }}</span>
                 {{ getRelatedTitle(related.slug) }}
               </a>
             </li>
@@ -77,24 +74,64 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useData } from 'vitepress';
-import PresentationViewer from './PresentationViewer.vue';
 import MediaContainer from './MediaContainer.vue';
 import StructuredTagsDisplay from '../collections/StructuredTagsDisplay.vue';
 
 // Get VitePress data
 const { page, theme } = useData();
 
-// Find current workbook item
+// Debug mode (set to false in production)
+const debugMode = ref(false);
+
+// Improved slug and filename extraction
 const slug = computed(() => {
   return page.value.relativePath.replace(/^workbook\/|\.md$/g, '');
 });
 
+const filename = computed(() => {
+  // Extract just the filename without extension from the path
+  const parts = page.value.relativePath.split('/');
+  const lastPart = parts[parts.length - 1];
+  return lastPart.replace(/\.md$/, '');
+});
+
+// Enhanced workbook item finder with multiple matching strategies
 const workbookItem = computed(() => {
-  const item = theme.value.workbookItems?.find(item => item.slug === slug.value) || null;
-  console.log('WorkbookViewer found item:', item ? item.title : 'None', 'for slug:', slug.value);
-  if (item && item.year) {
-    console.log('Item has year:', item.year);
+  if (!theme.value.workbookItems || !Array.isArray(theme.value.workbookItems)) {
+    console.warn('WorkbookViewer: No workbook items found in theme data');
+    return null;
   }
+  
+  // Strategy 1: Try to match by full slug (handles subdirectory paths)
+  let item = theme.value.workbookItems.find(item => item.slug === slug.value);
+  
+  // Strategy 2: Try to match by filename only (for backward compatibility)
+  if (!item) {
+    item = theme.value.workbookItems.find(item => item.slug === filename.value);
+  }
+  
+  // Strategy 3: Try to match by path (if workbook items have path property)
+  if (!item) {
+    const expectedPath = `/${page.value.relativePath.replace(/\.md$/, '')}`;
+    item = theme.value.workbookItems.find(item => item.path === expectedPath);
+  }
+  
+  // Strategy 4: Fuzzy matching - find items that end with the filename
+  if (!item) {
+    item = theme.value.workbookItems.find(item => 
+      item.slug.endsWith(filename.value) || 
+      item.title.toLowerCase().includes(filename.value.toLowerCase())
+    );
+  }
+  
+  if (debugMode.value) {
+    console.log('WorkbookViewer matching strategies:');
+    console.log('- Full slug match:', slug.value);
+    console.log('- Filename match:', filename.value);
+    console.log('- Available items:', theme.value.workbookItems.map(item => ({ slug: item.slug, title: item.title, path: item.path })));
+    console.log('- Found item:', item ? { slug: item.slug, title: item.title } : 'None');
+  }
+  
   return item;
 });
 
@@ -159,16 +196,21 @@ function extractVimeoId(url) {
   return match ? match[1] : null;
 }
 
-// Get thumbnail URL - prioritize Cloudflare Images
+// Enhanced thumbnail URL with priority system
 const thumbnailUrl = computed(() => {
   if (!workbookItem.value?.media) return '';
   
-  // First, check if there's a Cloudflare thumbnail URL in the media object
+  // Priority 1: Cloudflare Images URL from frontmatter (highest priority)
   if (workbookItem.value.media.thumbnail) {
     return workbookItem.value.media.thumbnail;
   }
   
-  // Fallback to static thumbnails for backward compatibility
+  // Priority 2: Workbook item thumbnail URL (from processing)
+  if (workbookItem.value.thumbnailUrl) {
+    return workbookItem.value.thumbnailUrl;
+  }
+  
+  // Priority 3: Generate from media URL (fallback)
   const { type, provider, url } = workbookItem.value.media;
   
   if (type === 'video' && provider === 'vimeo') {
@@ -176,46 +218,8 @@ const thumbnailUrl = computed(() => {
     return id ? `/media/thumbnails/vimeo-${id}.jpg` : '';
   }
   
+  // Priority 4: Default thumbnail
   return '';
-});
-
-// Presentation mode state
-const showPresentationMode = ref(false);
-
-// Toggle presentation mode
-function togglePresentationMode() {
-  showPresentationMode.value = !showPresentationMode.value;
-  
-  // Update URL
-  const url = new URL(window.location.href);
-  if (showPresentationMode.value) {
-    url.searchParams.set('presentation', 'true');
-  } else {
-    url.searchParams.delete('presentation');
-  }
-  window.history.replaceState({}, '', url.toString());
-}
-
-// Close presentation mode
-function closePresentationMode() {
-  showPresentationMode.value = false;
-  
-  // Update URL to remove presentation parameter
-  const url = new URL(window.location.href);
-  url.searchParams.delete('presentation');
-  window.history.replaceState({}, '', url.toString());
-}
-
-// Get presentation options
-const presentationOptions = computed(() => {
-  return workbookItem.value?.media?.presentation || {
-    enabled: true,
-    autoplay: false,
-    loop: true,
-    showControls: true,
-    backgroundMode: 'blurred',
-    accentColor: null
-  };
 });
 
 // Get technical details
@@ -225,17 +229,18 @@ const technicalDetails = computed(() => {
 
 // Keyboard shortcuts
 function handleKeyDown(event) {
-  if (event.key === 'Escape' && showPresentationMode.value) {
-    closePresentationMode();
+  // Debug mode toggle (Ctrl+Shift+D in development)
+  if (event.ctrlKey && event.shiftKey && event.key === 'D') {
+    debugMode.value = !debugMode.value;
   }
 }
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown);
   
-  // Check if URL has presentation parameter
-  if (window.location.search.includes('presentation=true')) {
-    showPresentationMode.value = true;
+  // Debug mode can be enabled via URL parameter
+  if (window.location.search.includes('debug=true')) {
+    debugMode.value = true;
   }
   
   console.log('WorkbookViewer mounted, workbookItem:', workbookItem.value);
@@ -247,191 +252,54 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.workbook-viewer {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem 0;
-}
-
-.standard-view {
+/* Component-specific styles only */
+.workbook-content {
   position: relative;
   background-color: transparent;
+  padding-top: var(--space-8);
+  border-top: var(--border-width) solid var(--border-secondary);
 }
 
-.content-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding-top: 2rem;
-  border-top: 1px solid var(--vp-c-divider-light);
-}
-
-.content-container h1 {
-  font-size: 1.9rem;
-  margin-bottom: 0.75rem;
-  line-height: 1.2;
-  color: var(--vp-c-text-1);
-  font-weight: 500;
-  background-color: transparent;
-}
-
-.content-container h2,
-.content-container h3 {
-  color: var(--vp-c-text-1);
-  background-color: transparent;
-}
-
-.description {
-  font-size: 1rem;
-  color: var(--vp-c-text-2);
-  margin-bottom: 1.25rem;
-  line-height: 1.5;
-  background-color: transparent;
-}
-
-.metadata {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  background-color: transparent;
-  font-size: 0.85rem;
-  color: var(--vp-c-text-3);
-}
-
-.year {
-  font-size: 0.85rem;
-  color: var(--vp-c-text-3);
-  background-color: transparent;
-  font-weight: 500;
-}
-
-.tag {
-  background-color: var(--vp-c-bg-soft);
-  padding: 0.15rem 0.4rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  color: var(--vp-c-text-2);
-}
-
-.technical-details {
-  margin-top: 1.5rem;
-  padding: 0.75rem 1rem;
-  background-color: var(--vp-c-bg-soft);
-  border-radius: 6px;
-  color: var(--vp-c-text-2);
-  font-size: 0.85rem;
-}
-
-.technical-details h3 {
-  margin-top: 0;
-  margin-bottom: 0.75rem;
-  font-size: 0.95rem;
-  color: var(--vp-c-text-1);
-  font-weight: 500;
-  background-color: transparent;
-}
-
-.technical-details .tools,
-.technical-details .format,
-.technical-details .duration {
-  margin-bottom: 0.4rem;
-  font-size: 0.85rem;
-  color: var(--vp-c-text-2);
-  background-color: transparent;
-}
-
-.technical-details .tools strong,
-.technical-details .format strong,
-.technical-details .duration strong {
-  color: var(--vp-c-text-1);
-  font-weight: 500;
-}
-
-.content {
-  margin-top: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-/* Related items styling */
-.related-items {
-  margin-top: 1.5rem;
-  padding: 0.75rem 1rem;
-  background-color: var(--vp-c-bg-soft);
-  border-radius: 6px;
-}
-
-.related-items h3 {
-  margin-top: 0;
-  margin-bottom: 0.75rem;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--vp-c-text-1);
-}
-
-.related-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.related-item {
-  margin-bottom: var(--space-2);
-}
-
-.related-item a {
+.related-link {
   display: flex;
   align-items: center;
   color: var(--vp-c-brand);
   text-decoration: none;
   font-size: var(--text-sm);
+  transition: var(--transition-fast);
 }
 
-.related-item a:hover {
+.related-link:hover {
   color: var(--vp-c-brand-dark);
 }
 
-.relationship-tag {
-  font-size: var(--text-xs);
-  background-color: var(--vp-c-brand-soft);
-  color: var(--vp-c-brand-dark);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  margin-right: var(--space-2);
-}
-
-/* Ensure VitePress theme integration */
-:root {
-  --vp-c-bg-alpha-with-backdrop: transparent;
-  --vp-code-block-bg: var(--vp-c-bg-soft);
-}
-
-/* Reset for VitePress content compatibility */
-.workbook-viewer :deep(.content) {
-  background-color: transparent;
-  padding: 0;
-  margin: 0;
-}
-
-/* Fix for specific white backgrounds */
-.workbook-viewer :deep(a),
-.workbook-viewer :deep(p),
-.workbook-viewer :deep(li),
-.workbook-viewer :deep(ul),
-.workbook-viewer :deep(ol) {
-  background-color: transparent;
-  color: var(--vp-c-text-1);
-}
+/* Utility classes for template */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-sm { font-size: var(--text-sm); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-4xl { font-size: var(--text-4xl); }
+.font-medium { font-weight: var(--font-medium); }
+.leading-tight { line-height: var(--leading-tight); }
+.leading-relaxed { line-height: var(--leading-relaxed); }
+.list-none { list-style: none; }
+.italic { font-style: italic; }
+.m-0 { margin: 0; }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-3 { margin-bottom: var(--space-3); }
+.mb-5 { margin-bottom: var(--space-5); }
+.mt-6 { margin-top: var(--space-6); }
+.mr-2 { margin-right: var(--space-2); }
+.p-0 { padding: 0; }
+.p-4 { padding: var(--space-4); }
+.border-error { border-left: 4px solid var(--color-error); }
 
 /* Responsive styling */
 @media (max-width: 768px) {
-  .content-container h1 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .description {
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
+  .workbook-content {
+    padding-top: var(--space-6);
   }
 }
 </style>

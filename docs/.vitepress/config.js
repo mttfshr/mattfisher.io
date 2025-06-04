@@ -19,14 +19,17 @@ migrateCollectionFiles();
 // Get workbook items first, then process collections
 const workbookItems = getWorkbookItems();
 const collectionsData = getCollections();
-console.log(`Found ${collectionsData.length} collection files:`, collectionsData.map(c => c.slug).join(', '));
 const collections = processCollections(collectionsData, workbookItems);
-console.log(`Processed ${collections.length} collections with items`);
+console.log(`📂 Processed ${collections.length} collections with ${collections.reduce((sum, c) => sum + (c.totalItems || 0), 0)} items`);
+if (collections.length > 0) {
+  collections.forEach(collection => {
+    console.log(`   "${collection.title}": ${collection.totalItems || 0} items`);
+  });
+}
 
-// Log each collection to check if it has items
-collections.forEach(collection => {
-  console.log(`Collection "${collection.title}" (${collection.slug}): ${collection.totalItems || 0} items`);
-});
+// Load async data synchronously at module level
+const logEntries = await getLogEntries();
+const sessions = await getSessions();
 
 export default defineConfig({
   // Basic configuration
@@ -83,11 +86,11 @@ export default defineConfig({
     // Add collections
     collections: collections,
     
-    // Gather all log entries at build time
-    logEntries: await getLogEntries(),
+    // Load async data at module level
+    logEntries: logEntries,
     
-    // Gather session notes from individual files
-    sessions: await getSessions(),
+    // Load async sessions data at module level  
+    sessions: sessions,
     
     // Gather all pins at build time using our new function
     pins: getPins()

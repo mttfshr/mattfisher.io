@@ -1,6 +1,6 @@
 <!-- docs/.vitepress/theme/components/pins/PinDetail.vue -->
 <template>
-  <div class="pin-detail">
+  <div class="container-centered">
     <!-- Header with image, title, description -->
     <div class="pin-header">
       <div class="pin-image-container" v-if="pin.imageUrl">
@@ -8,7 +8,7 @@
       </div>
       
       <div class="header-content">
-        <h2 class="pin-title">{{ pin.title }}</h2>
+        <h2 class="content-section-title">{{ pin.title }}</h2>
         
         <div class="pin-source">
           <a :href="pin.url" target="_blank" rel="noopener noreferrer" class="source-link">
@@ -22,32 +22,32 @@
           </a>
         </div>
         
-        <p v-if="pin.description" class="pin-description">
+        <p v-if="pin.description" class="content-section-subtitle">
           {{ pin.description }}
         </p>
       </div>
     </div>
     
     <!-- Notes if available -->
-    <div v-if="pin.notes" class="pin-notes">
-      <h3>Notes</h3>
-      <blockquote>{{ pin.notes }}</blockquote>
+    <div v-if="pin.notes" class="content-section">
+      <h3 class="text-lg font-semibold text-primary">Notes</h3>
+      <blockquote class="card card-body">{{ pin.notes }}</blockquote>
     </div>
     
     <!-- Metadata display -->
-    <div class="pin-metadata">
+    <div class="content-section">
       <div class="metadata-section">
-        <h3>Metadata</h3>
+        <h3 class="content-section-title">Metadata</h3>
         
-        <div class="metadata-layout">
+        <div class="content-responsive">
           <!-- Collections -->
-          <div class="metadata-group collections-group" v-if="hasCollections">
-            <h4>Collections</h4>
-            <div class="collections-list">
+          <div class="metadata-group" v-if="hasCollections">
+            <h4 class="text-sm font-semibold text-secondary">Collections</h4>
+            <div class="stack-horizontal spacing-tight">
               <div 
                 v-for="collectionId in pin.collections" 
                 :key="`collection-${collectionId}`"
-                class="collection-tag"
+                class="badge badge-primary interactive"
                 @click="emit('tag-click', `collection:${collectionId}`)"
               >
                 <span class="collection-icon">{{ getCollectionIcon(collectionId) }}</span>
@@ -59,8 +59,8 @@
           <!-- Structured metadata -->
           <div class="metadata-groups" v-if="hasMetadata">
             <!-- Inferred metadata -->
-            <div class="metadata-category inferred-metadata" v-if="hasInferredMetadata">
-              <h4>
+            <div class="metadata-category" v-if="hasInferredMetadata">
+              <h4 class="stack-horizontal text-sm text-primary">
                 <span class="category-icon">🤖</span>
                 Auto-Detected
               </h4>
@@ -70,16 +70,16 @@
                 :key="`inferred-${key}`"
                 class="metadata-group"
               >
-                <div class="metadata-key">
+                <div class="stack-horizontal text-sm text-secondary">
                   <span class="key-icon">{{ getMetadataIcon(key) }}</span>
                   {{ getMetadataLabel(key) }}:
                 </div>
                 
-                <div class="metadata-values">
+                <div class="stack-horizontal spacing-tight">
                   <div 
                     v-for="value in inferredMetadata[key]"
                     :key="`inferred-${key}-${value}`"
-                    class="metadata-tag"
+                    class="metadata-tag interactive"
                     :class="`meta-${key}`"
                     @click="emit('tag-click', `${key}:${value}`)"
                   >
@@ -91,8 +91,8 @@
             </div>
             
             <!-- Manual metadata -->
-            <div class="metadata-category manual-metadata" v-if="hasManualMetadata">
-              <h4>
+            <div class="metadata-category" v-if="hasManualMetadata">
+              <h4 class="stack-horizontal text-sm text-primary">
                 <span class="category-icon">✏️</span>
                 Manually Added
               </h4>
@@ -102,16 +102,16 @@
                 :key="`manual-${key}`"
                 class="metadata-group"
               >
-                <div class="metadata-key">
+                <div class="stack-horizontal text-sm text-secondary">
                   <span class="key-icon">{{ getMetadataIcon(key) }}</span>
                   {{ getMetadataLabel(key) }}:
                 </div>
                 
-                <div class="metadata-values">
+                <div class="stack-horizontal spacing-tight">
                   <div 
                     v-for="value in manualMetadata[key]"
                     :key="`manual-${key}-${value}`"
-                    class="metadata-tag"
+                    class="metadata-tag interactive"
                     :class="`meta-${key}`"
                     @click="emit('tag-click', `${key}:${value}`)"
                   >
@@ -124,13 +124,13 @@
           </div>
           
           <!-- Standard tags -->
-          <div class="metadata-group tags-group" v-if="pin.tags && pin.tags.length > 0">
-            <h4>Tags</h4>
-            <div class="tags-list">
+          <div class="metadata-group" v-if="pin.tags && pin.tags.length > 0">
+            <h4 class="text-sm font-semibold text-secondary">Tags</h4>
+            <div class="stack-horizontal spacing-tight">
               <div 
                 v-for="tag in pin.tags" 
                 :key="`tag-${tag}`"
-                class="pin-tag"
+                class="badge interactive"
                 @click="emit('tag-click', tag)"
               >
                 #{{ tag }}
@@ -142,13 +142,13 @@
     </div>
     
     <!-- Related pins -->
-    <div class="related-pins" v-if="relatedPins && relatedPins.length > 0">
-      <h3>Related Pins</h3>
-      <div class="related-pins-grid">
+    <div class="content-section" v-if="relatedPins && relatedPins.length > 0">
+      <h3 class="content-section-title">Related Pins</h3>
+      <div class="gallery-grid">
         <div 
           v-for="relatedPin in relatedPins" 
           :key="`related-${relatedPin.id}`"
-          class="related-pin-card"
+          class="card interactive"
           @click="emit('pin-click', relatedPin)"
         >
           <div class="related-pin-thumbnail">
@@ -167,9 +167,9 @@
             </div>
           </div>
           
-          <div class="related-pin-info">
-            <h4 class="related-pin-title">{{ relatedPin.title }}</h4>
-            <div class="related-pin-source">{{ getDomainName(relatedPin.url) }}</div>
+          <div class="card-body">
+            <h4 class="text-sm font-semibold text-primary">{{ relatedPin.title }}</h4>
+            <div class="text-xs text-secondary">{{ getDomainName(relatedPin.url) }}</div>
           </div>
         </div>
       </div>
@@ -290,11 +290,7 @@ const getTypeIcon = (type) => {
 </script>
 
 <style scoped>
-.pin-detail {
-  padding: var(--space-6);
-  max-width: 100%;
-}
-
+/* Component-specific styles only */
 .pin-header {
   display: flex;
   gap: var(--space-6);
@@ -305,7 +301,7 @@ const getTypeIcon = (type) => {
   flex: 0 0 40%;
   border-radius: var(--radius-md);
   overflow: hidden;
-  background-color: var(--vp-c-bg-alt);
+  background-color: var(--surface-tertiary);
 }
 
 .pin-image {
@@ -318,24 +314,17 @@ const getTypeIcon = (type) => {
   flex: 1;
 }
 
-.pin-title {
-  margin: 0 0 var(--space-2);
-  font-size: var(--text-3xl);
-  line-height: var(--leading-tight);
-}
-
 .pin-source {
   margin-bottom: var(--space-4);
-  font-size: var(--text-sm);
-  color: var(--vp-c-text-2);
 }
 
 .source-link {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
   text-decoration: none;
+  font-size: var(--text-sm);
   transition: var(--transition-base);
 }
 
@@ -353,82 +342,6 @@ const getTypeIcon = (type) => {
   opacity: 0.6;
 }
 
-.pin-description {
-  font-size: var(--text-base);
-  line-height: var(--leading-relaxed);
-  color: var(--vp-c-text-1);
-  margin: 0;
-}
-
-.pin-notes {
-  margin-bottom: var(--space-6);
-}
-
-.pin-notes h3 {
-  font-size: var(--text-lg);
-  margin: 0 0 var(--space-2);
-}
-
-.pin-notes blockquote {
-  margin: 0;
-  padding: var(--space-3) var(--space-4);
-  border-left: 4px solid var(--vp-c-brand);
-  background-color: var(--vp-c-bg-soft);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  font-style: italic;
-}
-
-.pin-metadata {
-  margin-bottom: var(--space-8);
-}
-
-.metadata-section h3 {
-  font-size: var(--text-lg);
-  margin: 0 0 var(--space-4);
-  padding-bottom: var(--space-2);
-  border-bottom: var(--border-width) solid var(--vp-c-divider);
-}
-
-.metadata-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-6);
-}
-
-.metadata-group {
-  margin-bottom: var(--space-4);
-}
-
-.metadata-group h4 {
-  font-size: var(--text-sm);
-  margin: 0 0 var(--space-2);
-  font-weight: var(--font-semibold);
-  color: var(--vp-c-text-2);
-}
-
-.collections-list, .tags-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.collection-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-xl);
-  background-color: var(--vp-c-brand-soft);
-  color: var(--vp-c-brand-dark);
-  font-size: var(--text-sm);
-  cursor: pointer;
-  transition: var(--transition-base);
-}
-
-.collection-tag:hover {
-  background-color: var(--vp-c-brand);
-  color: var(--vp-c-white);
-}
-
 .collection-icon {
   margin-right: var(--space-2);
 }
@@ -437,36 +350,8 @@ const getTypeIcon = (type) => {
   margin-bottom: var(--space-6);
 }
 
-.metadata-category h4 {
-  display: flex;
-  align-items: center;
-  margin-bottom: var(--space-3);
-  font-size: var(--text-sm);
-  color: var(--vp-c-text-1);
-}
-
-.category-icon {
-  margin-right: var(--space-2);
-}
-
-.metadata-key {
-  display: flex;
-  align-items: center;
-  font-size: var(--text-sm);
-  color: var(--vp-c-text-2);
-  margin-bottom: var(--space-1);
-}
-
-.key-icon {
-  margin-right: var(--space-1);
-}
-
-.metadata-values {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-bottom: var(--space-3);
-  padding-left: var(--space-2);
+.metadata-group {
+  margin-bottom: var(--space-4);
 }
 
 .metadata-tag {
@@ -474,104 +359,34 @@ const getTypeIcon = (type) => {
   align-items: center;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-lg);
-  background-color: var(--vp-c-bg-alt);
-  color: var(--vp-c-text-1);
+  background-color: var(--surface-tertiary);
+  color: var(--text-primary);
   font-size: var(--text-xs);
   cursor: pointer;
   transition: var(--transition-base);
 }
 
 .metadata-tag:hover {
-  background-color: var(--vp-c-brand-light);
-  color: var(--vp-c-white);
+  background-color: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-dark);
 }
 
-.metadata-icon {
+.metadata-icon, .key-icon {
   margin-right: var(--space-1);
 }
 
-/* Type-specific styling */
-.meta-type {
-  background-color: var(--vp-c-gray-soft);
-}
-
-.meta-source {
-  background-color: var(--vp-c-gray-dark-soft);
-  color: var(--vp-c-gray-light-5);
-}
-
-.meta-artist, .meta-creator {
-  background-color: var(--vp-c-purple-soft);
-  color: var(--vp-c-purple-dark);
-}
-
-.meta-year {
-  background-color: var(--vp-c-yellow-soft);
-  color: var(--vp-c-yellow-dark);
-}
-
-.meta-genre {
-  background-color: var(--vp-c-green-soft);
-  color: var(--vp-c-green-dark);
-}
-
-.meta-mood {
-  background-color: var(--vp-c-pink-soft);
-  color: var(--vp-c-pink-dark);
-}
-
-.pin-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-lg);
-  background-color: var(--vp-c-bg-alt);
-  color: var(--vp-c-text-2);
-  font-size: var(--text-sm);
-  cursor: pointer;
-  transition: var(--transition-base);
-}
-
-.pin-tag:hover {
-  background-color: var(--vp-c-brand-light);
-  color: var(--vp-c-white);
-}
-
-/* Related pins */
-.related-pins h3 {
-  font-size: var(--text-lg);
-  margin: 0 0 var(--space-4);
-  padding-bottom: var(--space-2);
-  border-bottom: var(--border-width) solid var(--vp-c-divider);
-}
-
-.related-pins-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-4);
-}
-
-.related-pin-card {
-  display: flex;
-  flex-direction: column;
-  background-color: var(--vp-c-bg-soft);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow-xs);
-  transition: var(--transition-base);
-  cursor: pointer;
-  height: 100%;
-}
-
-.related-pin-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
-}
+/* Type-specific metadata styling */
+.meta-type { background-color: var(--surface-secondary); }
+.meta-source { background-color: var(--surface-secondary); }
+.meta-artist, .meta-creator { background-color: rgba(147, 51, 234, 0.1); color: rgb(147, 51, 234); }
+.meta-year { background-color: rgba(245, 158, 11, 0.1); color: rgb(245, 158, 11); }
+.meta-genre { background-color: rgba(34, 197, 94, 0.1); color: rgb(34, 197, 94); }
+.meta-mood { background-color: rgba(236, 72, 153, 0.1); color: rgb(236, 72, 153); }
 
 .related-pin-thumbnail {
   position: relative;
   height: 120px;
-  background-color: var(--vp-c-bg-alt);
+  background-color: var(--surface-tertiary);
   overflow: hidden;
 }
 
@@ -594,49 +409,13 @@ const getTypeIcon = (type) => {
   font-size: var(--text-3xl);
 }
 
-.fallback-thumbnail.type-music {
-  background: linear-gradient(135deg, #8e44ad, #3498db);
-}
-
-.fallback-thumbnail.type-video {
-  background: linear-gradient(135deg, #e74c3c, #f39c12);
-}
-
-.fallback-thumbnail.type-article {
-  background: linear-gradient(135deg, #2ecc71, #1abc9c);
-}
-
-.fallback-thumbnail.type-code {
-  background: linear-gradient(135deg, #34495e, #2c3e50);
-}
-
-.fallback-thumbnail.type-design {
-  background: linear-gradient(135deg, #e67e22, #d35400);
-}
-
-.fallback-thumbnail.type-link {
-  background: linear-gradient(135deg, #7f8c8d, #95a5a6);
-}
-
-.related-pin-info {
-  padding: var(--space-3);
-}
-
-.related-pin-title {
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  margin: 0 0 var(--space-1);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;  
-  overflow: hidden;
-  line-height: var(--leading-tight);
-}
-
-.related-pin-source {
-  font-size: var(--text-xs);
-  color: var(--vp-c-text-2);
-}
+/* Content type specific gradients */
+.fallback-thumbnail.type-music { background: linear-gradient(135deg, #8e44ad, #3498db); }
+.fallback-thumbnail.type-video { background: linear-gradient(135deg, #e74c3c, #f39c12); }
+.fallback-thumbnail.type-article { background: linear-gradient(135deg, #2ecc71, #1abc9c); }
+.fallback-thumbnail.type-code { background: linear-gradient(135deg, #34495e, #2c3e50); }
+.fallback-thumbnail.type-design { background: linear-gradient(135deg, #e67e22, #d35400); }
+.fallback-thumbnail.type-link { background: linear-gradient(135deg, #7f8c8d, #95a5a6); }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -654,21 +433,7 @@ const getTypeIcon = (type) => {
   .pin-image {
     height: 100%;
     object-fit: contain;
-    background-color: var(--vp-c-bg-alt);
-  }
-  
-  .metadata-layout {
-    grid-template-columns: 1fr;
-  }
-  
-  .related-pins-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .related-pins-grid {
-    grid-template-columns: 1fr;
+    background-color: var(--surface-tertiary);
   }
 }
 </style>

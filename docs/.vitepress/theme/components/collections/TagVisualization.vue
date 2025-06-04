@@ -1,11 +1,11 @@
 <template>
-  <div class="tag-visualization">
-    <div class="visualization-controls">
-      <div class="view-selector">
+  <div class="container-responsive">
+    <div class="view-controls">
+      <div class="btn-group flex gap-2">
         <button 
           v-for="view in viewOptions" 
           :key="view.id"
-          :class="['view-button', { active: activeView === view.id }]"
+          :class="['btn btn-ghost', { 'btn-primary': activeView === view.id }]"
           @click="setActiveView(view.id)"
         >
           {{ view.label }}
@@ -18,13 +18,13 @@
       v-if="activeView === 'cloud'" 
       class="tag-cloud-view"
     >
-      <div v-for="category in categoryOrder" :key="category" class="tag-category-cloud">
-        <h3 class="category-name">{{ formatCategory(category) }}</h3>
-        <div class="cloud-tags">
+      <div v-for="category in categoryOrder" :key="category" class="card card-body tag-category-section">
+        <h3 class="text-lg font-semibold text-primary m-0 mb-4">{{ formatCategory(category) }}</h3>
+        <div class="cloud-tags flex flex-wrap gap-3">
           <span 
             v-for="tag in getTagsByCategory(category)" 
             :key="tag.fullTag"
-            class="cloud-tag"
+            class="cloud-tag interactive-scale"
             :style="{ 
               fontSize: `${getTagSize(tag.count)}rem`,
               opacity: getTagOpacity(tag.count)
@@ -38,28 +38,28 @@
     
     <!-- Simple relationship view when D3 is not available -->
     <div v-else class="simple-relationship-view">
-      <p class="note">For a more interactive visualization with relationships between tags, please include D3.js in your project.</p>
+      <p class="note text-sm text-tertiary p-4 bg-surface-secondary rounded-md">For a more interactive visualization with relationships between tags, please include D3.js in your project.</p>
       
-      <div class="relationships-list">
-        <div v-for="(tags, category) in tagsByCategory" :key="category" class="category-group">
-          <h3>{{ formatCategory(category) }}</h3>
-          <div class="tag-pairs">
+      <div class="relationships-list grid-auto gap-6">
+        <div v-for="(tags, category) in tagsByCategory" :key="category" class="category-group card card-body">
+          <h3 class="text-lg font-medium text-primary m-0 mb-4">{{ formatCategory(category) }}</h3>
+          <div class="tag-pairs stack-vertical gap-4">
             <div
               v-for="tag in tags.slice(0, 5)" 
               :key="tag.fullTag"
               class="tag-pair-container"
             >
-              <div class="tag-name">{{ formatTagValue(tag.value) }}</div>
+              <div class="tag-name font-medium text-brand-dark mb-2">{{ formatTagValue(tag.value) }}</div>
               <div class="tag-connections">
-                <div class="connection-label">Most common connections:</div>
-                <div class="connection-tags">
+                <div class="connection-label text-xs text-tertiary mb-1">Most common connections:</div>
+                <div class="connection-tags flex flex-wrap gap-2">
                   <span
                     v-for="(connection, idx) in getRelatedTags(tag.fullTag).slice(0, 3)"
                     :key="idx"
-                    class="connection-tag"
+                    class="connection-tag badge text-sm bg-surface-tertiary text-secondary"
                   >
                     {{ formatTagValue(connection.tag.split(':')[1] || connection.tag) }}
-                    <span class="count">({{ connection.count }})</span>
+                    <span class="count text-xs opacity-70">({{ connection.count }})</span>
                   </span>
                 </div>
               </div>
@@ -73,12 +73,22 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useData } from 'vitepress';
 
 const props = defineProps({
   items: {
     type: Array,
-    required: true
+    default: () => []
   }
+});
+
+// Get data from theme config if not provided as prop
+const { theme } = useData();
+const itemsData = computed(() => {
+  if (props.items && props.items.length > 0) {
+    return props.items;
+  }
+  return theme.value.workbookItems || [];
 });
 
 // Check if we have D3 available
@@ -128,7 +138,7 @@ const tagsByCategory = computed(() => {
   // Count tag occurrences
   const tagCounts = new Map();
   
-  props.items.forEach(item => {
+  itemsData.value.forEach(item => {
     if (!item.tags || !Array.isArray(item.tags)) return;
     
     item.tags.forEach(tag => {
@@ -212,7 +222,7 @@ const tagRelationships = computed(() => {
   const relationships = new Map();
   
   // For each item, calculate all tag pairs
-  props.items.forEach(item => {
+  itemsData.value.forEach(item => {
     if (!item.tags || !Array.isArray(item.tags) || item.tags.length < 2) return;
     
     // Generate all pairs of tags
@@ -267,66 +277,21 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.tag-visualization {
-  margin: var(--space-8) 0;
-}
+/* Component-specific styles only - Layout utilities moved to template */
 
-.visualization-controls {
-  margin-bottom: var(--space-6);
-}
-
-.view-selector {
-  display: flex;
-  gap: var(--space-2);
-}
-
-.view-button {
-  padding: var(--space-2) var(--space-4);
-  background-color: var(--vp-c-bg-soft);
-  border: var(--border-width) solid var(--vp-c-divider);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-sm);
-  color: var(--vp-c-text-2);
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.view-button:hover {
-  background-color: var(--vp-c-bg-mute);
-}
-
-.view-button.active {
-  background-color: var(--vp-c-brand-soft);
-  color: var(--vp-c-brand-dark);
-  border-color: var(--vp-c-brand-soft);
-}
-
+/* Tag cloud layout */
 .tag-cloud-view {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--space-6);
+  margin-top: var(--space-6);
 }
 
-.tag-category-cloud {
-  padding: var(--space-4);
-  background-color: var(--vp-c-bg-soft);
-  border-radius: var(--radius-md);
-}
-
-.category-name {
-  margin-top: 0;
+.tag-category-section {
   margin-bottom: var(--space-4);
-  font-size: var(--text-lg);
-  font-weight: var(--font-medium);
-  color: var(--vp-c-text-1);
 }
 
-.cloud-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-}
-
+/* Cloud tag styling */
 .cloud-tag {
   color: var(--vp-c-brand-dark);
   line-height: var(--leading-tight);
@@ -336,89 +301,38 @@ onMounted(() => {
 
 .cloud-tag:hover {
   color: var(--vp-c-brand);
-  transform: scale(1.1);
 }
 
 /* Simple relationship view */
 .simple-relationship-view {
-  margin-top: var(--space-4);
+  margin-top: var(--space-6);
 }
 
+/* Note styling enhancement */
 .note {
-  font-size: var(--text-sm);
-  color: var(--vp-c-text-3);
   margin-bottom: var(--space-6);
+  border-left: 4px solid var(--color-info);
 }
 
+/* Responsive grid override */
 .relationships-list {
-  display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: var(--space-6);
 }
 
-.category-group {
-  background-color: var(--vp-c-bg-soft);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
-}
-
-.category-group h3 {
-  margin-top: 0;
-  margin-bottom: var(--space-4);
-  font-size: var(--text-lg);
-  font-weight: var(--font-medium);
-  color: var(--vp-c-text-1);
-}
-
-.tag-pairs {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
+/* Tag pair container */
 .tag-pair-container {
-  border-top: var(--border-width) solid var(--vp-c-divider);
+  border-top: var(--border-width) solid var(--border-primary);
   padding-top: var(--space-3);
 }
 
-.tag-name {
-  font-weight: var(--font-medium);
-  color: var(--vp-c-brand-dark);
-  margin-bottom: var(--space-2);
-}
-
-.connection-label {
-  font-size: var(--text-xs);
-  color: var(--vp-c-text-3);
-  margin-bottom: var(--space-1);
-}
-
-.connection-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-.connection-tag {
-  font-size: var(--text-sm);
-  background-color: var(--vp-c-bg-mute);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  color: var(--vp-c-text-2);
-}
-
-.connection-tag .count {
-  font-size: var(--text-xs);
-  opacity: 0.7;
-}
-
+/* Responsive behavior */
 @media (max-width: 768px) {
   .tag-cloud-view {
     grid-template-columns: 1fr;
   }
   
   .relationships-list {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 }
 </style>

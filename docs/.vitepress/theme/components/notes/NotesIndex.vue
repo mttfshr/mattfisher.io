@@ -1,6 +1,7 @@
 <!-- NotesIndex.vue -->
 <script setup>
 import { ref, computed } from 'vue'
+import { useData } from 'vitepress'
 import NoteCard from './NoteCard.vue'
 
 const props = defineProps({
@@ -14,13 +15,22 @@ const props = defineProps({
   }
 })
 
+// Get notes from theme config if not provided as prop
+const { theme } = useData()
+const notesData = computed(() => {
+  if (props.notes && props.notes.length > 0) {
+    return props.notes
+  }
+  return theme.value.notes || []
+})
+
 const searchQuery = ref('')
 const activeFilter = ref('all')
 
 // Extract all unique tags
 const uniqueTags = computed(() => {
   const tags = new Set()
-  props.notes.forEach(note => {
+  notesData.value.forEach(note => {
     if (note.tags && note.tags.length) {
       note.tags.forEach(tag => tags.add(tag))
     }
@@ -30,7 +40,7 @@ const uniqueTags = computed(() => {
 
 // Filter notes based on search query and tag filter
 const filteredNotes = computed(() => {
-  return props.notes.filter(note => {
+  return notesData.value.filter(note => {
     // Apply tag filter
     const tagMatch = activeFilter.value === 'all' || 
                     (note.tags && note.tags.includes(activeFilter.value))

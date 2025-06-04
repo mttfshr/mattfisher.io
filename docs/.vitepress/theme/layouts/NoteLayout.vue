@@ -61,21 +61,23 @@ onMounted(() => {
 
 <template>
   <div class="note-container">
-    <!-- Header Section -->
-    <header class="note-header">
-      <h1>{{ frontmatter.title }}</h1>
-      
-      <div class="metadata">
-        <div class="date-info">
-          <div v-if="page.lastUpdated" class="modified-date">
-            Updated: {{ formatDate(page.lastUpdated) }}
-          </div>
-        </div>
-        
+    <!-- Header Section - Updated to use semantic header pattern -->
+    <header class="page-header-adaptive">
+      <div class="page-header-layout">
+        <h1 class="text-2xl font-semibold">{{ frontmatter.title }}</h1>
         <div v-if="frontmatter.tags && frontmatter.tags.length" class="tags">
           <span v-for="tag in frontmatter.tags" :key="tag" class="tag">
             {{ tag }}
           </span>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Metadata section moved below header -->
+    <div class="note-metadata">
+      <div class="date-info">
+        <div v-if="page.lastUpdated" class="modified-date">
+          Updated: {{ formatDate(page.lastUpdated) }}
         </div>
       </div>
       
@@ -86,7 +88,7 @@ onMounted(() => {
       <div v-if="frontmatter.description" class="description">
         {{ frontmatter.description }}
       </div>
-    </header>
+    </div>
     
     <!-- Main Content -->
     <div class="note-content">
@@ -117,39 +119,24 @@ onMounted(() => {
 .note-container {
   max-width: 800px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 0 var(--space-4);
 }
 
-.note-header {
-  margin-bottom: 2rem;
-}
-
-.note-header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  line-height: 1.2;
-}
-
-.metadata {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--vp-c-divider);
-  font-size: 0.9rem;
-  color: var(--vp-c-text-2);
+.note-metadata {
+  padding: var(--space-6) 0;
+  border-bottom: var(--border-width) solid var(--border-secondary);
+  margin-bottom: var(--space-6);
 }
 
 .date-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-4);
 }
 
 .featured-image {
-  margin-bottom: 2rem;
-  border-radius: 8px;
+  margin-bottom: var(--space-6);
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -160,24 +147,24 @@ onMounted(() => {
 }
 
 .description {
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-  color: var(--vp-c-text-2);
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-4);
+  color: var(--text-secondary);
 }
 
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .tag {
-  padding: 0.2rem 0.6rem;
+  padding: var(--space-1) var(--space-3);
   background-color: var(--vp-c-brand-soft);
   color: var(--vp-c-brand-dark);
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
 }
 
 .note-content {
@@ -245,13 +232,16 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
-  .metadata {
-    flex-direction: column;
-    gap: 1rem;
+  .note-metadata {
+    padding: var(--space-4) 0;
   }
   
   .related-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .tags {
+    justify-content: flex-start;
   }
 }
 </style>

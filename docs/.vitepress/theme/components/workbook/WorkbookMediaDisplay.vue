@@ -1,7 +1,7 @@
 <!-- WorkbookMediaDisplay.vue - Enhanced media display for folio view -->
 <template>
   <div 
-    class="media-display" 
+    class="media-display rounded-xl overflow-hidden bg-surface-soft cursor-pointer transition-base" 
     :class="{ 
       'presentation-mode': presentationMode,
       'video-media': item.media?.type === 'video',
@@ -19,8 +19,8 @@
         />
         
         <!-- Play overlay -->
-        <div v-if="!showPlayer" class="play-overlay">
-          <div class="play-button" @click.stop="togglePlayer">
+        <div v-if="!showPlayer" class="play-overlay overlay">
+          <div class="play-button btn-primary rounded-full flex items-center justify-center interactive" @click.stop="togglePlayer">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5v14l11-7z"/>
             </svg>
@@ -29,9 +29,9 @@
         
         <!-- Video info overlay -->
         <div class="video-info">
-          <div class="video-meta">
-            <span class="video-provider">{{ item.media.provider?.toUpperCase() }}</span>
-            <span v-if="item.media.technicalDetails?.duration" class="video-duration">
+          <div class="video-meta flex gap-2">
+            <span class="video-provider badge">{{ item.media.provider?.toUpperCase() }}</span>
+            <span v-if="item.media.technicalDetails?.duration" class="video-duration badge">
               {{ item.media.technicalDetails.duration }}
             </span>
           </div>
@@ -59,7 +59,7 @@
         ></iframe>
         
         <!-- Close player button -->
-        <button class="close-player" @click="showPlayer = false">
+        <button class="close-player btn btn-ghost rounded-full" @click="showPlayer = false">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
           </svg>
@@ -78,9 +78,9 @@
       
       <!-- Image info overlay -->
       <div class="image-info">
-        <div class="image-meta">
-          <span class="image-type">IMAGE</span>
-          <span v-if="item.media.technicalDetails?.format" class="image-format">
+        <div class="image-meta flex gap-2">
+          <span class="image-type badge">IMAGE</span>
+          <span v-if="item.media.technicalDetails?.format" class="image-format badge">
             {{ item.media.technicalDetails.format }}
           </span>
         </div>
@@ -88,14 +88,14 @@
     </div>
     
     <!-- Fallback for other media types -->
-    <div v-else class="placeholder-media">
-      <div class="placeholder-content">
+    <div v-else class="placeholder-media flex items-center justify-center bg-surface-alt">
+      <div class="placeholder-content text-center text-tertiary">
         <div class="placeholder-icon">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
             <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
           </svg>
         </div>
-        <span class="placeholder-text">{{ getMediaType() }}</span>
+        <span class="placeholder-text text-lg font-medium">{{ getMediaType() }}</span>
       </div>
     </div>
   </div>
@@ -182,152 +182,11 @@ function togglePlayer() {
 }
 </script>
 
-<style scoped>
-.media-display {
-  position: relative;
-  width: 100%;
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--vp-c-bg-soft);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.media-display:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-.media-display.presentation-mode {
-  cursor: default;
-  transform: none;
-}
-
-.media-display.presentation-mode:hover {
-  transform: none;
-}
-
-/* Video Display */
-.video-container {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;
-}
-
-.video-thumbnail {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.video-thumbnail.clickable {
-  cursor: pointer;
-}
-
-.thumbnail-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.video-thumbnail:hover .thumbnail-image {
-  transform: scale(1.02);
-}
-
-.play-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.3);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.video-thumbnail:hover .play-overlay {
-  opacity: 1;
-}
-
-.play-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  color: var(--vp-c-brand);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.play-button:hover {
-  background: white;
-  transform: scale(1.1);
-}
-
-.video-info {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  right: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.video-meta {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.video-provider,
-.video-duration {
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-/* Video Player */
-.video-player {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;
-}
-
-.video-iframe {
-  width: 100%;
-  height: 100%;
-}
-
-.close-player {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
 .close-player:hover {
   background: rgba(0, 0, 0, 0.9);
 }
 
-/* Image Display */
+/* Image display */
 .image-container {
   position: relative;
   width: 100%;
@@ -339,51 +198,23 @@ function togglePlayer() {
   display: block;
 }
 
+/* Image info positioning */
 .image-info {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: var(--space-3);
+  left: var(--space-3);
 }
 
-.image-meta {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.image-type,
-.image-format {
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-/* Placeholder */
+/* Placeholder styling */
 .placeholder-media {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   height: 300px;
-  background: var(--vp-c-bg-alt);
-}
-
-.placeholder-content {
-  text-align: center;
-  color: var(--vp-c-text-3);
 }
 
 .placeholder-icon {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-4);
 }
 
-.placeholder-text {
-  font-size: 1.1rem;
-  font-weight: 500;
-}
-
-/* Responsive */
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .play-button {
     width: 48px;

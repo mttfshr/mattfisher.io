@@ -1,36 +1,36 @@
 <!-- docs/.vitepress/theme/components/pins/PinCollections.vue -->
 <template>
-  <div class="pin-collections">
+  <div class="container-responsive">
     <!-- Collection navigation -->
-    <div class="collections-nav">
+    <div class="collections-nav flex flex-wrap gap-2">
       <button
         v-for="collection in visibleCollections"
         :key="collection.id"
-        class="collection-button"
-        :class="{ active: activeCollection === collection.id }"
+        class="btn btn-ghost collection-btn"
+        :class="{ 'btn-primary': activeCollection === collection.id }"
         @click="setActiveCollection(collection.id)"
       >
         {{ collection.name }}
-        <span class="collection-count">{{ getCollectionCount(collection) }}</span>
+        <span class="collection-count badge">{{ getCollectionCount(collection) }}</span>
       </button>
       
       <!-- More collections dropdown if needed -->
       <div v-if="hiddenCollections.length > 0" class="more-collections-dropdown">
-        <button class="more-button" @click="moreMenuOpen = !moreMenuOpen">
+        <button class="btn btn-ghost more-btn" @click="moreMenuOpen = !moreMenuOpen">
           More
-          <span class="more-count">{{ hiddenCollections.length }}</span>
+          <span class="badge">{{ hiddenCollections.length }}</span>
         </button>
         
-        <div v-if="moreMenuOpen" class="dropdown-menu">
+        <div v-if="moreMenuOpen" class="dropdown-menu card">
           <button
             v-for="collection in hiddenCollections"
             :key="collection.id"
-            class="dropdown-item"
-            :class="{ active: activeCollection === collection.id }"
+            class="btn btn-ghost dropdown-item"
+            :class="{ 'btn-primary': activeCollection === collection.id }"
             @click="setActiveCollection(collection.id)"
           >
             {{ collection.name }}
-            <span class="collection-count">{{ getCollectionCount(collection) }}</span>
+            <span class="collection-count badge">{{ getCollectionCount(collection) }}</span>
           </button>
         </div>
       </div>
@@ -38,19 +38,20 @@
     
     <!-- Active collection display -->
     <div v-if="currentCollection" class="active-collection">
-      <div class="collection-header">
-        <h2>{{ currentCollection.name }}</h2>
+      <div class="collection-header flex justify-between items-center flex-wrap gap-4">
+        <h2 class="m-0">{{ currentCollection.name }}</h2>
         
         <!-- Display options for current collection -->
-        <div class="collection-options">
+        <div class="collection-options flex gap-6 items-center">
           <!-- Group By option (for larger collections) -->
-          <div v-if="currentPins.length > 5" class="group-options">
-            <span class="option-label">Group by:</span>
-            <div class="option-buttons">
+          <div v-if="currentPins.length > 5" class="control-group flex items-center gap-2">
+            <span class="control-label text-sm text-secondary">Group by:</span>
+            <div class="btn-group">
               <button
                 v-for="group in groupOptions"
                 :key="group.value"
-                :class="{ active: groupBy === group.value }"
+                class="btn btn-ghost"
+                :class="{ 'btn-primary': groupBy === group.value }"
                 @click="groupBy = group.value"
               >
                 {{ group.label }}
@@ -59,13 +60,14 @@
           </div>
           
           <!-- Layout option -->
-          <div class="layout-options">
-            <span class="option-label">View:</span>
-            <div class="option-buttons">
+          <div class="control-group flex items-center gap-2">
+            <span class="control-label text-sm text-secondary">View:</span>
+            <div class="btn-group">
               <button
                 v-for="layoutOpt in layoutOptions"
                 :key="layoutOpt.value"
-                :class="{ active: layout === layoutOpt.value }"
+                class="btn btn-ghost"
+                :class="{ 'btn-primary': layout === layoutOpt.value }"
                 @click="layout = layoutOpt.value"
               >
                 {{ layoutOpt.label }}
@@ -86,10 +88,9 @@
     </div>
     
     <!-- Pin detail modal -->
-    <div v-if="selectedPin" class="pin-detail-modal">
-      <div class="modal-overlay" @click="closePinDetail"></div>
-      <div class="modal-container">
-        <button class="modal-close" @click="closePinDetail">×</button>
+    <div v-if="selectedPin" class="modal-overlay flex items-center justify-center" @click="closePinDetail">
+      <div class="modal card animate-scale-in" @click.stop>
+        <button class="modal-close btn btn-ghost" @click="closePinDetail">×</button>
         <PinDetail
           :pin="selectedPin"
           :related-pins="getRelatedPins(selectedPin)"
@@ -320,252 +321,102 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.pin-collections {
-  width: 100%;
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
+/* Component-specific styles only - Layout utilities moved to template */
 
-/* Collection navigation */
+/* Sticky navigation - unique positioning behavior */
 .collections-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-8);
   position: sticky;
   top: var(--vp-nav-height);
-  z-index: 10;
-  background-color: var(--vp-c-bg);
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--vp-c-divider);
+  z-index: var(--z-sticky);
+  background-color: var(--surface-primary);
+  padding: var(--space-4) 0;
+  border-bottom: var(--border-width) solid var(--border-primary);
 }
 
-.collection-button {
-  padding: 0.5rem 1rem;
-  background-color: var(--vp-c-bg-soft);
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 20px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
+/* Collection button styling */
+.collection-btn {
+  border-radius: var(--radius-full);
   white-space: nowrap;
 }
 
-.collection-button:hover {
-  background-color: var(--vp-c-bg-alt);
-}
-
-.collection-button.active {
-  background-color: var(--vp-c-brand);
-  color: var(--vp-c-brand-contrast);
-  border-color: var(--vp-c-brand);
-}
-
-.collection-count {
-  display: inline-block;
+/* Badge styling enhancement */
+.collection-count.badge {
   background-color: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  padding: 0.1rem 0.4rem;
-  font-size: 0.75rem;
-  margin-left: 0.5rem;
+  margin-left: var(--space-2);
 }
 
-.active .collection-count {
+.btn-primary .collection-count.badge {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* More dropdown */
+/* Dropdown positioning - unique behavior */
 .more-collections-dropdown {
   position: relative;
-}
-
-.more-button {
-  padding: 0.5rem 1rem;
-  background-color: var(--vp-c-bg-soft);
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 20px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-}
-
-.more-button:hover {
-  background-color: var(--vp-c-bg-alt);
-}
-
-.more-count {
-  display: inline-block;
-  background-color: rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
-  padding: 0.1rem 0.4rem;
-  font-size: 0.75rem;
-  margin-left: 0.5rem;
 }
 
 .dropdown-menu {
   position: absolute;
   top: 100%;
   right: 0;
-  margin-top: 0.5rem;
-  background-color: var(--vp-c-bg);
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: var(--space-2);
   min-width: 180px;
-  z-index: 100;
-  padding: 0.5rem;
+  z-index: var(--z-dropdown);
+  padding: var(--space-2);
 }
 
 .dropdown-item {
   display: block;
   width: 100%;
   text-align: left;
-  padding: 0.5rem 1rem;
-  background: none;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.2s ease;
+  margin-bottom: var(--space-1);
 }
 
-.dropdown-item:hover {
-  background-color: var(--vp-c-bg-soft);
-}
-
-.dropdown-item.active {
-  background-color: var(--vp-c-brand-light);
-  color: var(--vp-c-brand-contrast);
-}
-
-/* Collection header */
+/* Collection content area */
 .collection-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
-  gap: 1rem;
+  margin-bottom: var(--space-8);
 }
 
-.collection-header h2 {
-  margin: 0;
-}
-
-/* Collection options */
-.collection-options {
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
-}
-
-.option-label {
-  font-size: 0.9rem;
-  color: var(--vp-c-text-2);
-}
-
-.option-buttons {
-  display: flex;
-  gap: 0.25rem;
-}
-
-.option-buttons button {
-  background-color: var(--vp-c-bg-soft);
-  border: 1px solid var(--vp-c-divider);
-  padding: 0.25rem 0.5rem;
-  font-size: 0.8rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.option-buttons button:hover {
-  background-color: var(--vp-c-bg-alt);
-}
-
-.option-buttons button.active {
-  background-color: var(--vp-c-brand);
-  color: var(--vp-c-brand-contrast);
-  border-color: var(--vp-c-brand);
-}
-
-/* Modal */
-.pin-detail-modal {
+/* Modal system - unique positioning and behavior */
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  z-index: var(--z-modal);
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
 }
 
-.modal-container {
+.modal {
   position: relative;
   width: 90%;
   max-width: 1000px;
   max-height: 90vh;
-  background-color: var(--vp-c-bg);
-  border-radius: 12px;
   overflow-y: auto;
-  z-index: 101;
+  z-index: var(--z-modal);
 }
 
 .modal-close {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: var(--vp-c-bg-soft);
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  font-size: 1.5rem;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 102;
-  transition: background-color 0.2s ease;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: var(--z-popover);
 }
 
-.modal-close:hover {
-  background-color: var(--vp-c-bg-alt);
-}
-
-/* Responsive adjustments */
+/* Responsive overrides */
 @media (max-width: 768px) {
   .collection-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    flex-direction: column !important;
+    align-items: flex-start !important;
   }
   
   .collection-options {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: var(--space-4) !important;
     width: 100%;
-  }
-  
-  .option-buttons {
-    flex-wrap: wrap;
   }
 }
 </style>

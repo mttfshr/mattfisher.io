@@ -82,6 +82,12 @@ const effectiveTags = computed(() => {
 
 // Computed for the URL
 const itemUrl = computed(() => {
+  // Use the full path if available (includes subdirectories)
+  if (props.item?.path) {
+    return `${props.item.path}.html`
+  }
+  
+  // Fallback to slug-based URL for backward compatibility
   if (!effectiveSlug.value) return '#'
   return `/workbook/${effectiveSlug.value}.html`
 })

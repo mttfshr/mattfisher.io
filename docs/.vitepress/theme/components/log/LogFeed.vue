@@ -1,6 +1,7 @@
 <!-- LogFeed.vue -->
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useData } from 'vitepress'
 import LogUpdate from './LogUpdate.vue'
 import LogSession from './LogSession.vue'
 
@@ -15,12 +16,53 @@ const props = defineProps({
   }
 })
 
+// Get data from theme config if not provided as prop
+const { theme } = useData()
+const entriesData = computed(() => {
+  if (props.entries && props.entries.length > 0) {
+    return props.entries
+  }
+  
+  // Combine log entries and sessions from theme config
+  const logEntries = theme.value.logEntries || []
+  const sessions = theme.value.sessions || []
+  
+  console.log('LogFeed - Building entries from theme:', {
+    logEntries: logEntries.length,
+    sessions: sessions.length
+  })
+  
+  const entries = logEntries.map(entry => ({
+    ...entry,
+    type: 'entry',
+    sortDate: new Date(entry.timestamp || entry.date)
+  }));
+  
+  const sessionItems = sessions.map(session => {
+    console.log('Processing session:', session.session, 'date:', session.date)
+    return {
+      ...session,
+      type: 'session',
+      sortDate: new Date(session.date),
+      isClaudeSession: true,
+      id: `session-${session.session}`,
+      title: `Session ${session.session} Summary`
+    }
+  });
+  
+  const combined = [...entries, ...sessionItems]
+    .sort((a, b) => b.sortDate - a.sortDate); // Newest first
+    
+  console.log('Combined entries:', combined.length)
+  return combined
+})
+
 const activeFilter = ref('all')
 const activeTypeFilter = ref('all')
 
 const uniqueTags = computed(() => {
   const tags = new Set()
-  props.entries.forEach(entry => {
+  entriesData.value.forEach(entry => {
     if (entry.tags && entry.tags.length) {
       entry.tags.forEach(tag => tags.add(tag))
     }
@@ -30,12 +72,12 @@ const uniqueTags = computed(() => {
 
 const filteredEntries = computed(() => {
   // First filter by type (all, updates, sessions)
-  let typeFiltered = props.entries
+  let typeFiltered = entriesData.value
   
   if (activeTypeFilter.value === 'updates') {
-    typeFiltered = props.entries.filter(entry => !entry.isClaudeSession)
+    typeFiltered = entriesData.value.filter(entry => !entry.isClaudeSession)
   } else if (activeTypeFilter.value === 'sessions') {
-    typeFiltered = props.entries.filter(entry => entry.isClaudeSession)
+    typeFiltered = entriesData.value.filter(entry => entry.isClaudeSession)
   }
   
   // Then filter by tags
@@ -51,7 +93,7 @@ const filteredEntries = computed(() => {
 
 // Sort entries by date, newest first
 const sortedEntries = computed(() => {
-  return [...props.entries].sort((a, b) => {
+  return [...entriesData.value].sort((a, b) => {
     // Handle both timestamp and date fields
     const dateA = new Date(a.timestamp || a.date)
     const dateB = new Date(b.timestamp || b.date)
@@ -113,38 +155,38 @@ const groupedByMonth = computed(() => {
 </script>
 
 <template>
-  <div class="log-feed">
-    <div v-if="showFilters" class="log-filters">
-      <div class="filters-section">
-        <div class="filter-label">Type:</div>
+  <div class="log-feed container-responsive">
+    <div v-if="showFilters" class="log-filters stack-vertical gap-4">
+      <div class="filters-section flex flex-wrap items-center gap-2">
+        <div class="filter-label text-secondary font-medium">Type:</div>
         <button 
-          class="filter-button type-filter" 
-          :class="{ active: activeTypeFilter === 'all' }"
+          class="filter-button btn btn-ghost type-filter" 
+          :class="{ 'btn-primary': activeTypeFilter === 'all' }"
           @click="setTypeFilter('all')"
         >
           All
         </button>
         <button 
-          class="filter-button type-filter" 
-          :class="{ active: activeTypeFilter === 'updates' }"
+          class="filter-button btn btn-ghost type-filter" 
+          :class="{ 'btn-primary': activeTypeFilter === 'updates' }"
           @click="setTypeFilter('updates')"
         >
           Updates
         </button>
         <button 
-          class="filter-button type-filter" 
-          :class="{ active: activeTypeFilter === 'sessions' }"
+          class="filter-button btn btn-ghost type-filter" 
+          :class="{ 'btn-primary': activeTypeFilter === 'sessions' }"
           @click="setTypeFilter('sessions')"
         >
           Sessions
         </button>
       </div>
       
-      <div v-if="uniqueTags.length > 0" class="filters-section">
-        <div class="filter-label">Tags:</div>
+      <div v-if="uniqueTags.length > 0" class="filters-section flex flex-wrap items-center gap-2">
+        <div class="filter-label text-secondary font-medium">Tags:</div>
         <button 
-          class="filter-button" 
-          :class="{ active: activeFilter === 'all' }"
+          class="filter-button btn btn-ghost" 
+          :class="{ 'btn-primary': activeFilter === 'all' }"
           @click="setFilter('all')"
         >
           All
@@ -153,8 +195,8 @@ const groupedByMonth = computed(() => {
         <button 
           v-for="tag in uniqueTags" 
           :key="tag"
-          class="filter-button tag-filter" 
-          :class="{ active: activeFilter === tag }"
+          class="filter-button btn btn-ghost tag-filter" 
+          :class="{ 'btn-primary': activeFilter === tag }"
           @click="setFilter(tag)"
         >
           #{{ tag }}
@@ -162,13 +204,13 @@ const groupedByMonth = computed(() => {
       </div>
     </div>
     
-    <div v-if="filteredEntries.length === 0" class="no-entries">
-      <p>No entries found matching your filter.</p>
+    <div v-if="filteredEntries.length === 0" class="no-entries text-center p-12">
+      <p class="text-secondary">No entries found matching your filter.</p>
     </div>
     
     <div v-else class="log-timeline">
-      <div v-for="group in groupedByMonth" :key="group.key" class="timeline-group">
-        <h2 class="timeline-month">{{ group.label }}</h2>
+      <div v-for="group in groupedByMonth" :key="group.key" class="timeline-group mb-12">
+        <h2 class="timeline-month text-xl font-semibold mb-6 text-primary">{{ group.label }}</h2>
         
         <div class="timeline-entries">
           <template v-for="entry in group.entries" :key="entry.id">
@@ -199,83 +241,19 @@ const groupedByMonth = computed(() => {
 </template>
 
 <style scoped>
-.log-feed {
-  max-width: 800px;
-  margin: 0 auto;
-}
+/* Component-specific styles only - Layout utilities moved to template */
 
+/* Log filters enhancement */
 .log-filters {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--vp-c-divider);
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-4);
+  border-bottom: var(--border-width) solid var(--border-primary);
 }
 
-.filters-section {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.filter-label {
-  font-weight: 500;
-  font-size: 0.9rem;
-  color: var(--vp-c-text-2);
-  margin-right: 0.5rem;
-}
-
-.filter-button {
-  padding: 0.4rem 0.8rem;
-  border-radius: 20px;
-  background-color: var(--vp-c-bg-soft);
-  color: var(--vp-c-text-2);
-  border: none;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.filter-button:hover {
-  background-color: var(--vp-c-brand-soft);
-  color: var(--vp-c-brand-dark);
-}
-
-.filter-button.active {
-  background-color: var(--vp-c-brand);
-  color: white;
-}
-
-.tag-filter {
-  background-color: var(--vp-c-bg-alt);
-}
-
-.type-filter {
-  background-color: var(--vp-c-bg-mute);
-}
-
-.type-filter.active {
-  background-color: var(--vp-c-brand);
-}
-
-.no-entries {
-  text-align: center;
-  padding: 3rem 0;
-}
-
-.timeline-group {
-  margin-bottom: 3rem;
-}
-
+/* Timeline month styling */
 .timeline-month {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  color: var(--vp-c-text-1);
   position: relative;
-  padding-left: 1rem;
+  padding-left: var(--space-4);
 }
 
 .timeline-month::before {
@@ -287,18 +265,19 @@ const groupedByMonth = computed(() => {
   width: 4px;
   height: 16px;
   background-color: var(--vp-c-brand);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 
+/* Responsive behavior */
 @media (max-width: 640px) {
   .filters-section {
-    flex-wrap: wrap;
-    margin-bottom: 0.5rem;
+    flex-wrap: wrap !important;
+    margin-bottom: var(--space-2);
   }
   
   .filter-label {
     width: 100%;
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--space-1);
   }
 }
 </style>

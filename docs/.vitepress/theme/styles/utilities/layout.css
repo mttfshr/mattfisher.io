@@ -1,0 +1,697 @@
+/* ===================================================================
+   FULL-WIDTH PAGE PATTERN - ENHANCED VITEPRESS OVERRIDE
+   Standard pattern for pages that don't use VitePress aside/sidebar
+   =================================================================== */
+
+/* Apply to body when any page uses full-width pattern */
+body:has(.page-full-width),
+.page-full-width,
+.vp-full-width-page,
+.Layout[data-full-width] {
+  /* Force full-width layout at root level */
+  --vp-layout-max-width: 100% !important;
+}
+
+/* Target VitePress containers directly for full-width pages with maximum specificity */
+body:has(.page-full-width) .VPDoc .container,
+body:has(.page-full-width) .VPDoc .content-container,
+body:has(.page-full-width) .VPDoc .content,
+body:has(.page-full-width) .VPDoc .main,
+.page-full-width .VPDoc .container,
+.page-full-width .VPDoc .content-container,
+.page-full-width .VPDoc .content,
+.page-full-width .VPDoc .main,
+.vp-full-width-page .VPDoc .container,
+.vp-full-width-page .VPDoc .content-container,
+.vp-full-width-page .VPDoc .content,
+.vp-full-width-page .VPDoc .main,
+.Layout[data-full-width] .VPDoc .container,
+.Layout[data-full-width] .VPDoc .content-container,
+.Layout[data-full-width] .VPDoc .content,
+.Layout[data-full-width] .VPDoc .main {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+}
+
+/* Hide VitePress aside completely - we use NavigationDrawer instead */
+body:has(.page-full-width) .VPDoc .aside,
+body:has(.page-full-width) .VPDoc .VPDocAside,
+body:has(.page-full-width) .container .aside,
+body:has(.page-full-width) .aside-container,
+.page-full-width .VPDoc .aside,
+.page-full-width .VPDoc .VPDocAside,
+.page-full-width .container .aside,
+.page-full-width .aside-container,
+.vp-full-width-page .VPDoc .aside,
+.vp-full-width-page .VPDoc .VPDocAside,
+.vp-full-width-page .container .aside,
+.vp-full-width-page .aside-container,
+.Layout[data-full-width] .VPDoc .aside,
+.Layout[data-full-width] .VPDoc .VPDocAside,
+.Layout[data-full-width] .container .aside,
+.Layout[data-full-width] .aside-container {
+  display: none !important;
+  width: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Fix the container layout to be single column */
+body:has(.page-full-width) .VPDoc .container,
+body:has(.page-full-width) .VPDoc .content-container,
+.page-full-width .VPDoc .container,
+.page-full-width .VPDoc .content-container,
+.vp-full-width-page .VPDoc .container,
+.vp-full-width-page .VPDoc .content-container,
+.Layout[data-full-width] .VPDoc .container,
+.Layout[data-full-width] .VPDoc .content-container {
+  display: block !important;
+  grid-template-columns: 1fr !important;
+}
+
+/* Ensure content area takes full width */
+body:has(.page-full-width) .VPContent.is-home,
+body:has(.page-full-width) .VPDoc,
+.page-full-width .VPContent.is-home,
+.page-full-width .VPDoc,
+.vp-full-width-page .VPContent.is-home,
+.vp-full-width-page .VPDoc,
+.Layout[data-full-width] .VPContent.is-home,
+.Layout[data-full-width] .VPDoc {
+  padding-bottom: var(--space-8) !important;
+}
+
+/* Alternative approach for browsers that don't support :has() */
+.vp-full-width-page .VPDoc .container,
+.vp-full-width-page .VPDoc .content-container,
+.vp-full-width-page .VPDoc .content,
+.vp-full-width-page .VPDoc .main {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+}
+
+.vp-full-width-page .VPDoc .aside,
+.vp-full-width-page .VPDoc .VPDocAside {
+  display: none !important;
+  width: 0 !important;
+}
+
+.vp-full-width-page .VPDoc .container,
+.vp-full-width-page .VPDoc .content-container {
+  display: block !important;
+  grid-template-columns: 1fr !important;
+}
+
+/* ===================================================================
+   SEMANTIC LAYOUT UTILITIES
+   Behavior-based classes that describe intent, not implementation
+   =================================================================== */
+
+/* ===================================================================
+   GALLERY SYSTEMS
+   Responsive grid patterns for content galleries
+   =================================================================== */
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+.gallery-grid-large {
+  display: grid;  
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+}
+
+.gallery-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--space-4);
+}
+
+/* ===================================================================
+   CONTENT LAYOUTS
+   Semantic content organization patterns
+   =================================================================== */
+
+.content-responsive {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-8);
+}
+
+.content-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.content-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+/* ===================================================================
+   NAVIGATION PATTERNS
+   Adaptive navigation behaviors
+   =================================================================== */
+
+.nav-adaptive {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: var(--space-2);
+  border-bottom: var(--border-width) solid var(--border-primary);
+}
+
+.nav-breadcrumb {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-size: var(--text-sm);
+}
+
+/* ===================================================================
+   CONTAINER PATTERNS
+   Semantic container behaviors
+   =================================================================== */
+
+.container-adaptive {
+  container-type: inline-size;
+  width: 100%;
+}
+
+.container-centered {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.container-fluid {
+  width: 100%;
+  padding: 0 var(--space-4);
+}
+
+/* ===================================================================
+   SPACING BEHAVIORS
+   Semantic spacing patterns that adapt to context
+   =================================================================== */
+
+.spacing-scaled {
+  /* Base spacing - modified by responsive utilities */
+}
+
+.spacing-tight {
+  gap: var(--space-2);
+}
+
+.spacing-comfortable {
+  gap: var(--space-6);
+}
+
+.spacing-generous {
+  gap: var(--space-10);
+}
+
+/* ===================================================================
+   FILTER AND CONTROL LAYOUTS
+   Semantic patterns for UI controls
+   =================================================================== */
+
+.filter-controls {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  padding: var(--space-4);
+  background-color: var(--surface-secondary);
+  border-radius: var(--radius-md);
+}
+
+.control-group {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.stack-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.stack-horizontal {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+/* ===================================================================
+   FOLIO AND CONTENT LAYOUT PATTERNS
+   Semantic patterns for detailed content views
+   =================================================================== */
+
+/* Folio view patterns */
+.folio-view {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.folio-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-12);
+  align-items: start;
+}
+
+.folio-media {
+  position: sticky;
+  top: var(--space-8);
+}
+
+.folio-content {
+  padding: var(--space-4) 0;
+}
+
+/* View controls and navigation */
+.view-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.view-toggle {
+  background: var(--surface-secondary);
+  border: none;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.view-toggle.active {
+  background: var(--vp-c-brand-soft);
+}
+
+/* Collections grid pattern */
+.collections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-8);
+}
+
+/* ===================================================================
+   PAGE HEADER PATTERNS
+   Common header layouts for pages with title and controls
+   =================================================================== */
+
+.page-header-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-header-adaptive {
+  background: var(--surface-secondary);
+  border-bottom: var(--border-width) solid var(--border-secondary);
+  padding: var(--space-4) 0;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+}
+
+/* ===================================================================
+   COLLAPSIBLE SIDEBAR SYSTEM
+   Reusable patterns for sidebar-based layouts
+   =================================================================== */
+
+.content-with-sidebar {
+  display: grid;
+  gap: var(--space-6);
+  transition: var(--transition-base);
+}
+
+.content-with-sidebar.pins-layout {
+  grid-template-columns: 280px 1fr;
+}
+
+.content-with-sidebar.pins-layout.sidebar-collapsed {
+  grid-template-columns: 48px 1fr;
+}
+
+.content-with-sidebar.workbook-layout {
+  grid-template-columns: 320px 1fr;
+  height: calc(100vh - 120px);
+  padding: var(--space-6);
+}
+
+.content-with-sidebar.workbook-layout.sidebar-collapsed {
+  grid-template-columns: 56px 1fr;
+}
+
+.sidebar-collapsible {
+  transition: var(--transition-base);
+  overflow: hidden;
+}
+
+.sidebar-collapsible.pins-style {
+  flex: 0 0 280px;
+  position: sticky;
+  top: var(--space-16);
+  height: calc(100vh - var(--space-16));
+  padding-right: var(--space-4);
+  overflow-y: auto;
+}
+
+.sidebar-collapsible.pins-style.collapsed {
+  width: 48px;
+  min-width: 48px;
+  flex: 0 0 48px;
+}
+
+/* Nav drawer specific styles for right-sliding behavior */
+.sidebar-collapsible.nav-drawer-right {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 320px;
+  background: var(--surface-primary);
+  border-left: var(--border-width) solid var(--border-secondary);
+  z-index: var(--z-dropdown);
+  transform: translateX(100%);
+  transition: transform var(--transition-base);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-6);
+  overflow-y: auto;
+}
+
+.sidebar-collapsible.nav-drawer-right:not(.collapsed) {
+  transform: translateX(0);
+}
+
+/* Nav drawer backdrop overlay */
+.nav-drawer-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: calc(var(--z-dropdown) - 1);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-base);
+}
+
+.nav-drawer-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar-collapsible.workbook-style {
+  background: var(--surface-secondary);
+  border-radius: var(--radius-lg);
+  border: var(--border-width) solid var(--border-secondary);
+  padding: var(--space-4);
+  position: sticky;
+  top: var(--space-6);
+  height: fit-content;
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+}
+
+.sidebar-collapsible.workbook-style.collapsed {
+  width: 56px;
+  min-width: 56px;
+  padding: var(--space-2);
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-4);
+}
+
+.sidebar-toggle {
+  padding: var(--space-2);
+  min-width: 40px;
+  justify-content: center;
+  border-radius: var(--radius-md);
+}
+
+.toggle-icon {
+  font-size: var(--text-lg);
+  font-weight: bold;
+  transition: var(--transition-fast);
+}
+
+/* Nav drawer toggle button styling */
+.nav-drawer-toggle {
+  margin-left: var(--space-2);
+  border-left: var(--border-width) solid var(--border-secondary);
+  padding-left: var(--space-3);
+}
+
+/* ===================================================================
+   VIEW SELECTOR PATTERNS
+   Icon-based view switching controls
+   =================================================================== */
+
+.view-selector {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.view-selector .btn {
+  padding: var(--space-2);
+  min-width: 40px;
+  justify-content: center;
+}
+
+.view-icon {
+  font-size: var(--text-lg);
+  opacity: 0.8;
+  transition: var(--transition-fast);
+}
+
+.btn-primary .view-icon {
+  opacity: 1;
+}
+
+/* ===================================================================
+   UNIFIED NAVIGATION DRAWER SYSTEM
+   Right-sliding drawers with header integration
+   Based on pins-style sidebar patterns for consistency
+   =================================================================== */
+
+/* Base drawer container - slides from right, under header */
+.nav-drawer-container {
+  position: fixed;
+  top: var(--header-height, 60px);
+  right: 0;
+  width: 320px;
+  height: calc(100vh - var(--header-height, 60px));
+  background: var(--surface-primary);
+  border-left: var(--border-width) solid var(--border-secondary);
+  transform: translateX(100%);
+  transition: transform var(--transition-base);
+  z-index: var(--z-dropdown);
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-4);
+}
+
+.nav-drawer-container.open {
+  transform: translateX(0);
+}
+
+/* Drawer header with close control */
+.nav-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-4)) var(--space-4);
+  border-bottom: var(--border-width) solid var(--border-secondary);
+  background: var(--surface-secondary);
+  position: sticky;
+  top: calc(-1 * var(--space-4));
+  z-index: calc(var(--z-dropdown) + 1);
+}
+
+.nav-drawer-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+/* Close button styling - based on pins-style patterns */
+.nav-drawer-close {
+  padding: var(--space-2);
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  font-size: var(--text-xl);
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.nav-drawer-close:hover {
+  background: var(--surface-tertiary);
+  color: var(--text-primary);
+}
+
+/* Toggle trigger button - matches pins-style view controls */
+.nav-drawer-trigger {
+  padding: var(--space-2);
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+  margin-left: var(--space-2);
+  border-left: var(--border-width) solid var(--border-secondary);
+  padding-left: var(--space-3);
+}
+
+.nav-drawer-trigger.active {
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-dark);
+}
+
+/* Backdrop overlay - positioned under header */
+.nav-drawer-backdrop {
+  position: fixed;
+  top: var(--header-height, 60px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: calc(var(--z-dropdown) - 1);
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--transition-base);
+}
+
+.nav-drawer-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Content area adjustment when drawer is open - subtle offset */
+.page-content {
+  transition: margin-right var(--transition-base);
+}
+
+.page-content.drawer-open {
+  margin-right: 40px;
+}
+
+/* Drawer content styling - inherit from pins-style patterns */
+.nav-drawer-content {
+  padding-top: var(--space-2);
+}
+
+.nav-drawer-content .search-container {
+  position: relative;
+  margin-bottom: var(--space-6);
+}
+
+.nav-drawer-content .search-clear {
+  position: absolute;
+  right: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: var(--text-xl);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 0;
+  transition: var(--transition-fast);
+}
+
+.nav-drawer-content .search-clear:hover {
+  color: var(--text-primary);
+}
+
+/* Mobile responsive behavior */
+@media (max-width: 768px) {
+  .nav-drawer-container {
+    top: var(--header-height, 60px);
+    width: 85%;
+    max-width: 320px;
+  }
+  
+  .nav-drawer-backdrop {
+    top: var(--header-height, 60px);
+  }
+  
+  /* Mobile: drawer covers full width minus small margin */
+  .page-content.drawer-open {
+    margin-right: 0;
+  }
+}
+
+/* ===================================================================
+   RESPONSIVE DISPLAY UTILITIES
+   Control visibility across breakpoints
+   =================================================================== */
+
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: flex;
+  }
+  
+  .desktop-only {
+    display: none;
+  }
+  
+  .content-responsive {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  .folio-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+  
+  .sidebar-adaptive {
+    flex: none;
+    position: static;
+    height: auto;
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+    transition: var(--transition-slow);
+  }
+  
+  .collections-grid {
+    grid-template-columns: 1fr;
+  }
+}

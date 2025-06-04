@@ -33,7 +33,6 @@ export async function getLogEntries() {
         const headerLine = lines[0]
         
         if (!headerLine || !headerLine.startsWith('# ')) {
-          console.warn('Skipping entry: Invalid header format')
           continue
         }
         
@@ -42,7 +41,6 @@ export async function getLogEntries() {
         const headerMatch = headerLine.match(/# (\d{4}-\d{2}-\d{2}): (?:\[(.*?)\]\((.*?)\)|(.*))?/)
         
         if (!headerMatch) {
-          console.warn('Skipping entry: Could not parse header')
           continue
         }
         
@@ -108,7 +106,6 @@ export async function getLogEntries() {
         const headerLine = lines[0]
         
         if (!headerLine || !headerLine.startsWith('# ')) {
-          console.warn('Skipping session: Invalid header format')
           continue
         }
         
@@ -117,7 +114,6 @@ export async function getLogEntries() {
         const headerMatch = headerLine.match(/# (\d{4}-\d{2}-\d{2}): (.*)$/)
         
         if (!headerMatch) {
-          console.warn('Skipping session: Could not parse header')
           continue
         }
         
@@ -148,7 +144,7 @@ export async function getLogEntries() {
       }
     }
   } else {
-    console.warn('Sessions file not found:', sessionsPath)
+    // Sessions file not found - no warning needed since sessions are now in individual files
   }
   
   // Sort by date (newest first)

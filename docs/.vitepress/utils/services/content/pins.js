@@ -250,7 +250,128 @@ function processAllMetadata(manualTags, url, ogData) {
 }
 
 /**
- * Get Cloudflare Images URL for video pins from catalog
+ * Enhanced Vimeo ID extraction from various URL formats
+ * @param {string} url - The Vimeo URL to extract ID from
+ * @returns {string|null} - The numeric Vimeo ID or null if not found
+ */
+function extractVimeoId(url) {
+  // Pattern 1: Standard numeric URLs
+  // https://vimeo.com/326204191
+  // https://player.vimeo.com/video/326204191
+  const numericMatch = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/);
+  if (numericMatch) {
+    return numericMatch[1];
+  }
+  
+  // Pattern 2: Username/slug format (requires Vimeo API or manual mapping)
+  // https://vimeo.com/jakefried/openeyes
+  // https://vimeo.com/winstonhacking/animalcollectivewegoback
+  const userSlugMatch = url.match(/vimeo\.com\/([^\/]+)\/([^\/\?#]+)/);
+  if (userSlugMatch) {
+    const username = userSlugMatch[1];
+    const slug = userSlugMatch[2];
+    
+    // Check if we have a manual mapping for this URL pattern
+    const manualMappings = getVimeoManualMappings();
+    const mappingKey = `${username}/${slug}`;
+    if (manualMappings[mappingKey]) {
+      return manualMappings[mappingKey];
+    }
+    
+    // Log for manual mapping if not found
+    console.log(`🔍 Vimeo username/slug URL needs manual mapping: ${url} (${mappingKey})`);
+    return null;
+  }
+  
+  // Pattern 3: Vimeo embed URLs
+  // https://player.vimeo.com/video/326204191?h=abc123
+  const embedMatch = url.match(/player\.vimeo\.com\/video\/(\d+)/);
+  if (embedMatch) {
+    return embedMatch[1];
+  }
+  
+  // Pattern 4: Vimeo channels or groups
+  // https://vimeo.com/channels/staffpicks/326204191
+  const channelMatch = url.match(/vimeo\.com\/(?:channels|groups)\/[^\/]+\/(\d+)/);
+  if (channelMatch) {
+    return channelMatch[1];
+  }
+  
+  return null;
+}
+
+/**
+ * Manual mappings for Vimeo username/slug URLs to numeric IDs
+ * This helps handle URLs like vimeo.com/username/videoname
+ * @returns {Object} Mapping of "username/slug" to numeric ID
+ */
+function getVimeoManualMappings() {
+  // Manual mappings for known username/slug URLs
+  // These can be populated as needed when specific URLs are identified
+  return {
+    // Format: "username/slug": "numericId"
+    // Example: "jakefried/openeyes": "123456789"
+    
+    // Add mappings as needed for specific pins that use username/slug format
+    // These would need to be discovered by checking the actual Vimeo URLs
+  };
+}
+
+/**
+ * Extract Spotify album ID from various URL formats
+ */
+function extractSpotifyAlbumId(url) {
+  const albumMatch = url.match(/\/album\/([a-zA-Z0-9]+)/);
+  return albumMatch ? albumMatch[1] : null;
+}
+
+/**
+ * Extract Spotify playlist ID from URL
+ */
+function extractSpotifyPlaylistId(url) {
+  const playlistMatch = url.match(/\/playlist\/([a-zA-Z0-9]+)/);
+  return playlistMatch ? playlistMatch[1] : null;
+}
+
+/**
+ * Get Spotify artwork URL from enhanced catalog with Spotify thumbnails
+ */
+function getSpotifyArtworkUrl(url) {
+  try {
+    const catalogPath = path.resolve(process.cwd(), 'catalog.json');
+    if (!fs.existsSync(catalogPath)) {
+      return null;
+    }
+    
+    const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+    if (!catalog.spotifyThumbnails) {
+      return null;
+    }
+    
+    // Extract album or playlist ID from URL
+    const albumId = extractSpotifyAlbumId(url);
+    const playlistId = extractSpotifyPlaylistId(url);
+    
+    let thumbnailKey = null;
+    if (albumId) {
+      thumbnailKey = `spotify-album-${albumId}`;
+    } else if (playlistId) {
+      thumbnailKey = `spotify-playlist-${playlistId}`;
+    }
+    
+    if (thumbnailKey && catalog.spotifyThumbnails[thumbnailKey]) {
+      return catalog.spotifyThumbnails[thumbnailKey].artworkUrl;
+    }
+    
+    return null;
+  } catch (error) {
+    console.warn(`Error reading Spotify catalog for ${url}:`, error.message);
+    return null;
+  }
+}
+
+/**
+ * Get Cloudflare Images URL for video pins from catalog with enhanced URL matching
  */
 function getCloudflareImageUrl(url) {
   try {
@@ -264,16 +385,19 @@ function getCloudflareImageUrl(url) {
       return null;
     }
     
-    // Check if this is a video URL we can extract an ID from
-    const vimeoMatch = url.match(/(?:vimeo\.com\/|player\.vimeo\.com\/video\/)(\d+)/);
-    const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
-    
+    // Enhanced video ID extraction
     let thumbnailKey = null;
     
-    if (vimeoMatch) {
-      thumbnailKey = `vimeo-${vimeoMatch[1]}`;
-    } else if (youtubeMatch) {
-      thumbnailKey = `youtube-${youtubeMatch[1]}`;
+    // Check for Vimeo URLs with enhanced extraction
+    const vimeoId = extractVimeoId(url);
+    if (vimeoId) {
+      thumbnailKey = `vimeo-${vimeoId}`;
+    } else {
+      // Check for YouTube URLs
+      const youtubeMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+      if (youtubeMatch) {
+        thumbnailKey = `youtube-${youtubeMatch[1]}`;
+      }
     }
     
     if (thumbnailKey && catalog.videoThumbnails[thumbnailKey]) {
@@ -473,16 +597,21 @@ function extractPinsFromMarkdown(filePath, defaultSection = 'General', processed
           ? processedData.metadata.type[0] 
           : 'link';
         
-        // Determine final image URL with proper priority:
+        // Enhanced thumbnail priority logic:
         // 1. OpenGraph imageUrl (best quality, creator-chosen)
-        // 2. Cloudflare video thumbnails (fallback for videos when no OG image)
-        // 3. Empty string (component shows fallback icon)
+        // 2. Spotify album artwork (high quality for music)
+        // 3. Cloudflare video thumbnails (fallback for videos when no OG image)
+        // 4. Empty string (component shows fallback icon)
         let finalImageUrl = '';
         if (ogData.imageUrl) {
           // Use OpenGraph image if available (first priority)
           finalImageUrl = ogData.imageUrl;
+        } else if (url.includes('spotify.com')) {
+          // Check for Spotify album artwork (second priority for Spotify URLs)
+          const spotifyArtworkUrl = getSpotifyArtworkUrl(url);
+          finalImageUrl = spotifyArtworkUrl || '';
         } else {
-          // Fallback to Cloudflare video thumbnail if no OG image
+          // Fallback to Cloudflare video thumbnail for non-Spotify URLs
           const cloudflareImageUrl = getCloudflareImageUrl(url);
           finalImageUrl = cloudflareImageUrl || '';
         }
@@ -515,11 +644,17 @@ function extractPinsFromMarkdown(filePath, defaultSection = 'General', processed
       } catch (error) {
         console.error(`Error processing pin ${url}:`, error);
         
-        // Determine fallback image URL with proper priority even in error case
+        // Enhanced fallback image URL with proper priority even in error case
         let fallbackImageUrl = '';
-        // First try to get Cloudflare video thumbnail as fallback
-        const cloudflareImageUrl = getCloudflareImageUrl(url);
-        fallbackImageUrl = cloudflareImageUrl || '';
+        if (url.includes('spotify.com')) {
+          // First try to get Spotify artwork as fallback
+          const spotifyArtworkUrl = getSpotifyArtworkUrl(url);
+          fallbackImageUrl = spotifyArtworkUrl || '';
+        } else {
+          // For non-Spotify URLs, try Cloudflare video thumbnail as fallback
+          const cloudflareImageUrl = getCloudflareImageUrl(url);
+          fallbackImageUrl = cloudflareImageUrl || '';
+        }
         
         // Add a minimal pin with the url if OG data fails
         pins.push({
@@ -713,9 +848,23 @@ export function getPins() {
       collections: Array.from(collections).sort()
     };
     
+    // Calculate thumbnail statistics
+    const thumbnailStats = {
+      total: allPins.length,
+      withImages: allPins.filter(pin => pin.imageUrl && pin.imageUrl.trim()).length,
+      spotify: allPins.filter(pin => pin.imageUrl && (pin.imageUrl.includes('scdn.co') || pin.imageUrl.includes('spotifycdn.com'))).length,
+      cloudflare: allPins.filter(pin => pin.imageUrl && pin.imageUrl.includes('imagedelivery.net')).length,
+      opengraph: allPins.filter(pin => pin.imageUrl && !pin.imageUrl.includes('scdn.co') && !pin.imageUrl.includes('spotifycdn.com') && !pin.imageUrl.includes('imagedelivery.net')).length
+    };
+    
     console.log(`Total pins processed: ${allPins.length}`);
     console.log(`Content types found: ${contentTypes.length} types`);
     console.log(`Collections found: ${Array.from(collections).length} collections`);
+    console.log(`\n📷 Thumbnail Summary:`);
+    console.log(`   With thumbnails: ${thumbnailStats.withImages}/${thumbnailStats.total} (${((thumbnailStats.withImages/thumbnailStats.total)*100).toFixed(1)}%)`);
+    if (thumbnailStats.spotify > 0) console.log(`   🎵 Spotify artwork: ${thumbnailStats.spotify}`);
+    if (thumbnailStats.cloudflare > 0) console.log(`   🎞️ Cloudflare CDN: ${thumbnailStats.cloudflare}`);
+    if (thumbnailStats.opengraph > 0) console.log(`   🌐 OpenGraph images: ${thumbnailStats.opengraph}`);
     
     return pinsData;
   } catch (error) {
@@ -730,4 +879,201 @@ export function getPins() {
       collections: []
     };
   }
+}
+
+/**
+ * Enhanced thumbnail resolution with multiple fallback strategies
+ * @param {string} url - The pin URL
+ * @param {Object} ogData - OpenGraph data from cache
+ * @returns {Object} Resolved thumbnail info with metadata
+ */
+function resolveEnhancedThumbnail(url, ogData) {
+  const result = {
+    imageUrl: '',
+    source: 'none',
+    confidence: 'low',
+    alternatives: []
+  };
+  
+  // Strategy 1: OpenGraph image (highest priority)
+  if (ogData?.imageUrl && ogData.imageUrl.trim()) {
+    result.imageUrl = ogData.imageUrl;
+    result.source = 'opengraph';
+    result.confidence = 'high';
+    return result;
+  }
+  
+  // Strategy 2: Cloudflare video thumbnails (for video content)
+  const cloudflareImageUrl = getCloudflareImageUrl(url);
+  if (cloudflareImageUrl) {
+    result.imageUrl = cloudflareImageUrl;
+    result.source = 'cloudflare-video';
+    result.confidence = 'medium';
+    return result;
+  }
+  
+  // Strategy 3: Service-specific defaults (for known platforms)
+  const serviceDefault = getServiceDefaultThumbnail(url);
+  if (serviceDefault) {
+    result.imageUrl = serviceDefault.url;
+    result.source = `service-default-${serviceDefault.platform}`;
+    result.confidence = 'low';
+    result.alternatives.push('Generate custom thumbnail for this platform');
+    return result;
+  }
+  
+  // Strategy 4: Domain favicon as last resort
+  if (ogData?.favicon) {
+    result.alternatives.push({
+      type: 'favicon',
+      url: ogData.favicon,
+      note: 'Site favicon as minimal fallback'
+    });
+  }
+  
+  // Missing thumbnail - logged silently for cleaner output
+  
+  return result;
+}
+
+/**
+ * Get service-specific default thumbnails for known platforms
+ * @param {string} url - The URL to analyze
+ * @returns {Object|null} Default thumbnail info or null
+ */
+function getServiceDefaultThumbnail(url) {
+  try {
+    const urlObj = new URL(url);
+    const domain = urlObj.hostname.replace('www.', '');
+    
+    // Platform-specific defaults (could be moved to config)
+    const serviceDefaults = {
+      'spotify.com': {
+        platform: 'spotify',
+        url: '/media/placeholders/spotify-default.png',
+        note: 'Generic Spotify placeholder'
+      },
+      'bandcamp.com': {
+        platform: 'bandcamp',
+        url: '/media/placeholders/bandcamp-default.png',
+        note: 'Generic Bandcamp placeholder'
+      },
+      'github.com': {
+        platform: 'github',
+        url: '/media/placeholders/github-default.png',
+        note: 'Generic GitHub placeholder'
+      }
+    };
+    
+    return serviceDefaults[domain] || null;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * Batch refresh OpenGraph data for pins with missing thumbnails
+ * @param {Array} pinUrls - URLs to refresh OG data for
+ */
+export async function refreshOpenGraphData(pinUrls) {
+  console.log(`🔄 Refreshing OpenGraph data for ${pinUrls.length} URLs...`);
+  
+  const refreshedData = {};
+  const ogCachePath = path.resolve(process.cwd(), 'docs/.vitepress/cache/pins-cache.json');
+  
+  for (const url of pinUrls) {
+    try {
+      console.log(`Fetching OG data for: ${url}`);
+      
+      // Use your existing OG fetching logic here
+      const ogData = await fetchOpenGraphData(url);
+      
+      if (ogData && ogData.imageUrl) {
+        refreshedData[url] = ogData;
+        console.log(`✅ Found thumbnail: ${ogData.imageUrl}`);
+      } else {
+        console.log(`❌ No thumbnail found for: ${url}`);
+      }
+      
+      // Rate limiting
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } catch (error) {
+      console.error(`Error fetching OG data for ${url}:`, error.message);
+    }
+  }
+  
+  // Update cache
+  if (Object.keys(refreshedData).length > 0) {
+    try {
+      let existingCache = {};
+      if (fs.existsSync(ogCachePath)) {
+        existingCache = JSON.parse(fs.readFileSync(ogCachePath, 'utf8'));
+      }
+      
+      const updatedCache = { ...existingCache, ...refreshedData };
+      fs.writeFileSync(ogCachePath, JSON.stringify(updatedCache, null, 2));
+      
+      console.log(`💾 Updated cache with ${Object.keys(refreshedData).length} new entries`);
+    } catch (error) {
+      console.error('Error updating OG cache:', error);
+    }
+  }
+  
+  return refreshedData;
+}
+
+/**
+ * Audit Cloudflare video thumbnail coverage
+ */
+export function auditVideoThumbnailCoverage() {
+  console.log('🎬 Auditing video thumbnail coverage...\n');
+  
+  const pinsData = getPins();
+  const videoUrls = pinsData.pins.filter(pin => 
+    pin.contentType === 'video' || 
+    pin.url.includes('youtube') || 
+    pin.url.includes('vimeo')
+  );
+  
+  console.log(`Found ${videoUrls.length} video URLs in pins`);
+  
+  const cloudflareMatches = [];
+  const missingFromCloudflare = [];
+  
+  videoUrls.forEach(pin => {
+    const cloudflareUrl = getCloudflareImageUrl(pin.url);
+    
+    if (cloudflareUrl) {
+      cloudflareMatches.push({
+        url: pin.url,
+        title: pin.title,
+        cloudflareUrl
+      });
+    } else {
+      missingFromCloudflare.push({
+        url: pin.url,
+        title: pin.title,
+        platform: pin.url.includes('vimeo') ? 'vimeo' : 'youtube'
+      });
+    }
+  });
+  
+  console.log(`✅ ${cloudflareMatches.length} videos have Cloudflare thumbnails`);
+  console.log(`❌ ${missingFromCloudflare.length} videos missing from Cloudflare\n`);
+  
+  if (missingFromCloudflare.length > 0) {
+    console.log('MISSING FROM CLOUDFLARE:');
+    missingFromCloudflare.forEach(video => {
+      console.log(`  📹 ${video.platform}: ${video.url}`);
+    });
+    
+    console.log('\n💡 To generate missing thumbnails:');
+    console.log('   npm run media:generate-video-thumbnails');
+  }
+  
+  return {
+    total: videoUrls.length,
+    withThumbnails: cloudflareMatches.length,
+    missing: missingFromCloudflare
+  };
 }

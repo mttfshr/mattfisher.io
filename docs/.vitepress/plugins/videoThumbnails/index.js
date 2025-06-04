@@ -12,7 +12,7 @@ export function videoThumbnailsPlugin() {
     name: 'vitepress-video-thumbnails-plugin',
     
     buildStart() {
-      console.log('Video Thumbnails Plugin: Processing thumbnails');
+      console.log('📹 Processing video thumbnails...');
       
       try {
         // Import the workbookItems directly from the config
@@ -23,8 +23,6 @@ export function videoThumbnailsPlugin() {
             console.log('No workbook items found in themeConfig');
             return;
           }
-          
-          console.log(`Found ${workbookItems.length} workbook items to process`);
           
           // Make sure thumbnail directory exists in the public folder
           // Using the standard VitePress public directory structure
@@ -43,7 +41,6 @@ export function videoThumbnailsPlugin() {
             skipExisting: true
           });
           
-          console.log('Video Thumbnails Plugin: Successfully processed workbook items');
         }).catch(configError => {
           console.error('Error loading config:', configError);
         });

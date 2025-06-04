@@ -2,12 +2,7 @@ import DefaultTheme from 'vitepress/theme'
 import Layout from './layouts/Layout.vue'
 import NoteLayout from './layouts/NoteLayout.vue'
 import WorkbookItemLayout from './layouts/WorkbookItemLayout.vue'
-import PinsLayout from './layouts/PinsLayout.vue'
-import MicroblogLayout from './layouts/MicroblogLayout.vue'
 import FolderIndexLayout from './layouts/FolderIndexLayout.vue'
-import WorkbookFolioLayout from './layouts/WorkbookFolioLayout.vue'
-import DebugLayout from './layouts/DebugLayout.vue'
-import CollectionLayout from './components/collections/CollectionLayout.vue'
 import '@fontsource-variable/source-sans-3';
 import '@fontsource/ibm-plex-mono/400.css'
 import '@fontsource/ibm-plex-mono/600.css'
@@ -17,6 +12,10 @@ import './styles/design-tokens.css'
 import './styles/utilities.css'
 import './styles/components.css'
 import './styles/patterns.css'
+// Semantic Atomic Utilities
+import './styles/utilities/layout.css'
+import './styles/utilities/interactions.css'
+import './styles/utilities/responsive.css'
 // Component-specific styles
 import './styles/pins.css'
 import './styles/workbook.css'
@@ -27,6 +26,15 @@ import EnhancedMarkdown from './components/common/EnhancedMarkdown.vue'
 import EnhancedNote from './components/notes/EnhancedNote.vue'
 import MediaEmbed from './components/common/MediaEmbed.vue'
 import AssetDiagnostics from './components/common/AssetDiagnostics.vue'
+// Import reusable semantic components
+import MediaThumbnail from './components/common/MediaThumbnail.vue'
+import TagDisplay from './components/common/TagDisplay.vue'
+// Import new foundational components
+import ViewHeader from './components/common/ViewHeader.vue'
+import PageIntro from './components/common/PageIntro.vue'
+import ContentSection from './components/common/ContentSection.vue'
+import StatusIndicator from './components/common/StatusIndicator.vue'
+import CrossReferencePanel from './components/common/CrossReferencePanel.vue'
 import LogUpdate from './components/log/LogUpdate.vue'
 import LogFeed from './components/log/LogFeed.vue'
 import NoteCard from './components/notes/NoteCard.vue'
@@ -35,9 +43,15 @@ import WorkbookItem from './components/workbook/WorkbookItem.vue'
 import WorkbookGallery from './components/workbook/WorkbookGallery.vue'
 import WorkbookViewer from './components/workbook/WorkbookViewer.vue'
 import WorkbookPage from './components/workbook/WorkbookPage.vue'
-import PresentationViewer from './components/workbook/PresentationViewer.vue'
+import WorkbookFolio from './components/workbook/WorkbookFolio.vue'
+import WorkbookPageSimple from './components/workbook/WorkbookPageSimple.vue'
+import WorkbookPageDebug from './components/workbook/WorkbookPageDebug.vue'
+import WorkbookTest from './components/workbook/WorkbookTest.vue'
 import MediaContainer from './components/workbook/MediaContainer.vue'
 import PinsPage from './components/pins/PinsPage.vue'
+
+// Import common components
+import NavigationDrawer from './components/common/NavigationDrawer.vue'
 
 // Import collection components
 import CollectionsGallery from './components/collections/CollectionsGallery.vue'
@@ -47,20 +61,7 @@ import StructuredTagsDisplay from './components/collections/StructuredTagsDispla
 
 export default {
   extends: DefaultTheme,
-  
-  // Register custom layouts
-  layouts: {
-    layout: Layout,
-    note: NoteLayout,
-    workbookItem: WorkbookItemLayout,
-    pins: PinsLayout,
-    microblog: MicroblogLayout,
-    folderindex: FolderIndexLayout,
-    workbookfolio: WorkbookFolioLayout,
-    debug: DebugLayout,
-    // Add collection layout
-    collection: CollectionLayout
-  },
+  Layout, // Use our custom layout
   
   enhanceApp({ app }) {
     // Register components globally
@@ -73,13 +74,20 @@ export default {
     app.component('NotesIndex', NotesIndex)
     app.component('WorkbookItem', WorkbookItem)
     app.component('WorkbookGallery', WorkbookGallery)
+    app.component('WorkbookFolio', WorkbookFolio)
     app.component('WorkbookViewer', WorkbookViewer)
-    app.component('PresentationViewer', PresentationViewer)
+    app.component('WorkbookTest', WorkbookTest)
+    app.component('WorkbookPageSimple', WorkbookPageSimple)
+    app.component('WorkbookPageDebug', WorkbookPageDebug)
     app.component('MediaContainer', MediaContainer)
     app.component('AssetDiagnostics', AssetDiagnostics)
     app.component('PinsPage', PinsPage)
     app.component('Pins', PinsPage) // Also register as 'Pins' component
     app.component('WorkbookPage', WorkbookPage) // Register WorkbookPage component
+    app.component('workbook-page', WorkbookPage) // Also register with kebab-case
+    
+    // Register common components
+    app.component('NavigationDrawer', NavigationDrawer)
     
     // Register collection components
     app.component('CollectionsGallery', CollectionsGallery)
@@ -89,5 +97,35 @@ export default {
     
     // Register Cloudflare Images component
     app.component('CloudflareImage', CloudflareImage)
+    
+    // Register reusable semantic components
+    app.component('MediaThumbnail', MediaThumbnail)
+    app.component('TagDisplay', TagDisplay)
+    
+    // Register new foundational components
+    app.component('ViewHeader', ViewHeader)
+    app.component('PageIntro', PageIntro)
+    app.component('ContentSection', ContentSection)
+    app.component('StatusIndicator', StatusIndicator)
+    app.component('CrossReferencePanel', CrossReferencePanel)
+  },
+  
+  setup() {
+    // Add body class for full-width pages when they mount
+    if (typeof document !== 'undefined') {
+      const observer = new MutationObserver(() => {
+        const hasFullWidth = document.querySelector('.page-full-width')
+        if (hasFullWidth) {
+          document.body.classList.add('vp-full-width-page')
+        } else {
+          document.body.classList.remove('vp-full-width-page')
+        }
+      })
+      
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      })
+    }
   }
 }

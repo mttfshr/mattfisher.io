@@ -42,11 +42,11 @@ function togglePresentationMode() {
 </script>
 
 <template>
-  <div class="media-container" :class="{ 'is-loading': isLoading, 'has-error': hasError }">
+  <div class="media-container rounded-md overflow-hidden bg-surface-soft transition-base" :class="{ 'is-loading': isLoading, 'has-error': hasError }">
     <!-- Presentation mode toggle button -->
     <button 
       v-if="media.type === 'video' || media.type === 'image'"
-      class="presentation-mode-toggle"
+      class="presentation-mode-toggle btn btn-primary"
       @click="togglePresentationMode"
       aria-label="Enter presentation mode"
     >
@@ -58,23 +58,23 @@ function togglePresentationMode() {
           <rect x="6" y="14" width="12" height="5" rx="1" ry="1"></rect>
         </svg>
       </span>
-      <span class="toggle-text">Presentation Mode</span>
+      <span class="toggle-text text-sm">Presentation Mode</span>
     </button>
     
     <!-- Loading indicator -->
-    <div v-if="isLoading" class="media-loading">
+    <div v-if="isLoading" class="media-loading flex items-center justify-center bg-surface-soft">
       <div class="loading-spinner"></div>
     </div>
     
     <!-- Error state -->
-    <div v-if="hasError" class="media-error">
+    <div v-if="hasError" class="media-error p-8 flex flex-col items-center justify-center text-center">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"></circle>
         <line x1="12" y1="8" x2="12" y2="12"></line>
         <line x1="12" y1="16" x2="12.01" y2="16"></line>
       </svg>
-      <p>Failed to load media content</p>
-      <a :href="media.url" target="_blank" rel="noopener noreferrer">Open in new window</a>
+      <p class="text-danger">Failed to load media content</p>
+      <a :href="media.url" target="_blank" rel="noopener noreferrer" class="text-brand">Open in new window</a>
     </div>
     
     <!-- Video media -->

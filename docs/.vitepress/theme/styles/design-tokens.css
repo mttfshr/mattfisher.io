@@ -5,6 +5,12 @@
 
 :root {
   /* ===================================================================
+     GLOBAL LAYOUT OVERRIDES
+     VitePress content width adjustments
+     =================================================================== */
+  --vp-layout-max-width: 1400px;
+  
+  /* ===================================================================
      SPACING TOKENS
      Based on 8px grid system for consistent vertical rhythm
      =================================================================== */
@@ -23,17 +29,17 @@
 
   /* ===================================================================
      TYPOGRAPHY TOKENS
-     Scale: Minor Third (1.2) for balanced hierarchy
+     Scale: Subdued hierarchy with max h1 at 24px, base at 16px
      =================================================================== */
   --text-xs: 0.75rem;     /* 12px */
-  --text-sm: 0.85rem;     /* 13.6px */
-  --text-base: 1rem;      /* 16px */
-  --text-lg: 1.1rem;      /* 17.6px */
-  --text-xl: 1.2rem;      /* 19.2px */
-  --text-2xl: 1.44rem;    /* 23px */
-  --text-3xl: 1.728rem;   /* 27.6px */
-  --text-4xl: 2.074rem;   /* 33.2px */
-  --text-5xl: 2.488rem;   /* 39.8px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px - unchanged */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.375rem;   /* 22px */
+  --text-3xl: 1.5rem;     /* 24px - max h1 size */
+  --text-4xl: 1.625rem;   /* 26px - reserved for special cases */
+  --text-5xl: 1.75rem;    /* 28px - reserved for special cases */
 
   /* Font Weights */
   --font-light: 300;
@@ -157,4 +163,104 @@
   --z-popover: 1060;
   --z-tooltip: 1070;
   --z-toast: 1080;
+
+  /* ===================================================================
+     LAYOUT TOKENS
+     Common layout dimensions and constraints
+     =================================================================== */
+  --header-height: 60px;
+  --drawer-width: 320px;
+}
+
+/* ===================================================================
+   GLOBAL LAYOUT OVERRIDES
+   VitePress content width adjustments
+   =================================================================== */
+
+/* Override VitePress default content width */
+.vp-doc .container,
+.vp-doc .content,
+.VPDoc .container,
+.VPDoc .content {
+  max-width: 840px !important;
+}
+
+/* Override VitePress layout containers */
+.vp-layout {
+  max-width: 840px !important;
+  margin: 0 auto;
+}
+
+/* Also target any main content containers */
+main .container {
+  max-width: 840px !important;
+}
+
+/* ===================================================================
+   FOLIO VIEW OVERRIDES
+   Allow folio content to use full 1400px width
+   =================================================================== */
+
+/* Folio pages should use the full layout width */
+.folio-fullscreen .vp-doc .container,
+.folio-fullscreen .vp-doc .content,
+.folio-fullscreen .VPDoc .container,
+.folio-fullscreen .VPDoc .content,
+.folio-layout .vp-doc .container,
+.folio-layout .vp-doc .content,
+.folio-layout .VPDoc .container,
+.folio-layout .VPDoc .content {
+  max-width: 1400px !important;
+}
+
+/* Also override the parent layout for folio views */
+.folio-fullscreen .vp-layout,
+.folio-layout .vp-layout {
+  max-width: 1400px !important;
+}
+
+/* CRITICAL: Override VitePress .has-aside content-container constraint for folio views */
+.VPDoc.has-aside .folio-fullscreen .content-container,
+.VPDoc.has-aside .folio-layout .content-container,
+.folio-fullscreen .VPDoc.has-aside .content-container,
+.folio-layout .VPDoc.has-aside .content-container {
+  max-width: 1400px !important;
+}
+
+/* Also target the content-container directly when inside folio layouts */
+.folio-fullscreen .content-container,
+.folio-layout .content-container {
+  max-width: 1400px !important;
+}
+
+/* Target folio content directly when it's the main content */
+body:has(.folio-fullscreen) .vp-doc .container,
+body:has(.folio-fullscreen) .vp-doc .content,
+body:has(.folio-fullscreen) .VPDoc .container,
+body:has(.folio-fullscreen) .VPDoc .content,
+body:has(.folio-layout) .vp-doc .container,
+body:has(.folio-layout) .vp-doc .content,
+body:has(.folio-layout) .VPDoc .container,
+body:has(.folio-layout) .VPDoc .content {
+  max-width: 1400px !important;
+}
+
+/* Override has-aside constraint at the body level for folio pages */
+body:has(.folio-fullscreen) .VPDoc.has-aside .content-container,
+body:has(.folio-layout) .VPDoc.has-aside .content-container {
+  max-width: 1400px !important;
+}
+
+/* ULTRA-SPECIFIC: Override VitePress scoped styles for folio content */
+.VPDoc.has-aside .content-container[data-v-10119189]:has(.folio-fullscreen),
+.VPDoc.has-aside .content-container[data-v-10119189]:has(.folio-layout) {
+  max-width: 1400px !important;
+}
+
+/* Fallback: Target any content-container with data attributes inside folio layouts */
+.folio-fullscreen .content-container[data-v-10119189],
+.folio-layout .content-container[data-v-10119189],
+.folio-fullscreen .content-container[class*="data-v-"],
+.folio-layout .content-container[class*="data-v-"] {
+  max-width: 1400px !important;
 }

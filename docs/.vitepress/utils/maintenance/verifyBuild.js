@@ -59,8 +59,8 @@ if (!fs.existsSync(thumbnailsDir)) {
 console.log('\nVerifying pins data processing...');
 
 try {
-  const getPins = await import('./getPins.js');
-  const pinsData = getPins.getPins();
+  const { getPins } = await import('../services/content/pins.js');
+  const pinsData = getPins();
   
   console.log(`✅ Found ${pinsData.pins.length} pins`);
   console.log(`✅ Content types: ${pinsData.contentTypes.join(', ')}`);

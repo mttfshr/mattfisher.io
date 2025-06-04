@@ -1,639 +1,551 @@
-<!-- WorkbookFolio.vue - Chronological focused presentation -->
-<template>
-  <div class="workbook-folio">
-    <!-- Folio controls -->
-    <div class="folio-controls">
-      <button 
-        class="nav-button"
-        :disabled="currentIndex === 0"
-        @click="navigateTo(currentIndex - 1)"
-      >
-        ← Previous
-      </button>
-      
-      <span class="position-indicator">
-        {{ currentIndex + 1 }} of {{ items.length }}
-      </span>
-      
-      <button 
-        class="nav-button"
-        :disabled="currentIndex === items.length - 1"
-        @click="navigateTo(currentIndex + 1)"
-      >
-        Next →
-      </button>
-    </div>
-    
-    <!-- Current item display -->
-    <div v-if="currentItem" class="folio-item">
-      <!-- Full-width media -->
-      <div class="folio-media">
-        <div class="media-container" @click="openPresentation">
-          <img 
-            :src="getThumbnail(currentItem)" 
-            :alt="currentItem.title"
-            class="media-image"
-          />
-          <div class="media-overlay">
-            <div class="play-icon">⚏</div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Collapsible content section -->
-      <div class="folio-content" :class="{ 'collapsed': contentCollapsed }">
-        <button class="content-toggle" @click="contentCollapsed = !contentCollapsed">
-          <span class="toggle-text">
-            {{ contentCollapsed ? 'Show Details' : 'Hide Details' }}
-          </span>
-          <span class="toggle-icon" :class="{ 'rotated': !contentCollapsed }">▼</span>
-        </button>
-        
-        <div v-if="!contentCollapsed" class="content-expanded">
-          <header class="folio-header">
-            <h2 class="folio-title">{{ currentItem.title }}</h2>
-            <div class="folio-meta">
-              <span v-if="currentItem.year" class="meta-year">{{ currentItem.year }}</span>
-              <span class="meta-type">{{ getMediaType(currentItem) }}</span>
-            </div>
-          </header>
-          
-          <div v-if="currentItem.description" class="folio-description">
-            {{ currentItem.description }}
-          </div>
-          
-          <!-- Structured tags -->
-          <div v-if="getStructuredTags(currentItem).length" class="folio-tags">
-            <div 
-              v-for="tagGroup in getStructuredTags(currentItem)" 
-              :key="tagGroup.category"
-              class="tag-group"
-            >
-              <span class="tag-label">{{ tagGroup.category }}:</span>
-              <div class="tag-values">
-                <span 
-                  v-for="value in tagGroup.values" 
-                  :key="value"
-                  class="tag-value"
-                >
-                  {{ formatTagValue(value) }}
-                </span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="folio-actions">
-            <a 
-              :href="`/workbook/${currentItem.slug}.html`" 
-              class="action-button primary"
-            >
-              View Details
-            </a>
-            <button 
-              v-if="getRelatedItems(currentItem).length"
-              class="action-button secondary"
-              @click="showRelated = !showRelated"
-            >
-              Related ({{ getRelatedItems(currentItem).length }})
-            </button>
-          </div>
-          
-          <!-- Related items -->
-          <div v-if="showRelated" class="related-section">
-            <h3>Related Works</h3>
-            <div class="related-grid">
-              <div 
-                v-for="related in getRelatedItems(currentItem).slice(0, 4)" 
-                :key="related.slug"
-                class="related-item"
-                @click="navigateToItem(related)"
-              >
-                <img :src="getThumbnail(related)" :alt="related.title" />
-                <span class="related-title">{{ related.title }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Bottom pagination -->
-    <div class="folio-pagination">
-      <button 
-        class="nav-button"
-        :disabled="currentIndex === 0"
-        @click="navigateTo(currentIndex - 1)"
-      >
-        ← Previous
-      </button>
-      
-      <span class="position-indicator">
-        {{ currentIndex + 1 }} of {{ items.length }}
-      </span>
-      
-      <button 
-        class="nav-button"
-        :disabled="currentIndex === items.length - 1"
-        @click="navigateTo(currentIndex + 1)"
-      >
-        Next →
-      </button>
-    </div>
-  </div>
-</template>
-
+<!-- WorkbookFolio.vue - Transformed using semantic atomic design system -->
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue'
+import MediaThumbnail from '../common/MediaThumbnail.vue'
+import TagDisplay from '../common/TagDisplay.vue'
 
 const props = defineProps({
   items: {
     type: Array,
     required: true
+  },
+  initialIndex: {
+    type: Number,
+    default: 0
   }
-});
+})
 
-const emit = defineEmits(['openPresentation', 'navigateToItem']);
+const emit = defineEmits(['openPresentation', 'navigateToItem'])
 
-const currentIndex = ref(0);
-const showRelated = ref(false);
-const contentCollapsed = ref(true); // Start collapsed for minimal distraction
+const currentIndex = ref(props.initialIndex)
+const showRelated = ref(false)
+const detailsCollapsed = ref(true) // Start collapsed for minimal distraction
 
 // Computed
-const currentItem = computed(() => props.items[currentIndex.value]);
+const currentItem = computed(() => props.items[currentIndex.value])
 
 // Navigation
 function navigateTo(index) {
   if (index >= 0 && index < props.items.length) {
-    currentIndex.value = index;
-    showRelated.value = false;
+    currentIndex.value = index
+    showRelated.value = false
   }
 }
 
 function navigateToItem(item) {
-  const index = props.items.findIndex(i => i.slug === item.slug);
+  const index = props.items.findIndex(i => i.slug === item.slug)
   if (index !== -1) {
-    navigateTo(index);
-    emit('navigateToItem', item);
+    navigateTo(index)
+    emit('navigateToItem', item)
   }
 }
 
 function openPresentation() {
-  emit('openPresentation', currentItem.value);
+  emit('openPresentation', currentItem.value)
 }
 
 // Utility functions
-function getThumbnail(item) {
-  if (item.media?.thumbnail) return item.media.thumbnail;
-  if (item.thumbnailUrl) return item.thumbnailUrl;
+function isVideoItem(item) {
+  return item.media?.type === 'video' && item.media?.embed
+}
+
+function getEmbedUrl(item) {
+  if (!isVideoItem(item)) return ''
   
-  if (item.media?.type === 'video' && item.media?.provider === 'vimeo') {
-    const vimeoId = extractVimeoId(item.media.url);
-    return vimeoId ? `/media/thumbnails/vimeo-${vimeoId}.jpg` : '/media/video-placeholder.svg';
+  const url = item.media.url
+  if (item.media.provider === 'vimeo') {
+    const vimeoId = extractVimeoId(url)
+    return vimeoId ? `https://player.vimeo.com/video/${vimeoId}` : ''
   }
   
-  return '/media/placeholder.svg';
+  if (item.media.provider === 'youtube') {
+    const youtubeId = extractYouTubeId(url)
+    return youtubeId ? `https://www.youtube.com/embed/${youtubeId}` : ''
+  }
+  
+  return ''
+}
+
+function getThumbnail(item) {
+  if (item.media?.thumbnail) return item.media.thumbnail
+  if (item.media?.url && item.media?.type === 'image') return item.media.url
+  
+  // Use fallback thumbnail logic from MediaThumbnail component
+  if (item.media?.type === 'video') {
+    if (item.media.provider === 'vimeo') {
+      const vimeoId = extractVimeoId(item.media.url)
+      return vimeoId ? `/media/thumbnails/vimeo-${vimeoId}.jpg` : null
+    }
+    if (item.media.provider === 'youtube') {
+      const youtubeId = extractYouTubeId(item.media.url)
+      return youtubeId ? `/media/thumbnails/youtube-${youtubeId}.jpg` : null
+    }
+  }
+  
+  return null
 }
 
 function getMediaType(item) {
-  if (!item.media) return 'Project';
-  const type = item.media.type || 'media';
-  return type.charAt(0).toUpperCase() + type.slice(1);
+  if (!item.media) return ''
+  const type = item.media.type || 'media'
+  return type.charAt(0).toUpperCase() + type.slice(1)
 }
 
 function getStructuredTags(item) {
-  if (!item.tags) return [];
+  if (!item.tags) return []
   
-  const grouped = {};
+  const grouped = {}
   item.tags.forEach(tag => {
     if (tag.includes(':')) {
-      const [category, value] = tag.split(':', 2);
-      if (!grouped[category]) grouped[category] = [];
-      grouped[category].push(value);
+      const [category, value] = tag.split(':', 2)
+      if (!grouped[category]) grouped[category] = []
+      grouped[category].push(value)
     }
-  });
+  })
   
   return Object.entries(grouped).map(([category, values]) => ({
     category: category.charAt(0).toUpperCase() + category.slice(1),
     values
-  }));
+  }))
 }
 
 function formatTagValue(value) {
-  return value.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  return value.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
 }
 
-function getRelatedItems(item) {
-  if (!item.tags) return [];
-  
-  return props.items.filter(other => {
-    if (other.slug === item.slug) return false;
-    if (!other.tags) return false;
-    
-    const sharedTags = item.tags.filter(tag => other.tags.includes(tag));
-    return sharedTags.length > 0;
-  }).slice(0, 8);
-}
-
+// Extract IDs for different video providers
 function extractVimeoId(url) {
-  if (!url) return null;
-  const regex = /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)/;
-  const match = url.match(regex);
-  return match ? match[1] : null;
+  if (!url) return null
+  const regex = /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)/
+  const match = url.match(regex)
+  return match ? match[1] : null
 }
+
+function extractYouTubeId(url) {
+  if (!url) return null
+  const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/
+  const match = url.match(regex)
+  return match ? match[1] : null
+}
+
+// Get related items based on shared tags
+function getRelatedItems(item) {
+  if (!item.tags || !props.items) return []
+  
+  return props.items
+    .filter(i => i.slug !== item.slug)
+    .filter(i => {
+      if (!i.tags) return false
+      return item.tags.some(tag => i.tags.includes(tag))
+    })
+    .slice(0, 8)
+}
+
+// Watch for changes to initialIndex prop
+watch(() => props.initialIndex, (newIndex) => {
+  if (newIndex !== currentIndex.value && newIndex >= 0 && newIndex < props.items.length) {
+    currentIndex.value = newIndex
+  }
+}, { immediate: true })
 </script>
 
+<template>
+  <div class="folio-fullscreen">
+    <div v-if="currentItem">
+      <!-- Full screen media -->
+      <div class="media-fullscreen">
+        <!-- Direct video embed for playable videos -->
+        <div v-if="isVideoItem(currentItem)" class="video-fullscreen">
+          <iframe 
+            :src="getEmbedUrl(currentItem)"
+            :title="currentItem.title"
+            class="video-iframe"
+            frameborder="0" 
+            allow="autoplay; fullscreen; picture-in-picture" 
+            allowfullscreen
+          ></iframe>
+        </div>
+        
+        <!-- Image showcase for non-video items -->
+        <div v-else class="image-fullscreen" @click="openPresentation">
+          <img 
+            :src="getThumbnail(currentItem)" 
+            :alt="currentItem.title"
+            class="image-fill"
+          />
+          <div class="media-overlay">
+            <div class="media-play-indicator">⚏</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Content below media -->
+      <div class="content-below">
+        <!-- Navigation controls -->
+        <div class="nav-controls">
+          <button 
+            class="btn btn-ghost"
+            :disabled="currentIndex === 0"
+            @click="navigateTo(currentIndex - 1)"
+          >
+            ← Previous
+          </button>
+          
+          <div class="nav-position">
+            <span class="font-semibold">{{ currentIndex + 1 }}</span>
+            <span class="text-tertiary">/</span>
+            <span class="text-secondary">{{ items.length }}</span>
+          </div>
+          
+          <button 
+            class="btn btn-ghost"
+            :disabled="currentIndex === items.length - 1"
+            @click="navigateTo(currentIndex + 1)"
+          >
+            Next →
+          </button>
+        </div>
+        
+        <!-- Title and metadata -->
+        <div class="title-section">
+          <h1 class="work-title">{{ currentItem.title }}</h1>
+          <div class="work-meta">
+            <span v-if="currentItem.year" class="badge badge-secondary">{{ currentItem.year }}</span>
+            <span v-if="getMediaType(currentItem)" class="badge badge-primary">{{ getMediaType(currentItem) }}</span>
+          </div>
+        </div>
+        
+        <!-- Expandable details -->
+        <details class="work-details" :open="!detailsCollapsed">
+          <summary class="details-toggle" @click="detailsCollapsed = !detailsCollapsed">
+            <span class="details-label">Details</span>
+            <span class="details-icon">{{ detailsCollapsed ? '↓' : '↑' }}</span>
+          </summary>
+          
+          <div class="details-content">
+            <div v-if="currentItem.description" class="work-description">
+              {{ currentItem.description }}
+            </div>
+            
+            <!-- Tags -->
+            <div v-if="getStructuredTags(currentItem).length" class="tags-section">
+              <div 
+                v-for="tagGroup in getStructuredTags(currentItem)" 
+                :key="tagGroup.category"
+                class="tag-group-row"
+              >
+                <span class="tag-category">{{ tagGroup.category }}</span>
+                <div class="tag-items">
+                  <TagDisplay
+                    v-for="value in tagGroup.values" 
+                    :key="value"
+                    :tag="formatTagValue(value)"
+                    variant="secondary"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="actions-row">
+              <a 
+                :href="currentItem.path ? `${currentItem.path}.html` : `/workbook/${currentItem.slug}.html`" 
+                class="btn btn-primary"
+              >
+                View Details
+              </a>
+              <button 
+                v-if="getRelatedItems(currentItem).length"
+                class="btn btn-secondary"
+                @click="showRelated = !showRelated"
+              >
+                Related ({{ getRelatedItems(currentItem).length }})
+              </button>
+            </div>
+            
+            <!-- Related items -->
+            <div v-if="showRelated" class="related-section">
+              <h3 class="related-title">Related Works</h3>
+              <div class="gallery-grid">
+                <div 
+                  v-for="related in getRelatedItems(currentItem).slice(0, 4)" 
+                  :key="related.slug"
+                  class="card card-interactive"
+                  @click="navigateToItem(related)"
+                >
+                  <MediaThumbnail 
+                    :item="related"
+                    :size="'sm'"
+                  />
+                  <div class="card-body">
+                    <span class="card-title">{{ related.title }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style scoped>
-/* CSS Custom Properties for consistency */
-:root {
-  --folio-spacing-xs: 0.5rem;
-  --folio-spacing-sm: 1rem;
-  --folio-spacing-md: 1.5rem;
-  --folio-spacing-lg: 2rem;
-  --folio-spacing-xl: 3rem;
-  
-  --folio-border-radius-sm: 6px;
-  --folio-border-radius-md: 8px;
-  --folio-border-radius-lg: 12px;
-  
-  --folio-transition-fast: 0.2s ease;
-  --folio-transition-smooth: 0.3s ease;
-  
-  --folio-shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --folio-shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --folio-shadow-strong: 0 8px 32px rgba(0, 0, 0, 0.12);
-}
-
-/* Utility Classes */
-.btn {
-  padding: var(--folio-spacing-sm) var(--folio-spacing-md);
-  border-radius: var(--folio-border-radius-md);
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  transition: var(--folio-transition-fast);
-}
-
-.btn-primary {
-  background: var(--vp-c-brand);
-  color: white;
-}
-
-.btn-secondary {
-  background: var(--vp-c-bg-soft);
-  color: var(--vp-c-text-1);
-  border: 1px solid var(--vp-c-divider);
-}
-
-.btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: var(--folio-shadow-medium);
-}
-
-.btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.card {
-  background: var(--vp-c-bg-soft);
-  border-radius: var(--folio-border-radius-lg);
-  overflow: hidden;
-  transition: var(--folio-transition-smooth);
-}
-
-.grid-auto {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--folio-spacing-md);
-}
-
-/* Component Styles */
-.workbook-folio {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--folio-spacing-lg) 0;
-}
-
-/* Top Controls */
-.folio-controls {
+/* Full screen folio layout */
+.folio-fullscreen {
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+}
+
+.media-fullscreen {
+  flex: 1;
+  display: flex;
   align-items: center;
-  gap: var(--folio-spacing-lg);
-  margin-bottom: var(--folio-spacing-xl);
-  padding: var(--folio-spacing-sm);
-  background: var(--vp-c-bg-soft);
-  border-radius: var(--folio-border-radius-lg);
+  justify-content: center;
+  min-height: 70vh;
+  background: var(--surface-primary);
 }
 
-.nav-button {
-  padding: var(--folio-spacing-sm) var(--folio-spacing-md);
-  border-radius: var(--folio-border-radius-md);
-  border: 1px solid var(--vp-c-divider);
-  background: var(--vp-c-bg-soft);
-  color: var(--vp-c-text-1);
-  cursor: pointer;
-  font-weight: 500;
-  transition: var(--folio-transition-fast);
-  padding: 0.75rem var(--folio-spacing-md);
+.video-fullscreen {
+  width: 100%;
+  max-width: 1400px;
+  aspect-ratio: 16/9;
 }
 
-.nav-button:hover:not(:disabled) {
-  background: var(--vp-c-brand-soft);
-  border-color: var(--vp-c-brand);
-  transform: translateY(-1px);
-  box-shadow: var(--folio-shadow-medium);
+.video-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
 }
 
-.nav-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.position-indicator {
-  font-weight: 500;
-  color: var(--vp-c-text-1);
-  font-size: 1rem;
-}
-
-/* Media Display */
-.folio-item {
-  margin-bottom: var(--folio-spacing-xl);
-}
-
-.folio-media {
-  margin-bottom: var(--folio-spacing-lg);
-}
-
-.media-container {
+.image-fullscreen {
   position: relative;
-  border-radius: var(--folio-border-radius-lg);
-  overflow: hidden;
+  width: 100%;
+  max-width: 1400px;
   cursor: pointer;
-  transition: var(--folio-transition-smooth);
-  box-shadow: var(--folio-shadow-subtle);
+  transition: var(--transition-base);
 }
 
-.media-container:hover {
-  transform: scale(1.01);
-  box-shadow: var(--folio-shadow-strong);
+.image-fullscreen:hover {
+  transform: scale(1.02);
 }
 
-.media-image {
+.image-fill {
   width: 100%;
   height: auto;
-  display: block;
-  aspect-ratio: 16/9;
-  object-fit: cover;
+  max-height: 70vh;
+  object-fit: contain;
 }
 
 .media-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: var(--folio-transition-smooth);
+  transition: var(--transition-base);
 }
 
-.media-container:hover .media-overlay {
+.image-fullscreen:hover .media-overlay {
   opacity: 1;
 }
 
-.play-icon {
-  font-size: 3rem;
+.media-play-indicator {
+  font-size: var(--text-5xl);
   color: white;
   background: rgba(0, 0, 0, 0.7);
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   width: 80px;
   height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--folio-transition-fast);
+  backdrop-filter: blur(8px);
+  transition: var(--transition-base);
 }
 
-.media-container:hover .play-icon {
+.image-fullscreen:hover .media-play-indicator {
   transform: scale(1.1);
 }
 
-/* Collapsible Content */
-.folio-content {
-  background: var(--vp-c-bg-soft);
-  border-radius: var(--folio-border-radius-lg);
-  overflow: hidden;
-  transition: var(--folio-transition-smooth);
+.content-below {
+  background: var(--surface-secondary);
+  padding: var(--space-8);
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-.content-toggle {
+.nav-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-4);
+  border-bottom: var(--border-width) solid var(--border-primary);
+}
+
+.nav-position {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.title-section {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.work-title {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-3);
+}
+
+.work-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.work-details {
+  width: 100%;
+}
+
+.details-toggle {
   width: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: var(--folio-spacing-sm) var(--folio-spacing-md);
-  background: var(--vp-c-bg-alt);
+  justify-content: space-between;
+  padding: var(--space-3) 0;
+  background: transparent;
   border: none;
   cursor: pointer;
-  font-weight: 500;
-  color: var(--vp-c-text-1);
-  transition: var(--folio-transition-fast);
+  transition: var(--transition-base);
+  list-style: none;
+  border-bottom: var(--border-width) solid var(--border-primary);
 }
 
-.content-toggle:hover {
-  background: var(--vp-c-bg-soft);
+.details-toggle::-webkit-details-marker {
+  display: none;
 }
 
-.toggle-icon {
-  transition: var(--folio-transition-fast);
-  font-size: 0.8rem;
+.details-label {
+  font-size: var(--text-lg);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
 }
 
-.toggle-icon.rotated {
-  transform: rotate(180deg);
+.details-icon {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  transition: var(--transition-fast);
 }
 
-.content-expanded {
-  padding: var(--folio-spacing-lg);
+.details-content {
+  padding-top: var(--space-6);
 }
 
-/* Content Sections */
-.folio-header {
-  margin-bottom: var(--folio-spacing-lg);
+.work-description {
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-6);
+  text-align: center;
+  max-width: 65ch;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.folio-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0 0 var(--folio-spacing-xs);
-  line-height: 1.2;
+.tags-section {
+  margin-bottom: var(--space-6);
 }
 
-.folio-meta {
+.tag-group-row {
   display: flex;
-  gap: var(--folio-spacing-md);
-  color: var(--vp-c-text-2);
-  font-size: 0.95rem;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border-width) solid var(--border-tertiary);
 }
 
-.folio-description {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin-bottom: var(--folio-spacing-lg);
-  color: var(--vp-c-text-1);
+.tag-group-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
-/* Tags */
-.folio-tags {
-  margin-bottom: var(--folio-spacing-lg);
-}
-
-.tag-group {
-  display: flex;
-  align-items: center;
-  gap: var(--folio-spacing-sm);
-  margin-bottom: var(--folio-spacing-sm);
-}
-
-.tag-label {
-  font-weight: 600;
-  color: var(--vp-c-text-1);
+.tag-category {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
   min-width: 80px;
-  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.tag-values {
+.tag-items {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--folio-spacing-xs);
+  gap: var(--space-2);
+  flex: 1;
 }
 
-.tag-value {
-  background: var(--vp-c-bg-soft);
-  padding: 0.3rem var(--folio-spacing-sm);
-  border-radius: 16px;
-  font-size: 0.85rem;
-  color: var(--vp-c-text-1);
-  border: 1px solid var(--vp-c-divider);
-}
-
-/* Actions */
-.folio-actions {
+.actions-row {
   display: flex;
-  gap: var(--folio-spacing-sm);
-  margin-bottom: var(--folio-spacing-lg);
+  gap: var(--space-3);
+  justify-content: center;
+  margin-bottom: var(--space-6);
 }
 
-.action-button {
-  padding: var(--folio-spacing-sm) var(--folio-spacing-md);
-  border-radius: var(--folio-border-radius-md);
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  transition: var(--folio-transition-fast);
-  padding: 0.75rem var(--folio-spacing-md);
-  text-decoration: none;
-  font-size: 0.95rem;
-}
-
-.action-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: var(--folio-shadow-medium);
-}
-
-.action-button.primary {
-  background: var(--vp-c-brand);
-  color: white;
-}
-
-.action-button.secondary {
-  background: var(--vp-c-bg-soft);
-  color: var(--vp-c-text-1);
-  border: 1px solid var(--vp-c-divider);
-}
-
-/* Related Items */
 .related-section {
-  margin-top: var(--folio-spacing-lg);
-  padding-top: var(--folio-spacing-lg);
-  border-top: 1px solid var(--vp-c-divider);
-}
-
-.related-section h3 {
-  margin-bottom: var(--folio-spacing-md);
-  font-size: 1.2rem;
-}
-
-.related-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--folio-spacing-md);
-}
-
-.related-item {
-  background: var(--vp-c-bg-soft);
-  border-radius: var(--folio-border-radius-lg);
-  overflow: hidden;
-  transition: var(--folio-transition-smooth);
-  cursor: pointer;
-  transition: var(--folio-transition-fast);
-}
-
-.related-item:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--folio-shadow-medium);
-}
-
-.related-item img {
-  width: 100%;
-  height: 100px;
-  object-fit: cover;
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: var(--border-width) solid var(--border-secondary);
 }
 
 .related-title {
-  display: block;
-  padding: var(--folio-spacing-sm);
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-4);
+  text-align: center;
 }
 
-/* Bottom Pagination */
-.folio-pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--folio-spacing-lg);
-  margin-top: var(--folio-spacing-xl);
-  padding: var(--folio-spacing-md);
-  background: var(--vp-c-bg-soft);
-  border-radius: var(--folio-border-radius-lg);
-}
-
-/* Responsive */
+/* Mobile responsive */
 @media (max-width: 768px) {
-  .folio-title {
-    font-size: 1.5rem;
+  .content-below {
+    padding: var(--space-4);
   }
   
-  .folio-actions {
+  .nav-controls {
     flex-direction: column;
+    gap: var(--space-3);
   }
   
-  .tag-group {
+  .work-title {
+    font-size: var(--text-2xl);
+  }
+  
+  .tag-group-row {
     flex-direction: column;
-    align-items: flex-start;
-    gap: var(--folio-spacing-xs);
+    gap: var(--space-2);
   }
   
-  .tag-label {
+  .tag-category {
     min-width: auto;
   }
   
-  .related-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  .actions-row {
+    flex-direction: column;
+    align-items: center;
   }
 }
 </style>

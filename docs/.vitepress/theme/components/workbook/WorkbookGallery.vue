@@ -1,34 +1,29 @@
-<!-- docs/.vitepress/theme/components/workbook/WorkbookGallery.vue -->
+<!-- WorkbookGallery.vue - Transformed using semantic atomic design system -->
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useData } from 'vitepress'
-import { getVideoThumbnail } from '../../utils/mediaUtils'
+import MediaThumbnail from '../common/MediaThumbnail.vue'
+
+// Emit events for parent component
+const emit = defineEmits(['item-click'])
 
 // Function to extract Vimeo ID
 function extractVimeoId(url) {
   if (!url) return null;
-  
   const regex = /(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)/;
   const match = url.match(regex);
-  
   return match ? match[1] : null;
 }
 
 // Function to extract YouTube ID
 function extractYouTubeId(url) {
   if (!url) return null;
-  
   const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/;
   const match = url.match(regex);
-  
   return match ? match[1] : null;
 }
 
 const { theme } = useData()
-
-onMounted(() => {
-  console.log('Workbook Items:', theme.value.workbookItems)
-})
 
 const props = defineProps({
   items: {
@@ -37,73 +32,21 @@ const props = defineProps({
   }
 })
 
-// Active tag filter
-const activeTag = ref('')
-
-// Filtered items based on tag selection
-const filteredItems = computed(() => {
-  if (!activeTag.value) return props.items
-  
-  return props.items.filter(item => 
-    item.tags && item.tags.includes(activeTag.value)
-  )
-})
-
-// Collect all unique tags
-const allTags = computed(() => {
-  const tags = new Set()
-  
-  props.items.forEach(item => {
-    if (item.tags) {
-      item.tags.forEach(tag => tags.add(tag))
-    }
-  })
-  
-  return Array.from(tags).sort()
-})
-
-// Format tag for display
-function formatTag(tag) {
-  if (!tag) return '';
-  
-  // Check if it's a structured tag (contains a colon)
-  if (tag.includes(':')) {
-    const [category, value] = tag.split(':', 2);
-    
-    // Format the value part (replace hyphens with spaces, capitalize)
-    const formattedValue = value
-      .replace(/-/g, ' ')
-      .replace(/\b\w/g, l => l.toUpperCase());
-    
-    return formattedValue;
-  }
-  
-  // If not a structured tag, just return as is
-  return tag;
-}
-
-// Set active tag
-function setTag(tag) {
-  activeTag.value = tag === activeTag.value ? '' : tag
-}
-
 // Generate a thumbnail URL for items based on media type
 function getThumbnail(item) {
   // Check if the item has a thumbnailUrl property set in the config
   if (item.thumbnailUrl) {
-    console.log('Using item.thumbnailUrl:', item.thumbnailUrl);
     return item.thumbnailUrl;
   }
 
   // Check if the item has a Cloudflare thumbnail URL in media object
   if (item.media?.thumbnail) {
-    console.log('Using Cloudflare thumbnail:', item.media.thumbnail);
     return item.media.thumbnail;
   }
 
-  // If the item doesn't have media, use a placeholder
+  // If the item doesn't have media, return null for placeholder
   if (!item.media) {
-    return '/media/video-placeholder.svg';
+    return null;
   }
   
   // Process based on media type - fallback to static thumbnails
@@ -111,12 +54,8 @@ function getThumbnail(item) {
     // Handle Vimeo videos
     if (item.media.provider === 'vimeo') {
       const vimeoId = extractVimeoId(item.media.url);
-      console.log('Vimeo ID:', vimeoId, 'URL:', item.media.url);
       if (vimeoId) {
-        // Use path that matches VitePress public directory structure
-        const thumbnailUrl = `/media/thumbnails/vimeo-${vimeoId}.jpg`;
-        console.log('Using fallback thumbnail URL:', thumbnailUrl);
-        return thumbnailUrl;
+        return `/media/thumbnails/vimeo-${vimeoId}.jpg`;
       }
     }
     
@@ -124,7 +63,6 @@ function getThumbnail(item) {
     if (item.media.provider === 'youtube') {
       const youtubeId = extractYouTubeId(item.media.url);
       if (youtubeId) {
-        // Use path that matches VitePress public directory structure
         return `/media/thumbnails/youtube-${youtubeId}.jpg`;
       }
     }
@@ -135,67 +73,47 @@ function getThumbnail(item) {
     return item.media.url;
   }
   
-  // Fallback to a placeholder
-  return '/media/video-placeholder.svg';
+  // Return null for MediaThumbnail to handle fallback
+  return null;
 }
 
-// Generate a display title for the media type
-function getMediaTypeDisplay(item) {
+// Generate fallback text for media type
+function getMediaFallbackText(item) {
   if (!item.media) return 'Project'
-  
   const type = item.media.type || 'media'
   return type.charAt(0).toUpperCase() + type.slice(1)
+}
+
+// Get appropriate aspect ratio based on media type
+function getAspectRatio(item) {
+  if (item.media?.type === 'video') {
+    return 'wide' // 16:9 aspect ratio for videos
+  }
+  return 'standard' // Default aspect ratio for other content
 }
 </script>
 
 <template>
   <div class="workbook-gallery">
-    <!-- Tag filters -->
-    <div v-if="allTags.length" class="tag-filters">
-      <button 
-        class="tag-filter" 
-        :class="{ active: !activeTag }"
-        @click="activeTag = ''"
-      >
-        All
-      </button>
-      <button 
-        v-for="tag in allTags" 
-        :key="tag"
-        class="tag-filter"
-        :class="{ active: activeTag === tag }"
-        @click="setTag(tag)"
-      >
-        {{ formatTag(tag) }}
-      </button>
-    </div>
-    
-    <!-- Gallery grid -->
-    <div class="gallery-grid">
-      <a 
-        v-for="item in filteredItems" 
+    <!-- Semantic gallery grid with 3-column layout to match pins spacing -->
+    <div class="gallery-grid-large spacing-scaled">
+      <div 
+        v-for="item in props.items" 
         :key="item.slug"
-        :href="`/workbook/${item.slug}.html`"
-        class="gallery-item"
+        class="card-interactive"
+        @click="emit('item-click', item)"
       >
-        <!-- Item thumbnail or preview -->
-        <div class="item-media">
-          <div v-if="item.media?.type === 'video'" class="media-badge video">
-            <span class="material-icons">videocam</span>
-          </div>
-          
-          <div v-if="!item.media" class="placeholder-media">
-            {{ getMediaTypeDisplay(item) }}
-          </div>
-          <img 
-            v-else 
-            :src="getThumbnail(item)" 
-            :alt="item.title"
-          />
-        </div>
+        <!-- Reusable media thumbnail component -->
+        <MediaThumbnail
+          :thumbnail-url="getThumbnail(item)"
+          :type="item.media?.type"
+          :alt="item.title"
+          :fallback-text="getMediaFallbackText(item)"
+          :aspect-ratio="getAspectRatio(item)"
+        />
         
-        <!-- Item details -->
-        <div class="item-details">
+        <!-- Card content -->
+        <div class="card-content">
           <h3 class="item-title">{{ item.title }}</h3>
           
           <div v-if="item.description" class="item-description">
@@ -205,131 +123,32 @@ function getMediaTypeDisplay(item) {
           <div v-if="item.year" class="item-date">
             {{ item.year }}
           </div>
-          
-          <div v-if="item.tags && item.tags.length" class="item-tags">
-            <span v-for="tag in item.tags.slice(0, 3)" :key="tag" class="item-tag">
-              {{ formatTag(tag) }}
-            </span>
-            <span v-if="item.tags.length > 3" class="more-tags">
-              +{{ item.tags.length - 3 }} more
-            </span>
-          </div>
         </div>
-      </a>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* Minimal component-specific styles only */
 .workbook-gallery {
   width: 100%;
 }
 
-.tag-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-}
-
-.tag-filter {
-  background: var(--vp-c-bg-soft);
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-}
-
-.tag-filter:hover {
-  background: var(--vp-c-brand-soft);
-}
-
-.tag-filter.active {
-  background: var(--vp-c-brand);
-  color: white;
-}
-
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
-}
-
-.gallery-item {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  transition: var(--transition-base);
-  box-shadow: var(--shadow-sm);
-}
-
-.gallery-item:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-}
-
-.item-media {
-  height: 200px;
-  background-color: var(--vp-c-bg-soft);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  position: relative;
-}
-
-.item-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.media-badge {
-  position: absolute;
-  top: var(--space-2);
-  right: var(--space-2);
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  border-radius: var(--radius-full);
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
-}
-
-.media-badge.video span {
-  font-size: 18px;
-}
-
-.placeholder-media {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  background-color: var(--vp-c-bg-alt);
-  color: var(--vp-c-text-2);
-  font-size: var(--text-xl);
-}
-
-.item-details {
+.card-content {
   padding: var(--space-4);
 }
 
 .item-title {
   margin: 0 0 var(--space-2);
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-tight);
 }
 
 .item-description {
   font-size: var(--text-sm);
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
   margin-bottom: var(--space-2);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -339,34 +158,7 @@ function getMediaTypeDisplay(item) {
 
 .item-date {
   font-size: var(--text-xs);
-  color: var(--vp-c-text-3);
+  color: var(--text-tertiary);
   margin-bottom: var(--space-2);
-}
-
-.item-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-  align-items: center;
-}
-
-.item-tag {
-  font-size: var(--text-xs);
-  background-color: var(--vp-c-bg-soft);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-}
-
-.more-tags {
-  font-size: var(--text-xs);
-  color: var(--vp-c-text-3);
-  margin-left: var(--space-1);
-}
-
-@media (max-width: 768px) {
-  .gallery-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: var(--space-6);
-  }
 }
 </style>
