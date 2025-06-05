@@ -134,16 +134,18 @@ const getGroupId = (name) => {
 
 /* Compact layout - thumbnails only, more columns */
 .pin-grid.compact .pins-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--space-3);
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+  gap: var(--space-3) !important;
+  width: 100% !important;
 }
 
 /* Detailed layout - thumbnails + metadata, fewer columns */
 .pin-grid.detailed .pins-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--space-4);
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+  gap: var(--space-4) !important;
+  width: 100% !important;
 }
 
 /* Responsive adjustments */

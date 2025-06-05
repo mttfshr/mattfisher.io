@@ -132,7 +132,7 @@ function formatCollectionName(id) {
 const searchQuery = ref('')
 const currentPage = ref(1)
 const pageSize = ref(50)
-const layout = ref('grid') // grid, masonry, list
+const layout = ref('compact') // 'compact' or 'detailed' - updated to match new layout system
 const selectedPin = ref(null)
 const selectedTypes = ref([])
 const selectedCollection = ref(null)

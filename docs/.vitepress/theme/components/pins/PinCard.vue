@@ -13,7 +13,7 @@ const props = defineProps({
   },
   layout: {
     type: String,
-    default: 'detailed', // 'compact' or 'detailed'
+    default: 'compact', // 'compact' or 'detailed' - match system default
     validator: (val) => ['compact', 'detailed'].includes(val)
   }
 })

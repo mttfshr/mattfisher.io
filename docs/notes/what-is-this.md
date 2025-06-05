@@ -1,6 +1,6 @@
 ---
 title: What is this?
-description: 'A place to collect and share ideas, projects, and notes between formal releases.'
+description: ''
 ---
 
 # What is this?

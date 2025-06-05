@@ -1,6 +1,6 @@
 <!-- GlobalLayout.vue - Complete site navigation replacement -->
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useData, useRoute } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import AppBar from '../components/common/AppBar.vue'
@@ -9,7 +9,20 @@ import Icon from '../components/common/Icon.vue'
 
 const { Layout } = DefaultTheme
 const route = useRoute()
-const { theme } = useData()
+const { theme, frontmatter } = useData() // Move useData outside computed
+
+// Force reactivity by creating a ref that triggers on route changes
+const routeKey = ref(0)
+
+// Watch route changes and force re-evaluation
+watch(() => route.path, (newPath, oldPath) => {
+  if (newPath !== oldPath) {
+    nextTick(() => {
+      routeKey.value++
+      // Force re-evaluation of computed properties
+    })
+  }
+}, { immediate: true })
 
 // Global navigation items for rail drawer
 const navItems = [
@@ -36,14 +49,20 @@ const navItems = [
   }
 ]
 
-const currentPath = computed(() => route.path)
+const currentPath = computed(() => {
+  routeKey.value // Force reactivity
+  return route.path
+})
 
-// Get page title from frontmatter or route
+// Get page title from frontmatter or route (with forced reactivity)
 const pageTitle = computed(() => {
-  const { frontmatter } = useData()
+  // Force reactivity trigger
+  routeKey.value
+  
+  const currentPath = route.path
   
   // Special handling for home page
-  if (route.path === '/') {
+  if (currentPath === '/') {
     return frontmatter.value.title || 'Home'
   }
   
@@ -53,7 +72,7 @@ const pageTitle = computed(() => {
   }
   
   // Derive from route path
-  const pathSegments = route.path.split('/').filter(Boolean)
+  const pathSegments = currentPath.split('/').filter(Boolean)
   if (pathSegments.length === 0) return 'Home'
   
   const lastSegment = pathSegments[pathSegments.length - 1]
@@ -68,9 +87,16 @@ const pageTitle = computed(() => {
   }
 })
 
-// Page-specific action detection
-const showWorkbookActions = computed(() => route.path.includes('/workbook'))
-const showPinsActions = computed(() => route.path.includes('/pins'))
+// Page-specific action detection (with forced reactivity)
+const showWorkbookActions = computed(() => {
+  routeKey.value // Force reactivity
+  return route.path.includes('/workbook')
+})
+
+const showPinsActions = computed(() => {
+  routeKey.value // Force reactivity
+  return route.path.includes('/pins')
+})
 
 // Workbook actions state
 const workbookTab = ref('items')
