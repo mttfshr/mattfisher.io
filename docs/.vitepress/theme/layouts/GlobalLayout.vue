@@ -1,15 +1,15 @@
-<!-- GlobalLayout.vue - Complete site navigation replacement -->
+<!-- GlobalLayout.vue - PWA-inspired layout with breadcrumb + bottom navigation -->
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useData, useRoute } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import AppBar from '../components/common/AppBar.vue'
-import RailNav from '../components/common/RailNav.vue'
+import BottomNav from '../components/common/BottomNav.vue'
 import Icon from '../components/common/Icon.vue'
 
 const { Layout } = DefaultTheme
 const route = useRoute()
-const { theme, frontmatter } = useData() // Move useData outside computed
+const { theme, frontmatter } = useData()
 
 // Force reactivity by creating a ref that triggers on route changes
 const routeKey = ref(0)
@@ -19,40 +19,9 @@ watch(() => route.path, (newPath, oldPath) => {
   if (newPath !== oldPath) {
     nextTick(() => {
       routeKey.value++
-      // Force re-evaluation of computed properties
     })
   }
 }, { immediate: true })
-
-// Global navigation items for rail drawer
-const navItems = [
-  { path: '/', label: 'Home', icon: 'Home' },
-  { path: '/workbook/', label: 'Workbook', icon: 'BookOpen' },
-  { path: '/pins/', label: 'Pins', icon: 'Pin' },
-  { path: '/log/', label: 'Log', icon: 'FileText' },
-  { path: '/notes/', label: 'Notes', icon: 'StickyNote' },
-  { 
-    path: '#', 
-    label: 'Links', 
-    icon: 'ExternalLink',
-    dropdown: [
-      { path: 'https://mattfisherstudio.com', label: 'studio', icon: 'Palette' },
-      { path: 'https://finishing-school-art.net', label: 'finishing school', icon: 'GraduationCap' },
-      { path: 'https://github.com/mttfshr', label: 'github', icon: 'Github' },
-      { path: 'https://bsky.app/profile/mattfisher.io', label: 'bluesky', icon: 'Cloud' },
-      { path: 'https://vimeo.com/mattfisherstudio', label: 'vimeo', icon: 'Video' },
-      { path: 'https://www.youtube.com/@mttfshr', label: 'youtube', icon: 'Play' },
-      { path: 'https://open.spotify.com/user/gradientfade', label: 'spotify', icon: 'Music' },
-      { path: 'https://bandcamp.com/mattfisher', label: 'bandcamp', icon: 'Disc' },
-      { path: 'https://discordapp.com/users/476778097404805145', label: 'discord', icon: 'MessageCircle' }
-    ]
-  }
-]
-
-const currentPath = computed(() => {
-  routeKey.value // Force reactivity
-  return route.path
-})
 
 // Get page title from frontmatter or route (with forced reactivity)
 const pageTitle = computed(() => {
@@ -106,10 +75,7 @@ const workbookDrawer = ref(false)
 const pinsLayout = ref('compact') // 'compact' = thumbnails only, 'detailed' = thumbnails + metadata
 const pinsDrawer = ref(false)
 
-// Mobile rail navigation state
-const mobileRailOpen = ref(false)
-
-// Responsive state
+// Mobile state
 const isMobile = ref(false)
 
 // Action handlers
@@ -133,13 +99,12 @@ const togglePinsDrawer = () => {
   window.dispatchEvent(new CustomEvent('pins-drawer-toggle', { detail: pinsDrawer.value }))
 }
 
-// Mobile rail navigation handler
-const toggleMobileRail = () => {
-  mobileRailOpen.value = !mobileRailOpen.value
+// Mobile navigation (no longer needed with bottom nav, but keeping for transition)
+const toggleMobileMenu = () => {
+  // This could trigger a mobile menu overlay if needed
+  console.log('Mobile menu toggle - consider implementing overlay for desktop navigation')
 }
 
-// Check if any drawer is open
-const anyDrawerOpen = computed(() => workbookDrawer.value || pinsDrawer.value)
 onMounted(() => {
   const checkMobile = () => {
     isMobile.value = window.innerWidth <= 768
@@ -170,95 +135,35 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="global-layout" :class="{ 'custom-page': isCustomPage }">
-    <!-- Global App Bar with page-specific actions -->
+  <div class="global-layout">
+    <!-- PWA-inspired app bar with breadcrumb navigation -->
     <AppBar 
       :title="pageTitle" 
       site-title="Matt Fisher" 
-      :show-menu-button="isMobile"
-      @menu-click="toggleMobileRail"
+      :show-menu-button="false"
+      :workbook-tab="workbookTab"
+      :pins-layout="pinsLayout"
+      :workbook-drawer="workbookDrawer"
+      :pins-drawer="pinsDrawer"
+      @menu-click="toggleMobileMenu"
+      @workbook-tab-change="setWorkbookTab"
+      @pins-layout-change="setPinsLayout"
+      @workbook-drawer-toggle="toggleWorkbookDrawer"
+      @pins-drawer-toggle="togglePinsDrawer"
     >
       <template #actions>
-        <!-- Workbook-specific actions -->
-        <template v-if="showWorkbookActions">
-          <button 
-            class="btn-icon" 
-            :class="{ active: workbookTab === 'folio' }" 
-            @click="setWorkbookTab('folio')"
-            title="Folio view"
-          >
-            <Icon name="BookOpen" :size="20" />
-          </button>
-          <button 
-            class="btn-icon" 
-            :class="{ active: workbookTab === 'items' }" 
-            @click="setWorkbookTab('items')"
-            title="Gallery view"
-          >
-            <Icon name="Grid3x3" :size="20" />
-          </button>
-          <button 
-            class="btn-icon" 
-            :class="{ active: workbookTab === 'collections' }" 
-            @click="setWorkbookTab('collections')"
-            title="Collections view"
-          >
-            <Icon name="Tags" :size="20" />
-          </button>
-          <button 
-            v-show="workbookTab === 'items'"
-            @click="toggleWorkbookDrawer" 
-            class="btn-icon"
-            :class="{ active: workbookDrawer }"
-            :title="workbookDrawer ? 'Hide filters' : 'Show filters'"
-          >
-            <Icon name="Funnel" :size="20" />
-          </button>
-        </template>
-        
-        <!-- Pins-specific actions -->
-        <template v-if="showPinsActions">
-          <button 
-            class="btn-icon" 
-            :class="{ active: pinsLayout === 'compact' }" 
-            @click="setPinsLayout('compact')"
-            title="Compact view - thumbnails only"
-          >
-            <Icon name="Grid3x3" :size="20" />
-          </button>
-          <button 
-            class="btn-icon" 
-            :class="{ active: pinsLayout === 'detailed' }" 
-            @click="setPinsLayout('detailed')"
-            title="Detailed view - thumbnails + metadata"
-          >
-            <Icon name="SquareStack" :size="20" />
-          </button>
-          <button 
-            @click="togglePinsDrawer"
-            class="btn-icon"
-            :class="{ active: pinsDrawer }"
-            title="Toggle filters"
-          >
-            <Icon name="Funnel" :size="20" />
-          </button>
-        </template>
+        <!-- Actions slot now empty - view controls moved to breadcrumb -->
       </template>
     </AppBar>
 
-    <!-- Global Rail Navigation (always visible) -->
-    <RailNav 
-      :items="navItems" 
-      :current-path="currentPath"
-      :mobile-open="mobileRailOpen"
-      @mobile-close="mobileRailOpen = false"
-    />
-
-    <!-- Main content area with rail nav offset -->
+    <!-- Main content area (no rail offset needed) -->
     <main class="global-content">
       <!-- Use default VitePress layout for content -->
       <Layout />
     </main>
+
+    <!-- PWA bottom navigation (mobile only) -->
+    <BottomNav />
   </div>
 </template>
 
@@ -271,21 +176,20 @@ onMounted(() => {
 
 .global-content {
   flex: 1;
-  margin-left: 72px; /* Rail nav width */
   padding-top: 56px; /* App bar height */
-  transition: margin-left var(--transition-base);
+  /* Remove rail navigation margin - we're going full-width */
+  margin-left: 0;
+  transition: none; /* Remove transition since no rail */
 }
 
-/* No content shifting - both drawers overlay content */
-
-/* Hide VitePress default navigation on custom pages */
-.custom-page :deep(.VPNav),
-.custom-page :deep(.VPLocalNav),
-.custom-page :deep(.VPSidebar) {
+/* Hide VitePress default navigation completely */
+:deep(.VPNav),
+:deep(.VPLocalNav),
+:deep(.VPSidebar) {
   display: none !important;
 }
 
-/* Override VitePress content positioning for rail navigation */
+/* Override VitePress content positioning for full-width layout */
 :deep(.VPDoc) {
   padding: 0 !important;
 }
@@ -341,11 +245,35 @@ onMounted(() => {
 /* Mobile responsive */
 @media (max-width: 768px) {
   .global-content {
-    margin-left: 0;
+    /* Add bottom padding to account for bottom navigation */
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
   }
   
   .global-content :deep(.VPDoc .content) {
     padding: var(--space-4) var(--space-4) var(--space-6) var(--space-4) !important;
   }
+}
+
+/* Action buttons (moved from old rail nav) */
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-icon:hover {
+  background: var(--surface-secondary);
+}
+
+.btn-icon.active {
+  background: var(--surface-accent-subtle);
+  color: var(--accent-primary);
 }
 </style>

@@ -73,6 +73,40 @@
   height: auto;
 }
 
+/* Standard container (default) */
+.media-container-standard {
+  aspect-ratio: 16/9;
+  height: auto;
+}
+
+/* Square video specific enhancements */
+.media-container-square {
+  aspect-ratio: 1;
+  height: auto;
+  /* Ensure square videos don't get too large */
+  max-width: min(100%, 400px);
+}
+
+/* Gallery-specific constraints for square videos */
+.gallery-grid-large .media-container-square,
+.gallery-grid-xlarge .media-container-square {
+  /* Constrain square videos in gallery context */
+  max-width: min(100%, 350px);
+  margin: 0 auto; /* Center the square videos */
+}
+
+/* Responsive adjustments for square videos */
+@media (max-width: 768px) {
+  .media-container-square {
+    max-width: 100%;
+  }
+  
+  .gallery-grid-large .media-container-square,
+  .gallery-grid-xlarge .media-container-square {
+    max-width: 100%;
+  }
+}
+
 /* ===================================================================
    INTERACTIVE STATES
    Semantic interaction feedback

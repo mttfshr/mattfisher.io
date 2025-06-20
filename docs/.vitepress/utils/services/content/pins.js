@@ -576,6 +576,11 @@ function extractPinsFromMarkdown(filePath, defaultSection = 'General', processed
       // Create pin object with unique ID
       const pinId = `pin-${uuidv4().substring(0, 8)}`;
       
+      // Create a timestamp that preserves file order (newer items have higher timestamps)
+      // Use a base date and subtract the line number to maintain chronological order
+      const baseDate = new Date();
+      const preservedOrderDate = new Date(baseDate.getTime() - (i * 1000)); // Each line is 1 second earlier
+      
       // Check if this URL is already in our processed cache
       if (processedPinsCache[url]) {
         // Use cached pin data, but update section if needed
@@ -626,7 +631,7 @@ function extractPinsFromMarkdown(filePath, defaultSection = 'General', processed
           metadata: processedData.metadata, // Structured metadata
           metadataSource: processedData.metadataSource, // Track which metadata was inferred vs manual
           section: currentSection,
-          pinDate: new Date().toISOString(), // Use current date as default
+          pinDate: preservedOrderDate.toISOString(), // Use preserved file order
           contentType, // Keep the original contentType for backward compatibility
           
           // OG data (with proper priority: OG first, then Cloudflare fallback)
@@ -667,7 +672,7 @@ function extractPinsFromMarkdown(filePath, defaultSection = 'General', processed
           metadata: { type: ['link'] },
           metadataSource: { type: 'fallback' },
           section: currentSection,
-          pinDate: new Date().toISOString(),
+          pinDate: preservedOrderDate.toISOString(), // Use preserved file order
           title: title || url,
           description: '',
           imageUrl: fallbackImageUrl,

@@ -42,6 +42,8 @@
   "dependencies": {
     "@fontsource-variable/kode-mono": "^5.2.5",
     "@fontsource/ibm-plex-mono": "^5.2.5",
+    "@fontsource/ibm-plex-sans": "^5.2.6",
+    "@fontsource/ibm-plex-serif": "^5.2.6",
     "@fontsource/monaspace-argon": "^5.2.5",
     "lucide-vue-next": "^0.513.0",
     "vitepress": "^1.6.3"

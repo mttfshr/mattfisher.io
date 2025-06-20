@@ -1,7 +1,7 @@
 <!-- CollectionsGallery.vue - Transformed using semantic atomic design system -->
 <script setup>
 import { computed, ref, onMounted } from 'vue'
-import { useData } from 'vitepress'
+import { useThemeData } from '../../composables/useThemeData.js'
 import TagDisplay from '../common/TagDisplay.vue'
 
 const props = defineProps({
@@ -11,14 +11,15 @@ const props = defineProps({
   }
 })
 
-const { theme } = useData()
+// Use composable for theme data access
+const { collections: themeCollections } = useThemeData()
 
 // Fallback to theme collections if not provided via props
 const allCollections = computed(() => {
   if (props.collections && props.collections.length > 0) {
     return props.collections
   }
-  return theme.value.collections || []
+  return themeCollections.value
 })
 
 onMounted(() => {

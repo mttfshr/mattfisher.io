@@ -1,9 +1,10 @@
 <!-- LogFeed.vue -->
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useData } from 'vitepress'
 import LogUpdate from './LogUpdate.vue'
 import LogSession from './LogSession.vue'
+import { useThemeData } from '../../composables/useThemeData'
+import { useLogFiltering } from '../../composables/useFiltering'
 
 const props = defineProps({
   entries: {
@@ -16,29 +17,27 @@ const props = defineProps({
   }
 })
 
-// Get data from theme config if not provided as prop
-const { theme } = useData()
-const entriesData = computed(() => {
+// Get theme data using composable
+const { logEntries, logSessions } = useThemeData()
+
+// Prepare combined entries for filtering
+const allEntries = computed(() => {
   if (props.entries && props.entries.length > 0) {
     return props.entries
   }
   
-  // Combine log entries and sessions from theme config
-  const logEntries = theme.value.logEntries || []
-  const sessions = theme.value.sessions || []
-  
   console.log('LogFeed - Building entries from theme:', {
-    logEntries: logEntries.length,
-    sessions: sessions.length
+    logEntries: logEntries.value.length,
+    sessions: logSessions.value.length
   })
   
-  const entries = logEntries.map(entry => ({
+  const entries = logEntries.value.map(entry => ({
     ...entry,
     type: 'entry',
     sortDate: new Date(entry.timestamp || entry.date)
   }));
   
-  const sessionItems = sessions.map(session => {
+  const sessionItems = logSessions.value.map(session => {
     console.log('Processing session:', session.session, 'date:', session.date)
     return {
       ...session,
@@ -57,12 +56,23 @@ const entriesData = computed(() => {
   return combined
 })
 
-const activeFilter = ref('all')
-const activeTypeFilter = ref('all')
+// Use filtering composable for advanced search and filtering
+const { 
+  searchQuery, 
+  activeFilters, 
+  filteredItems: filteredEntries,
+  setFilter,
+  clearAllFilters,
+  hasActiveFilters
+} = useLogFiltering(allEntries)
+
+// Legacy filter refs for backwards compatibility
+const activeFilter = computed(() => activeFilters.value.type || 'all')
+const activeTypeFilter = computed(() => activeFilters.value.type || 'all')
 
 const uniqueTags = computed(() => {
   const tags = new Set()
-  entriesData.value.forEach(entry => {
+  allEntries.value.forEach(entry => {
     if (entry.tags && entry.tags.length) {
       entry.tags.forEach(tag => tags.add(tag))
     }
@@ -70,43 +80,21 @@ const uniqueTags = computed(() => {
   return Array.from(tags).sort()
 })
 
-const filteredEntries = computed(() => {
-  // First filter by type (all, updates, sessions)
-  let typeFiltered = entriesData.value
-  
-  if (activeTypeFilter.value === 'updates') {
-    typeFiltered = entriesData.value.filter(entry => !entry.isClaudeSession)
-  } else if (activeTypeFilter.value === 'sessions') {
-    typeFiltered = entriesData.value.filter(entry => entry.isClaudeSession)
+// Event handlers for filter UI
+function setActiveFilter(filter) {
+  if (filter === 'all') {
+    setFilter('type', null)
+  } else {
+    setFilter('tags', [filter])
   }
-  
-  // Then filter by tags
-  if (activeFilter.value === 'all') {
-    return typeFiltered
-  }
-  
-  // Filter by tag
-  return typeFiltered.filter(entry => 
-    entry.tags && entry.tags.includes(activeFilter.value)
-  )
-})
-
-// Sort entries by date, newest first
-const sortedEntries = computed(() => {
-  return [...entriesData.value].sort((a, b) => {
-    // Handle both timestamp and date fields
-    const dateA = new Date(a.timestamp || a.date)
-    const dateB = new Date(b.timestamp || b.date)
-    return dateB - dateA
-  })
-})
-
-function setFilter(filter) {
-  activeFilter.value = filter
 }
 
-function setTypeFilter(filter) {
-  activeTypeFilter.value = filter
+function setTypeFilter(type) {
+  if (type === 'all') {
+    setFilter('type', null)
+  } else {
+    setFilter('type', type)
+  }
 }
 
 // Group entries by month/year for timeline display
@@ -187,7 +175,7 @@ const groupedByMonth = computed(() => {
         <button 
           class="filter-button btn btn-ghost" 
           :class="{ 'btn-primary': activeFilter === 'all' }"
-          @click="setFilter('all')"
+          @click="setActiveFilter('all')"
         >
           All
         </button>
@@ -197,7 +185,7 @@ const groupedByMonth = computed(() => {
           :key="tag"
           class="filter-button btn btn-ghost tag-filter" 
           :class="{ 'btn-primary': activeFilter === tag }"
-          @click="setFilter(tag)"
+          @click="setActiveFilter(tag)"
         >
           #{{ tag }}
         </button>

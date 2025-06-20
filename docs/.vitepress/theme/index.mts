@@ -4,8 +4,21 @@ import NoteLayout from './layouts/NoteLayout.vue'
 import WorkbookItemLayout from './layouts/WorkbookItemLayout.vue'
 import FolderIndexLayout from './layouts/FolderIndexLayout.vue'
 import '@fontsource-variable/source-sans-3';
-import '@fontsource/ibm-plex-mono/400.css'
-import '@fontsource/ibm-plex-mono/600.css'
+// IBM Plex Font Family - Complete Typography System
+import '@fontsource/ibm-plex-sans/300.css'     // Light
+import '@fontsource/ibm-plex-sans/400.css'     // Regular  
+import '@fontsource/ibm-plex-sans/500.css'     // Medium
+import '@fontsource/ibm-plex-sans/600.css'     // SemiBold
+import '@fontsource/ibm-plex-sans/700.css'     // Bold
+import '@fontsource/ibm-plex-serif/300.css'    // Light
+import '@fontsource/ibm-plex-serif/400.css'    // Regular
+import '@fontsource/ibm-plex-serif/400-italic.css' // Regular Italic
+import '@fontsource/ibm-plex-serif/500.css'    // Medium
+import '@fontsource/ibm-plex-serif/600.css'    // SemiBold
+import '@fontsource/ibm-plex-mono/400.css'     // Regular
+import '@fontsource/ibm-plex-mono/400-italic.css' // Regular Italic
+import '@fontsource/ibm-plex-mono/500.css'     // Medium
+import '@fontsource/ibm-plex-mono/600.css'     // SemiBold
 import './style.css'
 // Design Token System
 import './styles/design-tokens.css'
@@ -53,7 +66,8 @@ import PinsPage from './components/pins/PinsPage.vue'
 // Import common components
 import NavigationDrawer from './components/common/NavigationDrawer.vue'
 import AppBar from './components/common/AppBar.vue'
-import RailNav from './components/common/RailNav.vue'
+import BottomNav from './components/common/BottomNav.vue'
+import VimeoEmbed from './components/common/VimeoEmbed.vue'
 import Icon from './components/common/Icon.vue'
 import MainLayout from './components/common/MainLayout.vue'
 
@@ -94,7 +108,8 @@ export default {
     // Register common components
     app.component('NavigationDrawer', NavigationDrawer)
     app.component('AppBar', AppBar)
-    app.component('RailNav', RailNav)
+    app.component('BottomNav', BottomNav)
+    app.component('VimeoEmbed', VimeoEmbed)
     app.component('Icon', Icon)
     app.component('MainLayout', MainLayout)
     

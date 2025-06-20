@@ -1,7 +1,8 @@
 <!-- WorkbookPage.vue - Simplified structure -->
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useData, useRoute } from 'vitepress'
+import { useRoute } from 'vitepress'
+import { useThemeData } from '../../composables/useThemeData.js'
 import WorkbookFolio from './WorkbookFolio.vue'
 import WorkbookGallery from './WorkbookGallery.vue'
 import CollectionsGallery from '../collections/CollectionsGallery.vue'
@@ -9,10 +10,8 @@ import NavigationDrawer from '../common/NavigationDrawer.vue'
 import TagFilter from '../collections/TagFilter.vue'
 
 // Data and routing
-const { theme } = useData()
 const route = useRoute()
-const workbookItems = computed(() => theme.value.workbookItems || [])
-const collections = computed(() => theme.value.collections || [])
+const { workbookItems, collections } = useThemeData()
 
 // State
 const activeTab = ref('items')
@@ -92,7 +91,7 @@ watch(() => route.path, () => {
 <template>
   <div class="workbook-page">
     <!-- Folio view -->
-    <div v-show="activeTab === 'folio'" class="workbook-view">
+    <div v-if="activeTab === 'folio'" class="workbook-view">
       <WorkbookFolio 
         :items="sortedWorkbookItems" 
         :initial-index="initialFolioIndex"
@@ -102,15 +101,15 @@ watch(() => route.path, () => {
     </div>
     
     <!-- Gallery view -->
-    <div v-show="activeTab === 'items'" class="workbook-view">
+    <div v-if="activeTab === 'items'" class="workbook-view">
       <WorkbookGallery 
-        :items="filteredItems.length ? filteredItems : workbookItems" 
+        :items="filteredItems.length > 0 ? filteredItems : sortedWorkbookItems" 
         @item-click="navigateToItem"
       />
     </div>
     
     <!-- Collections view -->
-    <div v-show="activeTab === 'collections'" class="workbook-view">
+    <div v-if="activeTab === 'collections'" class="workbook-view">
       <div v-if="collections && collections.length === 0" class="empty-state">
         <div class="empty-state-icon">📁</div>
         <h3 class="empty-state-title">No Collections Found</h3>

@@ -89,11 +89,11 @@
     
     <!-- Pin detail modal -->
     <div v-if="selectedPin" class="modal-overlay flex items-center justify-center" @click="closePinDetail">
-      <div class="modal card animate-scale-in" @click.stop>
+      <div class="modal animate-scale-in" @click.stop>
         <button class="modal-close btn btn-ghost" @click="closePinDetail">×</button>
         <PinDetail
           :pin="selectedPin"
-          :related-pins="getRelatedPins(selectedPin)"
+          :related-pins="relatedPins"
           @tag-click="handleTagClick"
           @pin-click="openPinDetail"
         />
@@ -104,9 +104,19 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue';
-import { useData } from 'vitepress'; // Use VitePress useData composable
 import PinGrid from './PinGrid.vue';
 import PinDetail from './PinDetail.vue';
+import PinCard from '../common/PinCard.vue';
+import { useThemeData } from '../../composables/useThemeData';
+import { usePinModal } from '../../composables/useModal';
+
+<script setup>
+import { ref, computed, watch } from 'vue';
+import PinCard from '../common/PinCard.vue';
+import PinDetail from './PinDetail.vue';
+import { useThemeData } from '../../composables/useThemeData';
+import { usePinModal } from '../../composables/useModal';
+import { useFiltering } from '../../composables/useFiltering';
 
 const props = defineProps({
   defaultCollection: {
@@ -121,18 +131,12 @@ const props = defineProps({
 
 const emit = defineEmits(['update-collection']);
 
-// Get pins data from themeConfig
-const { theme } = useData();
-const pinsData = computed(() => theme.value.pins || { pins: [], contentTypes: [], allTags: [], userTags: [], sections: [] });
+// Use composables for shared functionality
+const { pins, pinsData, contentTypes, allTags, userTags } = useThemeData();
+const { selectedItem: selectedPin, openModal: openPinDetail, closeModal: closePinDetail, relatedItems: relatedPins } = usePinModal(pins);
 
-// State
-const pins = computed(() => pinsData.value.pins || []);
-const contentTypes = computed(() => pinsData.value.contentTypes || []);
-const allTags = computed(() => pinsData.value.allTags || []);
-const userTags = computed(() => pinsData.value.userTags || []);
-
+// Local state for collections-specific functionality
 const activeCollection = ref(props.defaultCollection);
-const selectedPin = ref(null);
 const moreMenuOpen = ref(false);
 const layout = ref('grid'); // grid, masonry, list
 const groupBy = ref('none'); // none, contentType, domain, section
@@ -229,20 +233,6 @@ const setActiveCollection = (id) => {
   }
 };
 
-// Open pin detail
-const openPinDetail = (pin) => {
-  selectedPin.value = pin;
-  // Disable scroll on body when modal is open
-  document.body.style.overflow = 'hidden';
-};
-
-// Close pin detail
-const closePinDetail = () => {
-  selectedPin.value = null;
-  // Restore scroll on body
-  document.body.style.overflow = '';
-};
-
 // Handle tag click
 const handleTagClick = (tag) => {
   // Find collection for this tag
@@ -254,30 +244,6 @@ const handleTagClick = (tag) => {
     // If no exact tag collection exists, add tag filter to current view
     console.log(`Tag ${tag} clicked, but no collection exists`);
   }
-};
-
-// Get related pins
-const getRelatedPins = (pin) => {
-  if (!pin) return [];
-  
-  // First try to find pins with matching tags
-  const withTags = pins.value.filter(p => 
-    p.id !== pin.id && 
-    p.tags.some(tag => pin.tags.includes(tag))
-  );
-  
-  // If we don't have enough, add same content type
-  if (withTags.length < 6) {
-    const sameType = pins.value.filter(p => 
-      p.id !== pin.id && 
-      p.contentType === pin.contentType &&
-      !withTags.includes(p)
-    );
-    
-    return [...withTags, ...sameType].slice(0, 6);
-  }
-  
-  return withTags.slice(0, 6);
 };
 
 // Format content type

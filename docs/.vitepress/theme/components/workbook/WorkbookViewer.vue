@@ -12,12 +12,13 @@
     
     <!-- Standard view -->
     <div class="workbook-content">
-      <!-- Media container using new component -->
-      <MediaContainer
-        v-if="workbookItem?.media"
-        :media="workbookItem.media"
+      <!-- Video embed using VimeoEmbed for proper aspect ratios -->
+      <VimeoEmbed
+        v-if="workbookItem?.media && getVimeoId(workbookItem.media.url)"
+        :video-id="getVimeoId(workbookItem.media.url)"
         :title="workbookItem.title"
-        :thumbnail-url="thumbnailUrl"
+        :show-presentation-button="true"
+        @toggle-presentation="togglePresentationMode"
       />
       
       <!-- Content below the media -->
@@ -74,7 +75,7 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useData } from 'vitepress';
-import MediaContainer from './MediaContainer.vue';
+import VimeoEmbed from '../common/VimeoEmbed.vue';
 import StructuredTagsDisplay from '../collections/StructuredTagsDisplay.vue';
 
 // Get VitePress data
@@ -82,6 +83,19 @@ const { page, theme } = useData();
 
 // Debug mode (set to false in production)
 const debugMode = ref(false);
+
+// Extract Vimeo ID from URL
+const getVimeoId = (url) => {
+  if (!url) return null;
+  const match = url.match(/vimeo\.com\/(\d+)/);
+  return match ? match[1] : null;
+};
+
+// Presentation mode handler
+const togglePresentationMode = () => {
+  // For now, just log - can be enhanced later with modal/fullscreen
+  console.log('Toggle presentation mode');
+};
 
 // Improved slug and filename extraction
 const slug = computed(() => {

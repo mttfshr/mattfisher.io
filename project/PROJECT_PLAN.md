@@ -73,32 +73,43 @@
 
 **Build Performance**: Consistent 8.30s build times with zero errors and complete functionality
 
-### Phase 5: Video System Modernization (NEXT PRIORITY)
-**Status**: Ready to begin - Address video aspect ratio issues and simplify video architecture
+### Phase 5: PWA-Inspired Complete Redesign (IN PROGRESS)
+**Status**: Comprehensive mobile-first navigation and video system overhaul with breaking changes
 
-**Core Problem**: Current video player hardcodes 16:9 aspect ratios, causing letterboxing of square videos (1:1)
+**Strategy Shift**: After identifying clunky mobile navigation experience when showing site to others, committed to full PWA-inspired redesign rather than incremental video fixes.
 
-**Technical Solution**: Replace complex custom video player with clean Vimeo embed component
-- **VimeoEmbed.vue Component**: Simple Vue wrapper around Vimeo player API
-- **Automatic Aspect Ratio**: Vimeo handles all video dimensions correctly
-- **VitePress Compatibility**: Bypasses markdown script tag restrictions
-- **Design System Integration**: Maintains site styling consistency
+**Core Philosophy**:
+- **Desktop Navigation Revolution**: Remove rail navigation, implement breadcrumb-style dropdown system
+- **Mobile PWA Navigation**: Bottom navigation bar with thumb-friendly native app experience
+- **Mobile-First Architecture**: Design for mobile first, enhance for desktop (architectural reversal)
+- **Breaking Changes Accepted**: Prioritizing modern user experience over backwards compatibility
+
+**Phase 1 - Foundation Changes (2-3 hours)**:
+- **Remove Rail Navigation**: Clean removal of RailNav component and dependencies
+- **Redesign AppBar**: Convert to breadcrumb-style navigation with page dropdown selectors
+- **Create BottomNav**: PWA-style mobile navigation with native app patterns
+- **Update GlobalLayout**: New responsive layout system without rail dependencies
+
+**Phase 2 - Video System Modernization (2-3 hours)**:
+- **Create VimeoEmbed Component**: Replace MediaContainer complexity (87% code reduction)
+- **Dynamic Aspect Ratios**: Fix square video letterboxing by removing 16:9 hardcoding
+- **Touch-Friendly Controls**: Larger, better-positioned mobile video buttons
+- **Mobile Video Optimization**: Thumb-friendly interactions and native player integration
+
+**Phase 3 - PWA Enhancement (2-3 hours)**:
+- **Mobile-First CSS**: Complete rewrite of layout system starting from mobile
+- **Touch Interactions**: 44px+ touch targets, swipe gestures, progressive enhancement
+- **Performance Optimization**: PWA-style lazy loading and optimized asset delivery
+- **Native App Feel**: Smooth animations, safe area handling, gesture recognition
 
 **Key Benefits**:
-- ✅ **Fixes Square Video Letterboxing**: 1:1 videos display properly without black bars
-- ✅ **87% Code Reduction**: Replace 200+ line MediaContainer with 47-line component
-- ✅ **Better Performance**: Leverages Vimeo's optimized player and global CDN
-- ✅ **Reduced Maintenance**: Less custom video logic to maintain
-- ✅ **Professional Player**: Vimeo's tested, accessible, mobile-optimized player
+- ✅ **Fixes Real UX Problem**: Eliminates clunky mobile experience identified in user testing
+- ✅ **Modern App Experience**: PWA patterns provide native-like mobile interaction
+- ✅ **Desktop Improvement**: Breadcrumb navigation more space-efficient than rail drawer
+- ✅ **Video Issue Resolution**: Dynamic aspect ratios fix square video letterboxing
+- ✅ **Future-Proof Architecture**: Mobile-first approach aligned with modern web standards
 
-**Implementation Scope**:
-1. Create VimeoEmbed.vue component with clean Vimeo integration
-2. Replace MediaContainer.vue usage with VimeoEmbed component
-3. Update video markdown files from complex HTML to simple component tags
-4. Test square video display (no letterboxing)
-5. Remove unused custom video player complexity
-
-**Priority Level**: High - Solves real user experience problem with immediate visual improvement
+**Priority Level**: High - Addresses fundamental user experience problems with comprehensive solution
 
 ### Phase 6: Advanced Enhancement Features (FUTURE)
 **Status**: Long-term enhancements enabled by solid foundation

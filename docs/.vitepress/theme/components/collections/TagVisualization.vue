@@ -73,7 +73,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useData } from 'vitepress';
+import { useThemeData } from '../../composables/useThemeData.js';
 
 const props = defineProps({
   items: {
@@ -82,13 +82,15 @@ const props = defineProps({
   }
 });
 
+// Use composable for theme data access
+const { workbookItems } = useThemeData();
+
 // Get data from theme config if not provided as prop
-const { theme } = useData();
 const itemsData = computed(() => {
   if (props.items && props.items.length > 0) {
     return props.items;
   }
-  return theme.value.workbookItems || [];
+  return workbookItems.value;
 });
 
 // Check if we have D3 available

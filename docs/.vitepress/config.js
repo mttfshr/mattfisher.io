@@ -69,19 +69,28 @@ export default defineConfig({
     ],
     
     // Gather all notes at build time
-    notes: getNotes(),
+    notes: {
+      notes: getNotes(),
+      categories: [],
+      tags: []
+    },
     
     // Gather all workbook items at build time
-    workbookItems: workbookItems,
+    workbook: {
+      items: workbookItems,
+      categories: [],
+      tags: []
+    },
     
     // Add collections
     collections: collections,
     
-    // Load async data at module level
-    logEntries: logEntries,
-    
-    // Load async sessions data at module level  
-    sessions: sessions,
+    // Load log data with proper structure
+    log: {
+      entries: logEntries,
+      sessions: sessions,
+      stats: {}
+    },
     
     // Gather all pins at build time using our new function
     pins: getPins()

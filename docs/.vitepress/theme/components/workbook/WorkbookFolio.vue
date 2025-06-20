@@ -3,6 +3,7 @@
 import { ref, computed, watch } from 'vue'
 import MediaThumbnail from '../common/MediaThumbnail.vue'
 import TagDisplay from '../common/TagDisplay.vue'
+import VimeoEmbed from '../common/VimeoEmbed.vue'
 
 const props = defineProps({
   items: {
@@ -36,6 +37,26 @@ function openPresentation() {
 
 function navigateToItem(item) {
   emit('navigateToItem', item)
+}
+
+// Extract Vimeo ID from various URL formats
+function getVimeoId(item) {
+  // Try different possible sources for Vimeo ID
+  if (item.sourceType === 'vimeo' && item.sourceId) {
+    return item.sourceId;
+  }
+  
+  if (item.media?.url) {
+    const match = item.media.url.match(/vimeo\.com\/(\d+)/);
+    if (match) return match[1];
+  }
+  
+  if (item.media?.provider === 'vimeo' && item.media?.embed) {
+    const match = item.media.embed.match(/vimeo\.com\/video\/(\d+)/);
+    if (match) return match[1];
+  }
+  
+  return null;
 }
 
 // Utilities
@@ -103,16 +124,15 @@ watch(() => props.initialIndex, (newIndex) => {
     <div v-if="currentItem">
       <!-- Full screen media -->
       <div class="media-fullscreen">
-        <!-- Direct video embed for playable videos -->
-        <div v-if="isVideoItem(currentItem)" class="video-fullscreen">
-          <iframe 
-            :src="getEmbedUrl(currentItem)"
+        <!-- Video embed with proper aspect ratios -->
+        <div v-if="isVideoItem(currentItem) && getVimeoId(currentItem)" class="video-fullscreen">
+          <VimeoEmbed
+            :video-id="getVimeoId(currentItem)"
             :title="currentItem.title"
-            class="video-iframe"
-            frameborder="0" 
-            allow="autoplay; fullscreen; picture-in-picture" 
-            allowfullscreen
-          ></iframe>
+            :show-presentation-button="false"
+            :autoplay="true"
+            :loop="true"
+          />
         </div>
         
         <!-- Image showcase for non-video items -->

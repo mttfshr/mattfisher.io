@@ -1,7 +1,8 @@
 <!-- NotesIndex.vue -->
 <script setup>
 import { ref, computed } from 'vue'
-import { useData } from 'vitepress'
+import { useThemeData } from '../../composables/useThemeData.js'
+import { useFiltering } from '../../composables/useFiltering.js'
 import NoteCard from './NoteCard.vue'
 
 const props = defineProps({
@@ -15,22 +16,34 @@ const props = defineProps({
   }
 })
 
-// Get notes from theme config if not provided as prop
-const { theme } = useData()
-const notesData = computed(() => {
+// Theme data access
+const { notes: themeNotes } = useThemeData()
+
+// Notes data source (props take precedence over theme data)
+const notesSource = computed(() => {
   if (props.notes && props.notes.length > 0) {
     return props.notes
   }
-  return theme.value.notes || []
+  return themeNotes.value
 })
 
-const searchQuery = ref('')
-const activeFilter = ref('all')
+// Advanced filtering with composable
+const {
+  searchQuery,
+  activeFilters,
+  filteredItems: filteredNotes,
+  setFilter,
+  setSorting
+} = useFiltering(notesSource, {
+  searchFields: ['title', 'description', 'tags'],
+  defaultSort: 'lastUpdated',
+  defaultOrder: 'desc'
+})
 
-// Extract all unique tags
+// Extract unique tags for filter UI
 const uniqueTags = computed(() => {
   const tags = new Set()
-  notesData.value.forEach(note => {
+  notesSource.value.forEach(note => {
     if (note.tags && note.tags.length) {
       note.tags.forEach(tag => tags.add(tag))
     }
@@ -38,59 +51,54 @@ const uniqueTags = computed(() => {
   return Array.from(tags).sort()
 })
 
-// Filter notes based on search query and tag filter
-const filteredNotes = computed(() => {
-  return notesData.value.filter(note => {
-    // Apply tag filter
-    const tagMatch = activeFilter.value === 'all' || 
-                    (note.tags && note.tags.includes(activeFilter.value))
-    
-    // Apply search
-    const query = searchQuery.value.toLowerCase()
-    const searchMatch = query === '' || 
-                       note.title.toLowerCase().includes(query) || 
-                       (note.description && note.description.toLowerCase().includes(query)) ||
-                       (note.tags && note.tags.some(tag => tag.toLowerCase().includes(query)))
-    
-    return tagMatch && searchMatch
-  })
+// Current tag filter state for UI
+const activeFilter = computed(() => {
+  const tagFilter = activeFilters.value.tags
+  return Array.isArray(tagFilter) ? tagFilter[0] : tagFilter || 'all'
 })
 
-// Sort options
+// Sort options for UI
 const sortOptions = [
-  { label: 'Recently Updated', value: 'recently-updated' },
-  { label: 'Alphabetical', value: 'alphabetical' }
+  { label: 'Recently Updated', value: 'lastUpdated' },
+  { label: 'Alphabetical', value: 'title' }
 ]
 
-const activeSortOption = ref('recently-updated')
+const activeSortOption = ref('lastUpdated')
 
-// Sorted notes
+// Enhanced filtering and sorting
 const sortedNotes = computed(() => {
-  return [...filteredNotes.value].sort((a, b) => {
-    if (activeSortOption.value === 'recently-updated') {
-      // For notes with lastUpdated, use it; otherwise fall back to title
+  let result = [...filteredNotes.value]
+  
+  if (activeSortOption.value === 'lastUpdated') {
+    result.sort((a, b) => {
       if (a.lastUpdated && b.lastUpdated) {
         return b.lastUpdated - a.lastUpdated
       } else if (a.lastUpdated) {
-        return -1 // a has lastUpdated, b doesn't
+        return -1
       } else if (b.lastUpdated) {
-        return 1  // b has lastUpdated, a doesn't
+        return 1
       }
-      // If neither has lastUpdated, sort alphabetically
       return a.title.localeCompare(b.title)
-    } else if (activeSortOption.value === 'alphabetical') {
-      return a.title.localeCompare(b.title)
-    }
-    return 0
-  })
+    })
+  } else if (activeSortOption.value === 'title') {
+    result.sort((a, b) => a.title.localeCompare(b.title))
+  }
+  
+  return result
 })
 
-function setFilter(filter) {
-  activeFilter.value = filter
+// UI helper functions
+function setTagFilter(tag) {
+  if (tag === 'all') {
+    setFilter('tags', null)
+  } else {
+    setFilter('tags', tag)
+  }
 }
 
 function setSortOption(option) {
   activeSortOption.value = option
+  setSorting(option, option === 'lastUpdated' ? 'desc' : 'asc')
 }
 </script>
 
@@ -113,7 +121,7 @@ function setSortOption(option) {
             <button 
               class="filter-button" 
               :class="{ active: activeFilter === 'all' }"
-              @click="setFilter('all')"
+              @click="setTagFilter('all')"
             >
               All
             </button>
@@ -123,7 +131,7 @@ function setSortOption(option) {
               :key="tag"
               class="filter-button" 
               :class="{ active: activeFilter === tag }"
-              @click="setFilter(tag)"
+              @click="setTagFilter(tag)"
             >
               {{ tag }}
             </button>

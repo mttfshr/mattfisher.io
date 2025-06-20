@@ -1,136 +1,146 @@
 <!-- docs/.vitepress/theme/components/pins/PinDetail.vue -->
 <template>
-  <div class="container-centered">
-    <!-- Header with image, title, description -->
-    <div class="pin-header">
-      <div class="pin-image-container" v-if="pin.imageUrl">
-        <img :src="pin.imageUrl" :alt="pin.title" class="pin-image" />
-      </div>
-      
-      <div class="header-content">
-        <h2 class="content-section-title">{{ pin.title }}</h2>
-        
-        <div class="pin-source">
-          <a :href="pin.url" target="_blank" rel="noopener noreferrer" class="source-link">
-            <img v-if="pin.favicon" :src="pin.favicon" class="site-favicon" alt="Site icon" />
-            <span>{{ getDomainName(pin.url) }}</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="external-link-icon">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-              <polyline points="15 3 21 3 21 9"></polyline>
-              <line x1="10" y1="14" x2="21" y2="3"></line>
-            </svg>
-          </a>
+  <div class="pin-detail-modal">
+    <!-- Modern card layout -->
+    <div class="pin-card">
+      <!-- Hero section with image and primary info -->
+      <div class="pin-hero">
+        <div class="pin-image-section" v-if="pin.imageUrl" :class="`image-${imageClassification}`">
+          <div class="pin-image-container" :style="cssAspectRatio ? { aspectRatio: cssAspectRatio } : {}">
+            <img :src="pin.imageUrl" :alt="pin.title" class="pin-image" />
+          </div>
         </div>
         
-        <p v-if="pin.description" class="content-section-subtitle">
-          {{ pin.description }}
-        </p>
+        <div class="pin-content">
+          <div class="pin-header">
+            <h1 class="pin-title">{{ pin.title }}</h1>
+            
+            <div class="pin-actions">
+              <a :href="pin.url" target="_blank" rel="noopener noreferrer" class="btn btn-primary action-button">
+                <Icon :name="getPlatformInfo(pin.url).icon" :size="16" />
+                <span class="action-label">{{ getPlatformInfo(pin.url).label }}</span>
+                <Icon name="ExternalLink" :size="14" />
+              </a>
+              
+              <!-- Secondary domain link for reference -->
+              <div class="domain-reference">
+                <img v-if="pin.favicon" :src="pin.favicon" class="site-favicon" alt="Site icon" />
+                <span class="domain-text">{{ getDomainName(pin.url) }}</span>
+              </div>
+            </div>
+            
+            <p v-if="pin.description" class="pin-description">
+              {{ pin.description }}
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
-    
-    <!-- Notes if available -->
-    <div v-if="pin.notes" class="content-section">
-      <h3 class="text-lg font-semibold text-primary">Notes</h3>
-      <blockquote class="card card-body">{{ pin.notes }}</blockquote>
-    </div>
-    
-    <!-- Metadata display -->
-    <div class="content-section">
-      <div class="metadata-section">
-        <h3 class="content-section-title">Metadata</h3>
+      
+      <!-- Notes section -->
+      <div v-if="pin.notes" class="pin-section">
+        <div class="section-header">
+          <Icon name="FileText" :size="16" />
+          <h3 class="section-title">Notes</h3>
+        </div>
+        <div class="notes-content">
+          {{ pin.notes }}
+        </div>
+      </div>
+      
+      <!-- Metadata section -->
+      <div class="pin-section">
+        <div class="section-header">
+          <Icon name="Tag" :size="16" />
+          <h3 class="section-title">Details</h3>
+        </div>
         
-        <div class="content-responsive">
+        <div class="metadata-grid">
           <!-- Collections -->
-          <div class="metadata-group" v-if="hasCollections">
-            <h4 class="text-sm font-semibold text-secondary">Collections</h4>
-            <div class="stack-horizontal spacing-tight">
+          <div class="metadata-row" v-if="hasCollections">
+            <div class="metadata-label">Collections</div>
+            <div class="metadata-values">
               <div 
                 v-for="collectionId in pin.collections" 
                 :key="`collection-${collectionId}`"
-                class="badge badge-primary interactive"
+                class="metadata-badge collection-badge"
                 @click="emit('tag-click', `collection:${collectionId}`)"
               >
-                <Icon :name="getCollectionIcon(collectionId)" :size="16" icon-class="collection-icon" />
+                <Icon :name="getCollectionIcon(collectionId)" :size="14" />
                 {{ getCollectionName(collectionId) }}
               </div>
             </div>
           </div>
           
-          <!-- Structured metadata -->
-          <div class="metadata-groups" v-if="hasMetadata">
-            <!-- Inferred metadata -->
-            <div class="metadata-category" v-if="hasInferredMetadata">
-              <h4 class="stack-horizontal text-sm text-primary">
-                <span class="category-icon">🤖</span>
-                Auto-Detected
-              </h4>
-              
-              <div 
-                v-for="key in Object.keys(inferredMetadata)"
-                :key="`inferred-${key}`"
-                class="metadata-group"
-              >
-                <div class="stack-horizontal text-sm text-secondary">
-                  <span class="key-icon">{{ getMetadataIcon(key) }}</span>
-                  {{ getMetadataLabel(key) }}:
-                </div>
-                
-                <div class="stack-horizontal spacing-tight">
-                  <div 
-                    v-for="value in inferredMetadata[key]"
-                    :key="`inferred-${key}-${value}`"
-                    class="metadata-tag interactive"
-                    :class="`meta-${key}`"
-                    @click="emit('tag-click', `${key}:${value}`)"
-                  >
-                    <span class="metadata-icon">{{ getMetadataValueIcon(key, value) }}</span>
-                    {{ value }}
-                  </div>
+          <!-- Auto-detected metadata -->
+          <div v-if="hasInferredMetadata" class="metadata-category">
+            <div class="category-header">
+              <Icon name="Zap" :size="14" />
+              <span class="category-name">Auto-detected</span>
+            </div>
+            
+            <div 
+              v-for="key in Object.keys(inferredMetadata)"
+              :key="`inferred-${key}`"
+              class="metadata-row"
+            >
+              <div class="metadata-label">
+                <span class="metadata-icon">{{ getMetadataIcon(key) }}</span>
+                {{ getMetadataLabel(key) }}
+              </div>
+              <div class="metadata-values">
+                <div 
+                  v-for="value in inferredMetadata[key]"
+                  :key="`inferred-${key}-${value}`"
+                  class="metadata-badge"
+                  :class="`meta-${key}`"
+                  @click="emit('tag-click', `${key}:${value}`)"
+                >
+                  <span class="value-icon">{{ getMetadataValueIcon(key, value) }}</span>
+                  {{ value }}
                 </div>
               </div>
             </div>
+          </div>
+          
+          <!-- Manual metadata -->
+          <div v-if="hasManualMetadata" class="metadata-category">
+            <div class="category-header">
+              <Icon name="Edit3" :size="14" />
+              <span class="category-name">Manual tags</span>
+            </div>
             
-            <!-- Manual metadata -->
-            <div class="metadata-category" v-if="hasManualMetadata">
-              <h4 class="stack-horizontal text-sm text-primary">
-                <span class="category-icon">✏️</span>
-                Manually Added
-              </h4>
-              
-              <div 
-                v-for="key in Object.keys(manualMetadata)"
-                :key="`manual-${key}`"
-                class="metadata-group"
-              >
-                <div class="stack-horizontal text-sm text-secondary">
-                  <span class="key-icon">{{ getMetadataIcon(key) }}</span>
-                  {{ getMetadataLabel(key) }}:
-                </div>
-                
-                <div class="stack-horizontal spacing-tight">
-                  <div 
-                    v-for="value in manualMetadata[key]"
-                    :key="`manual-${key}-${value}`"
-                    class="metadata-tag interactive"
-                    :class="`meta-${key}`"
-                    @click="emit('tag-click', `${key}:${value}`)"
-                  >
-                    <span class="metadata-icon">{{ getMetadataValueIcon(key, value) }}</span>
-                    {{ value }}
-                  </div>
+            <div 
+              v-for="key in Object.keys(manualMetadata)"
+              :key="`manual-${key}`"
+              class="metadata-row"
+            >
+              <div class="metadata-label">
+                <span class="metadata-icon">{{ getMetadataIcon(key) }}</span>
+                {{ getMetadataLabel(key) }}
+              </div>
+              <div class="metadata-values">
+                <div 
+                  v-for="value in manualMetadata[key]"
+                  :key="`manual-${key}-${value}`"
+                  class="metadata-badge"
+                  :class="`meta-${key}`"
+                  @click="emit('tag-click', `${key}:${value}`)"
+                >
+                  <span class="value-icon">{{ getMetadataValueIcon(key, value) }}</span>
+                  {{ value }}
                 </div>
               </div>
             </div>
           </div>
           
           <!-- Standard tags -->
-          <div class="metadata-group" v-if="pin.tags && pin.tags.length > 0">
-            <h4 class="text-sm font-semibold text-secondary">Tags</h4>
-            <div class="stack-horizontal spacing-tight">
+          <div class="metadata-row" v-if="pin.tags && pin.tags.length > 0">
+            <div class="metadata-label">Tags</div>
+            <div class="metadata-values">
               <div 
                 v-for="tag in pin.tags" 
                 :key="`tag-${tag}`"
-                class="badge interactive"
+                class="metadata-badge tag-badge"
                 @click="emit('tag-click', tag)"
               >
                 #{{ tag }}
@@ -140,60 +150,42 @@
         </div>
       </div>
     </div>
-    
-    <!-- Related pins -->
-    <div class="content-section" v-if="relatedPins && relatedPins.length > 0">
-      <h3 class="content-section-title">Related Pins</h3>
-      <div class="gallery-grid">
-        <div 
-          v-for="relatedPin in relatedPins" 
-          :key="`related-${relatedPin.id}`"
-          class="card interactive"
-          @click="emit('pin-click', relatedPin)"
-        >
-          <div class="related-pin-thumbnail">
-            <img 
-              v-if="relatedPin.imageUrl" 
-              :src="relatedPin.imageUrl" 
-              :alt="relatedPin.title" 
-              loading="lazy"
-            />
-            <div 
-              v-else 
-              class="fallback-thumbnail" 
-              :class="`type-${relatedPin.contentType}`"
-            >
-              <Icon :name="getTypeIcon(relatedPin.contentType)" :size="24" icon-class="related-type-icon" />
-            </div>
-          </div>
-          
-          <div class="card-body">
-            <h4 class="text-sm font-semibold text-primary">{{ relatedPin.title }}</h4>
-            <div class="text-xs text-secondary">{{ getDomainName(relatedPin.url) }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import Icon from '../common/Icon.vue';
 import { getCollectionById, getMetadataConfig, getMetadataValueIcon as getValueIcon } from '../../../utils/services/content/metadata';
+import { useMediaDimensions } from '../../composables/useMediaDimensions';
 
 const props = defineProps({
   pin: {
     type: Object,
     required: true
-  },
-  relatedPins: {
-    type: Array,
-    default: () => []
   }
 });
 
-const emit = defineEmits(['tag-click', 'pin-click']);
+const emit = defineEmits(['tag-click']);
+
+// Use the media dimensions composable
+const { aspectRatio, isLoading: isLoadingAspectRatio, aspectRatioType, cssAspectRatio, fetchDimensions } = useMediaDimensions();
+
+// Map composable's aspectRatioType to our CSS classes
+const imageClassification = computed(() => {
+  const type = aspectRatioType.value;
+  switch (type) {
+    case 'square': return 'square';
+    case 'portrait': return 'tall';
+    case 'landscape': return 'wide';
+    default: return 'default';
+  }
+});
+
+// Fetch dimensions on mount
+onMounted(() => {
+  fetchDimensions(props.pin.url, { imageUrl: props.pin.imageUrl });
+});
 
 // Check if pin has collections
 const hasCollections = computed(() => {
@@ -275,166 +267,422 @@ const getMetadataValueIcon = (key, value) => {
   return getValueIcon(key, value);
 };
 
-const getTypeIcon = (type) => {
-  switch (type) {
-    case 'music': return 'Music';
-    case 'video': return 'Video';
-    case 'article': return 'FileText';
-    case 'code': return 'Code';
-    case 'design': return 'Palette';
-    case 'image': return 'Image';
-    case 'document': return 'File';
-    case 'social': return '💬';
-    default: return '🔗';
+// Platform detection for action buttons
+const getPlatformInfo = (url) => {
+  const domain = getDomainName(url);
+  
+  // Platform-specific mappings
+  if (domain.includes('youtube.com') || domain.includes('youtu.be')) {
+    return { label: 'Watch on YouTube', icon: 'Youtube' };
   }
+  if (domain.includes('vimeo.com')) {
+    return { label: 'Watch on Vimeo', icon: 'Video' };
+  }
+  if (domain.includes('spotify.com')) {
+    return { label: 'Listen on Spotify', icon: 'Music' };
+  }
+  if (domain.includes('github.com')) {
+    return { label: 'View on GitHub', icon: 'Github' };
+  }
+  if (domain.includes('bandcamp.com')) {
+    return { label: 'Listen on Bandcamp', icon: 'Music' };
+  }
+  if (domain.includes('soundcloud.com')) {
+    return { label: 'Listen on SoundCloud', icon: 'Music' };
+  }
+  if (domain.includes('instagram.com')) {
+    return { label: 'View on Instagram', icon: 'Instagram' };
+  }
+  if (domain.includes('twitter.com') || domain.includes('x.com')) {
+    return { label: 'View on Twitter', icon: 'Twitter' };
+  }
+  if (domain.includes('medium.com')) {
+    return { label: 'Read on Medium', icon: 'FileText' };
+  }
+  if (domain.includes('dribbble.com')) {
+    return { label: 'View on Dribbble', icon: 'Dribbble' };
+  }
+  if (domain.includes('behance.net')) {
+    return { label: 'View on Behance', icon: 'Eye' };
+  }
+  if (domain.includes('figma.com')) {
+    return { label: 'Open in Figma', icon: 'Figma' };
+  }
+  if (domain.includes('codepen.io')) {
+    return { label: 'View on CodePen', icon: 'Code' };
+  }
+  if (domain.includes('linkedin.com')) {
+    return { label: 'View on LinkedIn', icon: 'Linkedin' };
+  }
+  
+  // Generic fallbacks
+  return { label: 'Open Link', icon: 'ExternalLink' };
 };
 </script>
 
 <style scoped>
-/* Component-specific styles only */
-.pin-header {
+/* Modern Pin Detail Modal */
+.pin-detail-modal {
   display: flex;
-  gap: var(--space-6);
-  margin-bottom: var(--space-6);
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.pin-card {
+  width: 100%;
+  max-width: 900px;
+  background: var(--surface-primary);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+/* Hero Section */
+.pin-hero {
+  display: flex;
+  min-height: 400px;
+  gap: 0;
+}
+
+.pin-image-section {
+  position: relative;
+  background: var(--surface-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Default sizing for unknown aspect ratios */
+.pin-image-section.image-default {
+  flex: 0 0 450px;
+}
+
+/* Square images - constrain to reasonable size */
+.pin-image-section.image-square {
+  flex: 0 0 400px;
+  max-width: 50vw;
+}
+
+/* Wide images - allow more width */
+.pin-image-section.image-wide {
+  flex: 0 0 500px;
+  max-width: 60vw;
+}
+
+/* Tall images - constrain width more */
+.pin-image-section.image-tall {
+  flex: 0 0 350px;
+  max-width: 40vw;
 }
 
 .pin-image-container {
-  flex: 0 0 40%;
-  border-radius: var(--radius-md);
+  width: 100%;
+  height: 100%;
+  position: relative;
   overflow: hidden;
-  background-color: var(--surface-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pin-image {
-  width: 100%;
-  height: auto;
-  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* Changed from cover to contain to show full image */
+  transition: var(--transition-base);
 }
 
-.header-content {
+.pin-content {
   flex: 1;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.pin-header {
+  margin-bottom: var(--space-3);
+}
+
+.pin-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-2);
 }
 
 .pin-source {
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+
+.pin-actions {
+  margin-bottom: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.action-button {
+  align-self: flex-start;
+  gap: var(--space-2);
+}
+
+.action-label {
+  font-weight: var(--font-semibold);
+}
+
+.domain-reference {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  background: var(--surface-secondary);
+  border-radius: var(--border-radius-sm);
+  width: fit-content;
+}
+
+.domain-text {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
 }
 
 .source-link {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  color: var(--text-secondary);
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  background: var(--surface-secondary);
+  border-radius: var(--border-radius-md);
   text-decoration: none;
+  color: var(--text-secondary);
   font-size: var(--text-sm);
-  transition: var(--transition-base);
+  font-weight: var(--font-medium);
+  transition: var(--transition-fast);
 }
 
 .source-link:hover {
-  color: var(--vp-c-brand);
+  background: var(--surface-tertiary);
+  color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
 .site-favicon {
   width: 16px;
   height: 16px;
-  object-fit: contain;
+  border-radius: var(--border-radius-xs);
 }
 
-.external-link-icon {
-  opacity: 0.6;
+.source-domain {
+  font-family: var(--font-mono);
 }
 
-.collection-icon {
-  margin-right: var(--space-2);
+.pin-description {
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Sections */
+.pin-section {
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border-secondary);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.section-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.notes-content {
+  background: var(--surface-secondary);
+  padding: var(--space-3);
+  border-radius: var(--border-radius-md);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Metadata Grid */
+.metadata-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
 .metadata-category {
-  margin-bottom: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
-.metadata-group {
-  margin-bottom: var(--space-4);
-}
-
-.metadata-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-lg);
-  background-color: var(--surface-tertiary);
-  color: var(--text-primary);
-  font-size: var(--text-xs);
-  cursor: pointer;
-  transition: var(--transition-base);
-}
-
-.metadata-tag:hover {
-  background-color: var(--vp-c-brand-soft);
-  color: var(--vp-c-brand-dark);
-}
-
-.metadata-icon, .key-icon {
-  margin-right: var(--space-1);
-}
-
-/* Type-specific metadata styling */
-.meta-type { background-color: var(--surface-secondary); }
-.meta-source { background-color: var(--surface-secondary); }
-.meta-artist, .meta-creator { background-color: rgba(147, 51, 234, 0.1); color: rgb(147, 51, 234); }
-.meta-year { background-color: rgba(245, 158, 11, 0.1); color: rgb(245, 158, 11); }
-.meta-genre { background-color: rgba(34, 197, 94, 0.1); color: rgb(34, 197, 94); }
-.meta-mood { background-color: rgba(236, 72, 153, 0.1); color: rgb(236, 72, 153); }
-
-.related-pin-thumbnail {
-  position: relative;
-  height: 120px;
-  background-color: var(--surface-tertiary);
-  overflow: hidden;
-}
-
-.related-pin-thumbnail img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.fallback-thumbnail {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+.category-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: var(--text-3xl);
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--border-secondary);
 }
 
-/* Content type specific gradients */
-.fallback-thumbnail.type-music { background: linear-gradient(135deg, #8e44ad, #3498db); }
-.fallback-thumbnail.type-video { background: linear-gradient(135deg, #e74c3c, #f39c12); }
-.fallback-thumbnail.type-article { background: linear-gradient(135deg, #2ecc71, #1abc9c); }
-.fallback-thumbnail.type-code { background: linear-gradient(135deg, #34495e, #2c3e50); }
-.fallback-thumbnail.type-design { background: linear-gradient(135deg, #e67e22, #d35400); }
-.fallback-thumbnail.type-link { background: linear-gradient(135deg, #7f8c8d, #95a5a6); }
+.category-name {
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
 
-/* Responsive adjustments */
+.metadata-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  min-height: 32px;
+}
+
+.metadata-label {
+  flex: 0 0 100px;
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding-top: var(--space-1);
+}
+
+.metadata-values {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.metadata-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  background: var(--surface-secondary);
+  border-radius: var(--border-radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  border: 1px solid var(--border-secondary);
+}
+
+.metadata-badge:hover {
+  background: var(--surface-tertiary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.collection-badge {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+}
+
+.collection-badge:hover {
+  background: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+}
+
+.tag-badge {
+  background: var(--surface-tertiary);
+  color: var(--text-primary);
+}
+
+.metadata-icon,
+.value-icon {
+  font-size: var(--text-xs);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .pin-header {
+  .pin-detail-modal {
+    padding: var(--space-2);
+  }
+  
+  .pin-card {
+    margin-top: var(--space-4);
+  }
+  
+  .pin-hero {
     flex-direction: column;
+    min-height: auto;
   }
   
-  .pin-image-container {
+  .pin-image-section,
+  .pin-image-section.image-default,
+  .pin-image-section.image-square,
+  .pin-image-section.image-wide,
+  .pin-image-section.image-tall {
     flex: none;
-    width: 100%;
-    max-height: 300px;
-    margin-bottom: var(--space-4);
+    height: 280px;
+    max-width: none;
   }
   
-  .pin-image {
-    height: 100%;
-    object-fit: contain;
-    background-color: var(--surface-tertiary);
+  .pin-content {
+    padding: var(--space-3);
+  }
+  
+  .pin-title {
+    font-size: var(--text-lg);
+  }
+  
+  .pin-section {
+    padding: var(--space-2) var(--space-3);
+  }
+  
+  .pin-actions {
+    margin-bottom: var(--space-2);
+  }
+  
+  .domain-reference {
+    font-size: var(--text-xs);
+  }
+  
+  .metadata-row {
+    flex-direction: column;
+    gap: var(--space-1);
+    align-items: flex-start;
+  }
+  
+  .metadata-label {
+    flex: none;
+    margin-bottom: var(--space-1);
+  }
+}
+
+@media (max-width: 480px) {
+  .pin-detail-modal {
+    padding: var(--space-1);
+  }
+  
+  .pin-content {
+    padding: var(--space-2);
+  }
+  
+  .pin-section {
+    padding: var(--space-2);
+  }
+  
+  .pin-image-section {
+    height: 240px;
   }
 }
 </style>

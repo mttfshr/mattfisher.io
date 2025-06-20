@@ -7,29 +7,44 @@ import TypeFilter from './TypeFilter.vue'
 import CollectionsBrowser from './CollectionsBrowser.vue'
 import ActiveFilters from './ActiveFilters.vue'
 import NavigationDrawer from '../common/NavigationDrawer.vue'
-import { useData } from 'vitepress'
+import { useThemeData } from '../../composables/useThemeData'
+import { usePinModal } from '../../composables/useModal'
+import { usePinFiltering } from '../../composables/useFiltering'
 
-// Get data from VitePress
-const { theme } = useData()
-const pinsData = computed(() => theme.value.pins || { 
-  pins: [], 
-  contentTypes: [], 
-  allTags: [], 
-  userTags: [], 
-  sections: [], 
-  metadataKeys: {}, 
-  collections: [] 
-})
+// Get theme data using composable
+const { pins, pinsData, contentTypes, collections } = useThemeData()
+
+// Modal management using composable
+const { selectedItem: selectedPin, isOpen: modalOpen, openModal: openPinDetail, closeModal: closePinDetail, relatedItems: relatedPins } = usePinModal(pins)
+
+// Filtering using composable
+const { 
+  searchQuery, 
+  activeFilters, 
+  filteredItems: filteredPins,
+  hasActiveFilters,
+  setFilter,
+  clearAllFilters,
+  addFilter,
+  removeFilter
+} = usePinFiltering(pins)
+
+// Local state for UI
+const currentPage = ref(1)
+const pageSize = ref(50)
+const layout = ref('compact') // 'compact' or 'detailed'
+const showMobileFilters = ref(false)
+const drawerOpen = ref(false) // Controlled by global layout
 
 // Transform content types to the format expected by TypeFilter
 const formattedContentTypes = computed(() => {
-  if (!pinsData.value.pins || pinsData.value.pins.length === 0) {
+  if (!pins.value || pins.value.length === 0) {
     return [];
   }
 
   // Count pins by content type
   const typeCount = {};
-  pinsData.value.pins.forEach(pin => {
+  pins.value.forEach(pin => {
     const type = pin.contentType || 'link';
     if (!typeCount[type]) {
       typeCount[type] = 0;
@@ -128,57 +143,13 @@ function formatCollectionName(id) {
     .replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
 
-// State
-const searchQuery = ref('')
-const currentPage = ref(1)
-const pageSize = ref(50)
-const layout = ref('compact') // 'compact' or 'detailed' - updated to match new layout system
-const selectedPin = ref(null)
-const selectedTypes = ref([])
-const selectedCollection = ref(null)
-const showMobileFilters = ref(false)
-const drawerOpen = ref(false) // Controlled by global layout
+// Additional computed properties for backward compatibility
+const selectedTypes = computed(() => activeFilters.value.contentType || [])
+const selectedCollection = computed(() => activeFilters.value.collections)
 
-// Filter pins based on selected types, collections, and search query
-const filteredPins = computed(() => {
-  const pins = pinsData.value.pins || [];
-  if (pins.length === 0) return [];
-  
-  let filtered = [...pins];
-  
-  // Filter by selected types
-  if (selectedTypes.value.length > 0) {
-    filtered = filtered.filter(pin => 
-      pin.contentType && selectedTypes.value.includes(pin.contentType)
-    )
-  }
-  
-  // Filter by selected collection
-  if (selectedCollection.value) {
-    filtered = filtered.filter(pin => 
-      pin.collections && pin.collections.includes(selectedCollection.value)
-    )
-  }
-  
-  // Filter by search query
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(pin => 
-      (pin.title && pin.title.toLowerCase().includes(query)) ||
-      (pin.url && pin.url.toLowerCase().includes(query)) ||
-      (pin.notes && pin.notes.toLowerCase().includes(query)) ||
-      (pin.tags && pin.tags.some(tag => tag.toLowerCase().includes(query)))
-    )
-  }
-  
-  return filtered
-})
-
-// Sort pins by date (newest first)
+// Sort pins by date (newest first) - now using filtered results from composable
 const sortedPins = computed(() => {
-  return [...filteredPins.value].sort((a, b) => {
-    return new Date(b.pinDate) - new Date(a.pinDate)
-  })
+  return [...filteredPins.value]  // filteredPins already comes sorted from composable
 })
 
 // Paginated pins
@@ -199,28 +170,21 @@ watch([searchQuery, selectedTypes, selectedCollection], () => {
 })
 
 // Methods
-const openPinDetail = (pin) => {
-  selectedPin.value = pin
-  document.body.style.overflow = 'hidden'
+// Event handlers for filters
+const handleTypeSelect = (typeIds) => {
+  setFilter('contentType', typeIds)
 }
 
-const closePinDetail = () => {
-  selectedPin.value = null
-  document.body.style.overflow = ''
+const handleCollectionSelect = (collectionId) => {
+  setFilter('collections', collectionId)
 }
 
 const clearTypeFilter = (typeId) => {
-  selectedTypes.value = selectedTypes.value.filter(t => t !== typeId)
+  removeFilter('contentType', typeId)
 }
 
 const clearCollectionFilter = () => {
-  selectedCollection.value = null
-}
-
-const clearAllFilters = () => {
-  selectedTypes.value = []
-  selectedCollection.value = null
-  searchQuery.value = ''
+  setFilter('collections', null)
 }
 
 const toggleMobileFilters = () => {
@@ -243,37 +207,12 @@ onMounted(() => {
     })
   }
 })
-
-// Get related pins when a pin is selected
-const relatedPins = computed(() => {
-  if (!selectedPin.value) return [];
-  
-  // Find pins with matching collections
-  const withCollections = selectedPin.value.collections && selectedPin.value.collections.length > 0
-    ? pinsData.value.pins.filter(p => 
-        p.id !== selectedPin.value.id && 
-        p.collections && 
-        p.collections.some(c => selectedPin.value.collections.includes(c))
-      )
-    : [];
-  
-  // Find pins with matching content type as a fallback
-  const contentType = selectedPin.value.contentType;
-  const sameType = pinsData.value.pins.filter(p => 
-    p.id !== selectedPin.value.id && 
-    !withCollections.includes(p) && 
-    p.contentType === contentType
-  );
-  
-  // Combine and limit to 6 related pins
-  return [...withCollections, ...sameType].slice(0, 6);
-});
 </script>
 
 <template>
   <div class="container-responsive">
     <!-- Debug output -->
-    <div v-if="pinsData.pins && pinsData.pins.length === 0" class="card bg-surface-soft p-4 m-4">
+    <div v-if="pins && pins.length === 0" class="card bg-surface-soft p-4 m-4">
       <h3>Debug Info</h3>
       <p>No pins data found. Check if theme.pins is properly configured in config.mts.</p>
       <pre class="text-xs">{{ JSON.stringify({
@@ -359,18 +298,20 @@ const relatedPins = computed(() => {
         <!-- Filter controls moved from sidebar -->
         <TypeFilter 
           :contentTypes="formattedContentTypes" 
-          v-model:selectedTypes="selectedTypes"
+          :selectedTypes="selectedTypes"
+          @update:selectedTypes="handleTypeSelect"
         />
         
         <CollectionsBrowser 
           :collections="formattedCollections" 
-          v-model:selectedCollection="selectedCollection"
+          :selectedCollection="selectedCollection"
+          @collection-select="handleCollectionSelect"
         />
       </NavigationDrawer>
     
       <!-- Pin detail modal -->
       <div v-if="selectedPin" class="modal-overlay" @click="closePinDetail">
-        <div class="modal card animate-scale-in" @click.stop>
+        <div class="modal animate-scale-in" @click.stop>
           <button class="modal-close btn btn-ghost" @click="closePinDetail">×</button>
           <PinDetail
             :pin="selectedPin"
