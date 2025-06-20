@@ -32,6 +32,8 @@ import './styles/utilities/responsive.css'
 // Component-specific styles
 import './styles/pins.css'
 import './styles/workbook.css'
+// Mobile orientation fix
+import './scripts/mobile-orientation.js'
 
 // Import custom components
 import CloudflareImage from './components/common/CloudflareImage.vue'

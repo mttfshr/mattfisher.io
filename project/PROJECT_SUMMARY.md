@@ -60,10 +60,11 @@
 
 #### **VimeoEmbed Mobile Features Added**:
 - **Smart Rotation Hints**: Overlay suggests landscape viewing for wide videos on mobile portrait
-- **One-Click Fullscreen**: Easy fullscreen access optimizes landscape video experience
+- **Improved Fullscreen**: Enhanced cross-browser fullscreen support with proper fallbacks
 - **Orientation Detection**: Automatic adaptation to device rotation changes
 - **User Preferences**: Remembers if rotation hints are dismissed via localStorage
 - **Progressive Enhancement**: Desktop unchanged, mobile enhanced, all devices supported
+- **Clean UI**: Removed duplicate fullscreen button, only presentation button shows on desktop
 
 #### **User Experience Transformation**:
 - **Mobile Portrait**: Videos display normally + helpful rotation hints for landscape content
@@ -95,10 +96,11 @@
 
 #### **VimeoEmbed Mobile Features Added**:
 - **Smart Rotation Hints**: Overlay suggests landscape viewing for wide videos on mobile portrait
-- **One-Click Fullscreen**: Easy fullscreen access optimizes landscape video experience
+- **Improved Fullscreen**: Enhanced cross-browser fullscreen support with proper fallbacks
 - **Orientation Detection**: Automatic adaptation to device rotation changes
 - **User Preferences**: Remembers if rotation hints are dismissed via localStorage
 - **Progressive Enhancement**: Desktop unchanged, mobile enhanced, all devices supported
+- **Clean UI**: Removed duplicate fullscreen button, only presentation button shows on desktop
 
 #### **User Experience Transformation**:
 - **Mobile Portrait**: Videos display normally + helpful rotation hints for landscape content

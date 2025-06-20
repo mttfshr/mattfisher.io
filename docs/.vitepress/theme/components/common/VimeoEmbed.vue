@@ -58,7 +58,15 @@ const isFullscreen = ref(false)
 
 // Detect mobile device
 const detectMobile = () => {
-  isMobile.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera
+  isMobile.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)
+  
+  // Also check for touch capability and small screen
+  const hasTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+  const hasSmallScreen = window.innerWidth <= 768
+  
+  // Consider it mobile if it has touch AND small screen, or matches user agent
+  isMobile.value = isMobile.value || (hasTouchScreen && hasSmallScreen)
 }
 
 // Check device orientation
@@ -181,9 +189,27 @@ async function requestFullscreen() {
     if (!container) return
     
     if (!document.fullscreenElement) {
-      await container.requestFullscreen()
+      // Try different fullscreen methods for different browsers
+      if (container.requestFullscreen) {
+        await container.requestFullscreen()
+      } else if (container.webkitRequestFullscreen) {
+        await container.webkitRequestFullscreen()
+      } else if (container.mozRequestFullScreen) {
+        await container.mozRequestFullScreen()
+      } else if (container.msRequestFullscreen) {
+        await container.msRequestFullscreen()
+      }
     } else {
-      await document.exitFullscreen()
+      // Exit fullscreen
+      if (document.exitFullscreen) {
+        await document.exitFullscreen()
+      } else if (document.webkitExitFullscreen) {
+        await document.webkitExitFullscreen()
+      } else if (document.mozCancelFullScreen) {
+        await document.mozCancelFullScreen()
+      } else if (document.msExitFullscreen) {
+        await document.msExitFullscreen()
+      }
     }
   } catch (error) {
     console.warn('Fullscreen request failed:', error)
@@ -258,16 +284,6 @@ const containerClasses = computed(() => [
     >
       <Icon name="Maximize2" :size="18" />
       <span class="btn-text">Present</span>
-    </button>
-
-    <!-- Mobile fullscreen button -->
-    <button 
-      v-if="isMobile && !showRotationHint"
-      class="mobile-fullscreen-btn"
-      @click="requestFullscreen"
-      aria-label="Enter fullscreen"
-    >
-      <Icon name="Maximize" :size="20" />
     </button>
     
     <!-- Loading indicator -->
@@ -559,31 +575,6 @@ const containerClasses = computed(() => [
   background: rgba(255, 255, 255, 0.2);
 }
 
-/* Mobile fullscreen button */
-.mobile-fullscreen-btn {
-  position: absolute;
-  bottom: var(--space-3);
-  right: var(--space-3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  border: none;
-  border-radius: var(--border-radius-md);
-  cursor: pointer;
-  z-index: 10;
-  transition: var(--transition-fast);
-  backdrop-filter: blur(4px);
-}
-
-.mobile-fullscreen-btn:hover {
-  background: rgba(0, 0, 0, 0.9);
-  transform: translateY(-1px);
-}
-
 /* Mobile responsive */
 @media (max-width: 768px) {
   .vimeo-embed-container {
@@ -601,12 +592,8 @@ const containerClasses = computed(() => [
   }
 }
 
-/* Hide mobile controls on desktop */
+/* Hide rotation hint on desktop */
 @media (min-width: 769px) {
-  .mobile-fullscreen-btn {
-    display: none;
-  }
-  
   .rotation-hint-overlay {
     display: none;
   }

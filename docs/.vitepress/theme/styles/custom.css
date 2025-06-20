@@ -1,5 +1,28 @@
 /* Custom styles for mattfisher.io */
 
+/* Ensure mobile orientation changes are allowed */
+html, body {
+  /* Prevent any CSS from accidentally locking orientation */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  /* Ensure proper viewport behavior on iOS */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Allow text selection for content areas */
+.content, .vp-doc, p, h1, h2, h3, h4, h5, h6 {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
 p {
   margin-bottom: .5em;
 }
