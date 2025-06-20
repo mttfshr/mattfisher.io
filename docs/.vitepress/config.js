@@ -45,8 +45,10 @@ export default defineConfig({
   // Theme configuration
   lastUpdated: true,
   
-  // Add favicon and app icons
+  // Add favicon, app icons, and mobile viewport
   head: [
+    // Essential viewport meta tag for mobile rotation and responsiveness
+    ['meta', { name: 'viewport', content: 'width=device-width, initial-scale=1.0, user-scalable=yes' }],
     ['link', { rel: 'icon', href: '/icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' }],
     ['link', { rel: 'icon', href: '/icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' }],
     ['link', { rel: 'icon', href: '/icons/favicon.svg', type: 'image/svg+xml' }],
