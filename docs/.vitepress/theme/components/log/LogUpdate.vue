@@ -112,8 +112,8 @@ const formattedContent = computed(() => {
 }
 
 .update-date {
-  font-weight: 500;
-  color: var(--vp-c-text-2);
+  font-weight: var(--font-normal);
+  color: var(--text-secondary);
   font-size: 0.85rem;
   text-decoration: none;
 }
@@ -129,9 +129,9 @@ const formattedContent = computed(() => {
 
 .update-title {
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: var(--font-normal);
   margin-bottom: 0.75rem;
-  color: var(--vp-c-text-1);
+  color: var(--text-primary);
   padding-left: 0.5rem;
   border-left: 3px solid var(--vp-c-brand);
 }

@@ -1,0 +1,176 @@
+/* ===================================================================
+   TYPOGRAPHY
+   Clear font family assignments and hierarchy
+   =================================================================== */
+
+/* Base typography - Clean separation of UI vs Content */
+body {
+  font-family: var(--font-mono);       /* IBM Plex Mono for content */
+  font-weight: var(--font-normal);
+  line-height: var(--leading-normal);
+  letter-spacing: 0.01em;
+}
+
+/* Headers - Authentic Sans for UI hierarchy */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);       /* Authentic Sans for headers */
+  font-weight: var(--font-normal);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-normal);
+}
+
+h2 {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-normal);
+}
+
+h3 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-normal);
+}
+
+h4 {
+  font-size: var(--text-lg);
+  font-weight: var(--font-normal);
+}
+
+h5, h6 {
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+}
+
+/* UI Elements - Authentic Sans for interface */
+nav, .nav, .breadcrumb-nav,
+button, .btn,
+label, .label,
+.badge, .tag,
+.menu, .dropdown,
+.app-bar {
+  font-family: var(--font-sans);       /* Authentic Sans for UI */
+  font-weight: var(--font-normal);
+  line-height: var(--leading-snug);
+  letter-spacing: 0.02em;
+}
+
+/* Form elements - Authentic Sans for interface */
+input, textarea, select {
+  font-family: var(--font-sans);       /* Authentic Sans for forms */
+  font-weight: var(--font-normal);
+  letter-spacing: 0.01em;
+}
+
+/* Content - IBM Plex Mono for readability */
+article, .article,
+p, .content,
+.prose, .markdown,
+li {
+  font-family: var(--font-mono);       /* IBM Plex Mono for content */
+  line-height: var(--leading-relaxed);
+  letter-spacing: 0.01em;
+}
+
+/* Enhanced readability for main content */
+.VPDoc .content,
+.vp-doc .content,
+.content-section {
+  font-family: var(--font-mono);       /* IBM Plex Mono for content */
+  line-height: var(--leading-relaxed);
+}
+
+/* Code and technical content - IBM Plex Mono */
+code, pre, kbd, samp,
+.code, .mono,
+.technical, .filename,
+.path, .url {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  letter-spacing: 0.03em;
+  line-height: var(--leading-snug);
+}
+
+/* Inline code */
+:not(pre) > code {
+  font-family: var(--font-mono);
+  font-weight: var(--font-normal);
+  font-size: 0.9em;
+  letter-spacing: 0.02em;
+}
+
+/* Code blocks */
+pre {
+  font-family: var(--font-mono);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-normal);
+  letter-spacing: 0.02em;
+}
+
+/* Component-specific typography */
+.site-title {
+  font-family: var(--font-sans);       /* Authentic Sans for site title */
+  font-weight: var(--font-normal);
+  letter-spacing: -0.01em;
+}
+
+.card-title, .pin-title {
+  font-family: var(--font-sans);       /* Authentic Sans for card titles */
+  font-weight: var(--font-normal);
+  letter-spacing: 0.01em;
+}
+
+.card-description, .pin-description {
+  font-family: var(--font-mono);       /* IBM Plex Mono for descriptions */
+  line-height: var(--leading-relaxed);
+  letter-spacing: 0.01em;
+}
+
+.card-meta, .pin-meta {
+  font-family: var(--font-sans);       /* Authentic Sans for metadata */
+  font-size: var(--text-xs);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* VitePress overrides - Ensure proper typography */
+.vp-doc h1, .VPDoc h1 {
+  font-family: var(--font-sans) !important;  /* Authentic Sans */
+  font-weight: var(--font-normal) !important;
+  letter-spacing: -0.01em !important;
+}
+
+.vp-doc h2, .VPDoc h2,
+.vp-doc h3, .VPDoc h3 {
+  font-family: var(--font-sans) !important;  /* Authentic Sans */
+  font-weight: var(--font-normal) !important;
+  letter-spacing: 0.01em !important;
+}
+
+.vp-doc p, .VPDoc p,
+.vp-doc li, .VPDoc li {
+  font-family: var(--font-mono) !important;  /* IBM Plex Mono for content */
+  line-height: var(--leading-relaxed) !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Responsive typography */
+@media (max-width: 768px) {
+  body {
+    font-size: 0.95em;
+  }
+  
+  h1 {
+    font-size: var(--text-2xl);
+  }
+  
+  h2 {
+    font-size: var(--text-xl);
+  }
+  
+  p, article, .content {
+    line-height: var(--leading-normal);
+  }
+}

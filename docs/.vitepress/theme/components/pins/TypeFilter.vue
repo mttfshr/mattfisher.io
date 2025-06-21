@@ -73,7 +73,7 @@ const sortedTypes = computed(() => {
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--vp-c-divider);
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: var(--font-normal);
 }
 
 .filter-icon {
@@ -116,7 +116,7 @@ const sortedTypes = computed(() => {
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: var(--text-base);
 }
 
 .type-name {
@@ -125,7 +125,7 @@ const sortedTypes = computed(() => {
 
 .type-count {
   font-size: 0.85rem;
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
 }
 
 /* Specific type styling */

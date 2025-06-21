@@ -463,7 +463,7 @@ watch(() => props.initialIndex, (newIndex) => {
 }
 
 .details-label {
-  font-weight: 500;
+  font-weight: var(--font-normal);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

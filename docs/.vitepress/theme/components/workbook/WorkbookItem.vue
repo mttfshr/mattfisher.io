@@ -110,7 +110,10 @@ const mediaTypeIcon = computed(() => {
 </script>
 
 <template>
-  <a :href="itemUrl" class="workbook-item">
+  <a :href="itemUrl" class="blueprint-card workbook-item">
+    <!-- Blueprint grid reference -->
+    <div class="blueprint-grid-ref">{{ effectiveMediaType.toUpperCase() }}</div>
+    
     <div class="media-thumbnail">
       <img :src="effectiveThumbnail" :alt="effectiveTitle" loading="lazy" />
       
@@ -130,42 +133,64 @@ const mediaTypeIcon = computed(() => {
       </div>
     </div>
     
-    <div class="item-details">
-      <h3 class="item-title">{{ effectiveTitle }}</h3>
+    <div class="blueprint-content item-details">
+      <!-- PRIMARY LEVEL: Item Title -->
+      <h3 class="blueprint-primary">{{ effectiveTitle }}</h3>
       
-      <div v-if="effectiveDate" class="item-date">{{ effectiveDate }}</div>
+      <!-- SECONDARY LEVEL: Technical Classification -->
+      <div class="blueprint-secondary media-classification">
+        <span class="media-type">{{ effectiveMediaType.toUpperCase() }}</span>
+        <span v-if="effectiveProvider" class="provider">{{ effectiveProvider.toUpperCase() }}</span>
+      </div>
       
-      <p v-if="effectiveDescription" class="item-description">{{ effectiveDescription }}</p>
+      <!-- TERTIARY LEVEL: Supporting Context -->
+      <p v-if="effectiveDescription" class="blueprint-tertiary">{{ effectiveDescription }}</p>
       
-      <div v-if="effectiveTags && effectiveTags.length > 0" class="item-tags">
-        <span v-for="tag in effectiveTags" :key="tag" class="tag">{{ tag }}</span>
+      <!-- QUATERNARY LEVEL: Technical Annotations -->
+      <div class="blueprint-annotations">
+        <div v-if="effectiveDate" class="blueprint-annotation">
+          <span>{{ effectiveDate }}</span>
+        </div>
+        
+        <div v-if="effectiveTags && effectiveTags.length > 0" class="blueprint-annotation">
+          <span>{{ effectiveTags.length }} TAGS</span>
+        </div>
+      </div>
+      
+      <!-- Blueprint tags -->
+      <div v-if="effectiveTags && effectiveTags.length > 0" class="blueprint-tags">
+        <div 
+          v-for="tag in effectiveTags.slice(0, 3)" 
+          :key="tag"
+          class="blueprint-tag"
+        >
+          {{ tag.toUpperCase() }}
+        </div>
+        
+        <div 
+          v-if="effectiveTags.length > 3"
+          class="blueprint-tag"
+        >
+          +{{ effectiveTags.length - 3 }}
+        </div>
       </div>
     </div>
   </a>
 </template>
 
 <style scoped>
+/* WorkbookItem specific styling - extends blueprint-card pattern */
 .workbook-item {
   display: block;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: var(--vp-c-bg-soft);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   text-decoration: none;
   color: inherit;
   height: 100%;
 }
 
-.workbook-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
 .media-thumbnail {
   position: relative;
   padding-top: 56.25%; /* 16:9 aspect ratio */
-  background-color: var(--vp-c-bg-alt);
+  background-color: var(--surface-tertiary);
   overflow: hidden;
 }
 
@@ -199,50 +224,51 @@ const mediaTypeIcon = computed(() => {
 }
 
 .media-type-icon {
-  color: var(--vp-c-brand);
+  color: var(--accent-primary);
 }
 
-.item-details {
-  padding: 16px;
+/* Blueprint content container */
+.blueprint-content.item-details {
+  padding: var(--space-6);
+  flex-grow: 1;
 }
 
-.item-title {
-  margin: 0 0 var(--space-2);
-  font-size: var(--text-lg);
-  font-weight: var(--font-semibold);
-  line-height: var(--leading-tight);
-}
-
-.item-date {
-  font-size: var(--text-sm);
-  margin-bottom: var(--space-2);
-  color: var(--vp-c-text-2);
-}
-
-.item-description {
-  font-size: var(--text-sm);
-  line-height: var(--leading-normal);
-  margin: 0 0 var(--space-3);
-  color: var(--vp-c-text-2);
-  
-  /* Limit to 3 lines with ellipsis */
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-}
-
-.item-tags {
+/* Technical classification styling */
+.media-classification {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
+  align-items: center;
+  gap: var(--space-3);
 }
 
-.tag {
-  font-size: var(--text-xs);
-  padding: var(--space-1) var(--space-2);
-  background-color: var(--vp-c-bg-alt);
-  border-radius: var(--radius-lg);
-  color: var(--vp-c-text-2);
+.media-type,
+.provider {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  background: var(--surface-tertiary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-primary);
+}
+
+.provider {
+  background: var(--accent-primary);
+  color: var(--surface-primary);
+  border-color: var(--accent-primary);
+  opacity: 0.8;
+}
+
+/* Custom blueprint tag hover states for workbook items */
+.blueprint-tag:hover {
+  background-color: var(--surface-secondary);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .blueprint-content.item-details {
+    padding: var(--space-4);
+  }
 }
 </style>

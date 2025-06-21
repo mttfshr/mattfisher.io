@@ -173,11 +173,11 @@ const hasAnyTags = computed(() => {
 }
 
 .section-label {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--vp-c-text-2);
+  font-size: var(--text-sm);
+  font-weight: var(--font-normal);
+  color: var(--text-secondary);
   min-width: 90px;
-  padding-top: 0.15rem;
+  padding-top: var(--space-1);
 }
 
 .tag-list {
@@ -190,8 +190,8 @@ const hasAnyTags = computed(() => {
 .tag {
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: 400;
+  font-size: var(--text-xs);
+  font-weight: var(--font-normal);
   white-space: nowrap;
 }
 
@@ -259,7 +259,7 @@ const hasAnyTags = computed(() => {
 
 .other-tag {
   background-color: var(--vp-c-bg-soft);
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
 }
 
 .legacy-tags {
@@ -270,7 +270,7 @@ const hasAnyTags = computed(() => {
 
 .legacy-tags .tag {
   background-color: var(--vp-c-bg-soft);
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
 }
 
 /* Responsive styling */

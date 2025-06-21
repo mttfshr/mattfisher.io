@@ -1,0 +1,109 @@
+<!-- GlobalBlueprintOverlay.vue - Site-wide blueprint performance overlay -->
+<script setup>
+import { useInteractiveBlueprintMode } from '../../composables/useInteractiveBlueprintMode'
+
+const { 
+  showPerformanceOverlay, 
+  performanceStats, 
+  formatMs, 
+  getBlueprintStats 
+} = useInteractiveBlueprintMode()
+
+// Get blueprint statistics
+const blueprintStats = getBlueprintStats()
+</script>
+
+<template>
+  <div 
+    v-if="showPerformanceOverlay" 
+    class="blueprint-perf-overlay active"
+  >
+    <div class="perf-header">
+      <div class="perf-title">BLUEPRINT SYSTEM STATUS</div>
+      <div class="perf-id">SYS_PERF_001</div>
+    </div>
+    
+    <div class="perf-section">
+      <div class="perf-metric">
+        <span class="perf-label">LOAD_TIME:</span>
+        <span class="perf-value">{{ formatMs(performanceStats.loadTime || 0) }}</span>
+      </div>
+      <div class="perf-metric">
+        <span class="perf-label">DOM_READY:</span>
+        <span class="perf-value">{{ formatMs(performanceStats.domReady || 0) }}</span>
+      </div>
+      <div class="perf-metric">
+        <span class="perf-label">RENDER_TIME:</span>
+        <span class="perf-value">{{ formatMs(performanceStats.renderTime || 0) }}</span>
+      </div>
+    </div>
+    
+    <div class="perf-separator"></div>
+    
+    <div class="perf-section">
+      <div class="perf-metric">
+        <span class="perf-label">BLUEPRINT_CARDS:</span>
+        <span class="perf-value">{{ performanceStats.components || 0 }}</span>
+      </div>
+      <div class="perf-metric">
+        <span class="perf-label">INTERACTIVE_ELEM:</span>
+        <span class="perf-value">{{ performanceStats.interactive || 0 }}</span>
+      </div>
+      <div class="perf-metric">
+        <span class="perf-label">FONT_SYMPHONY:</span>
+        <span class="perf-value">3 ACTIVE</span>
+      </div>
+    </div>
+    
+    <div class="perf-footer">
+      <div class="perf-instruction">Ctrl+Shift+B to toggle</div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.perf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--accent-primary);
+}
+
+.perf-title {
+  font-size: 11px;
+  font-weight: var(--font-medium);
+  color: white;
+  letter-spacing: 0.1em;
+}
+
+.perf-id {
+  font-size: 9px;
+  color: var(--accent-primary);
+  opacity: 0.7;
+}
+
+.perf-section {
+  margin-bottom: var(--space-3);
+}
+
+.perf-separator {
+  height: 1px;
+  background: var(--accent-primary);
+  opacity: 0.3;
+  margin: var(--space-2) 0;
+}
+
+.perf-footer {
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--accent-primary);
+  opacity: 0.6;
+}
+
+.perf-instruction {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+}
+</style>

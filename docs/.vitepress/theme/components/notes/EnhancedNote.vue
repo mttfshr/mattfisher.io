@@ -94,7 +94,7 @@ function getImagePath() {
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--vp-c-divider);
   font-size: 0.9rem;
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
 }
 
 .date-info {
@@ -132,7 +132,7 @@ function getImagePath() {
   color: var(--vp-c-brand-dark);
   border-radius: 20px;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: var(--font-normal);
 }
 
 @media (max-width: 768px) {

@@ -124,7 +124,7 @@ onMounted(async () => {
 }
 
 .asset-status {
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
 }
 
 .asset-info {
@@ -139,7 +139,7 @@ onMounted(async () => {
 .asset-url {
   font-family: monospace;
   font-size: 0.85rem;
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
   word-break: break-all;
 }
 

@@ -1,0 +1,36 @@
+/* ===================================================================
+   VISUAL UTILITIES
+   Colors, borders, shadows, and transitions
+   =================================================================== */
+
+/* Background Color Utilities */
+.bg-surface { background-color: var(--surface-primary); }
+.bg-surface-soft { background-color: var(--surface-secondary); }
+.bg-surface-alt { background-color: var(--surface-tertiary); }
+
+/* Border Utilities */
+.rounded { border-radius: var(--radius-base); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+.rounded-full { border-radius: var(--radius-full); }
+
+.border { border: var(--border-width) solid var(--border-primary); }
+
+/* Shadow Utilities */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow { box-shadow: var(--shadow-base); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
+
+/* Transition Utilities */
+.transition { transition: var(--transition-base); }
+.transition-fast { transition: var(--transition-fast); }
+.transition-slow { transition: var(--transition-slow); }
+
+/* Focus Ring Utility */
+.focus-ring:focus {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}

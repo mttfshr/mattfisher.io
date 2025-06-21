@@ -1,0 +1,96 @@
+/* ===================================================================
+   RESET
+   Minimal reset for consistent cross-browser baseline
+   =================================================================== */
+
+/* VitePress Brand Color Overrides */
+:root {
+  --vp-c-brand: #3a8eff;
+  --vp-c-brand-light: #539eff;
+  --vp-c-brand-lighter: #73b0ff;
+  --vp-c-brand-dark: #2067cc;
+  --vp-c-brand-darker: #1850a3;
+  --vp-c-brand-soft: rgba(58, 142, 255, 0.14);
+}
+
+/* VitePress Font Family Overrides */
+:root {
+  --vp-font-family-base: var(--font-sans);  /* Authentic Sans for interface */
+  --vp-font-family-mono: var(--font-mono);  /* IBM Plex Mono for code */
+}
+
+/* Global Layout Overrides - VitePress content width adjustments */
+.vp-doc .container,
+.vp-doc .content,
+.VPDoc .container,
+.VPDoc .content {
+  max-width: 840px !important;
+}
+
+.vp-layout {
+  max-width: 840px !important;
+  margin: 0 auto;
+}
+
+main .container {
+  max-width: 840px !important;
+}
+
+/* Folio View Overrides - Allow folio content to use full 1400px width */
+.folio-fullscreen .vp-doc .container,
+.folio-fullscreen .vp-doc .content,
+.folio-fullscreen .VPDoc .container,
+.folio-fullscreen .VPDoc .content,
+.folio-layout .vp-doc .container,
+.folio-layout .vp-doc .content,
+.folio-layout .VPDoc .container,
+.folio-layout .VPDoc .content {
+  max-width: 1400px !important;
+}
+
+.folio-fullscreen .vp-layout,
+.folio-layout .vp-layout {
+  max-width: 1400px !important;
+}
+
+/* Override VitePress .has-aside content-container constraint for folio views */
+.VPDoc.has-aside .folio-fullscreen .content-container,
+.VPDoc.has-aside .folio-layout .content-container,
+.folio-fullscreen .VPDoc.has-aside .content-container,
+.folio-layout .VPDoc.has-aside .content-container {
+  max-width: 1400px !important;
+}
+
+.folio-fullscreen .content-container,
+.folio-layout .content-container {
+  max-width: 1400px !important;
+}
+
+/* Additional folio overrides */
+body:has(.folio-fullscreen) .vp-doc .container,
+body:has(.folio-fullscreen) .vp-doc .content,
+body:has(.folio-fullscreen) .VPDoc .container,
+body:has(.folio-fullscreen) .VPDoc .content,
+body:has(.folio-layout) .vp-doc .container,
+body:has(.folio-layout) .vp-doc .content,
+body:has(.folio-layout) .VPDoc .container,
+body:has(.folio-layout) .VPDoc .content {
+  max-width: 1400px !important;
+}
+
+body:has(.folio-fullscreen) .VPDoc.has-aside .content-container,
+body:has(.folio-layout) .VPDoc.has-aside .content-container {
+  max-width: 1400px !important;
+}
+
+.VPDoc.has-aside .content-container[data-v-10119189]:has(.folio-fullscreen),
+.VPDoc.has-aside .content-container[data-v-10119189]:has(.folio-layout) {
+  max-width: 1400px !important;
+}
+
+.folio-fullscreen .content-container[data-v-10119189],
+.folio-layout .content-container[data-v-10119189],
+.folio-fullscreen .content-container[class*="data-v-"],
+.folio-layout .content-container[class*="data-v-"] {
+  max-width: 1400px !important;
+}

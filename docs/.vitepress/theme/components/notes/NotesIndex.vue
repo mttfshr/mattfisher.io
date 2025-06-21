@@ -196,8 +196,8 @@ function setSortOption(option) {
   border-radius: 8px;
   border: 1px solid var(--vp-c-divider);
   background-color: var(--vp-c-bg);
-  color: var(--vp-c-text-1);
-  font-size: 1rem;
+  color: var(--text-primary);
+  font-size: var(--text-base);
 }
 
 .search-input:focus {
@@ -219,9 +219,9 @@ function setSortOption(option) {
 }
 
 .filter-label {
-  font-weight: 500;
+  font-weight: var(--font-normal);
   font-size: 0.9rem;
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
 }
 
 .filter-buttons {
@@ -234,7 +234,7 @@ function setSortOption(option) {
   padding: 0.4rem 0.8rem;
   border-radius: 20px;
   background-color: var(--vp-c-bg-soft);
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
   border: none;
   font-size: 0.85rem;
   cursor: pointer;
@@ -255,7 +255,7 @@ function setSortOption(option) {
   padding: 0.4rem 0.8rem;
   border-radius: 20px;
   background-color: var(--vp-c-bg-soft);
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
   border: 1px solid var(--vp-c-divider);
   font-size: 0.85rem;
   cursor: pointer;
@@ -271,7 +271,7 @@ function setSortOption(option) {
   text-align: center;
   background-color: var(--vp-c-bg-soft);
   border-radius: 8px;
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
 }
 
 .notes-list {

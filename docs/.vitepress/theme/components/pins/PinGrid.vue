@@ -175,6 +175,6 @@ const getGroupId = (name) => {
   text-align: center;
   background-color: var(--vp-c-bg-soft);
   border-radius: 8px;
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
 }
 </style>

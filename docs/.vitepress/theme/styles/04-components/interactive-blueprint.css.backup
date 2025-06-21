@@ -1,0 +1,304 @@
+/* ===================================================================
+   INTERACTIVE BLUEPRINT OVERLAYS
+   Hover states and interactive elements for blueprint aesthetic
+   =================================================================== */
+
+/* Base Interactive Blueprint Element */
+.blueprint-interactive {
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.blueprint-interactive:hover {
+  transform: translateY(-1px);
+}
+
+/* Technical Specification Overlay */
+.blueprint-tech-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.95) 0%, 
+    rgba(0, 20, 40, 0.95) 100%);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-base);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-4);
+  border-radius: inherit;
+  z-index: 10;
+}
+
+.blueprint-interactive:hover .blueprint-tech-overlay {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Technical Readout Content */
+.tech-readout {
+  text-align: center;
+  color: var(--accent-primary);
+}
+
+.tech-readout-title {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: var(--font-normal);
+  color: white;
+  margin-bottom: var(--space-2);
+  letter-spacing: -0.01em;
+}
+
+.tech-readout-specs {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: var(--accent-primary);
+  line-height: var(--leading-relaxed);
+  text-transform: uppercase;
+}
+
+.tech-readout-insight {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: var(--space-3);
+  line-height: var(--leading-relaxed);
+  max-width: 250px;
+}
+
+/* Grid Reference Interactive */
+.blueprint-grid-ref.interactive {
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.blueprint-grid-ref.interactive:hover {
+  background: var(--accent-primary);
+  color: var(--surface-primary);
+  transform: scale(1.1);
+}
+
+/* Blueprint Detail Callout */
+.blueprint-detail-callout {
+  position: absolute;
+  background: var(--surface-primary);
+  border: 2px solid var(--accent-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-xl);
+  z-index: 100;
+  min-width: 280px;
+  max-width: 400px;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.95) translateY(10px);
+  transition: all var(--transition-base);
+  pointer-events: none;
+}
+
+.blueprint-detail-callout.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+}
+
+.blueprint-detail-callout::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 20px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid var(--accent-primary);
+}
+
+/* Blueprint Tooltip */
+.blueprint-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.95);
+  color: var(--accent-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--accent-primary);
+  white-space: nowrap;
+  z-index: 50;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-5px);
+  transition: all var(--transition-fast);
+  pointer-events: none;
+}
+
+.blueprint-tooltip.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-10px);
+}
+
+/* Performance Metrics Overlay */
+.blueprint-perf-overlay {
+  position: fixed;
+  top: var(--space-4);
+  right: var(--space-4);
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid var(--accent-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-primary);
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-base);
+  backdrop-filter: blur(4px);
+}
+
+.blueprint-perf-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.perf-metric {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-1);
+}
+
+.perf-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.perf-value {
+  color: var(--accent-primary);
+}
+
+/* Annotation Lines */
+.blueprint-annotation-line {
+  position: absolute;
+  background: var(--accent-primary);
+  opacity: 0;
+  transition: all var(--transition-base);
+  z-index: 5;
+}
+
+.blueprint-annotation-line.horizontal {
+  height: 1px;
+  width: 0;
+}
+
+.blueprint-annotation-line.vertical {
+  width: 1px;
+  height: 0;
+}
+
+.blueprint-interactive:hover .blueprint-annotation-line.horizontal {
+  width: 100%;
+  opacity: 0.6;
+}
+
+.blueprint-interactive:hover .blueprint-annotation-line.vertical {
+  height: 100%;
+  opacity: 0.6;
+}
+
+/* Hover Reveal Animations */
+@keyframes blueprint-reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes tech-scan {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+.blueprint-scan-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.blueprint-scan-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(var(--accent-primary-rgb, 0, 255, 255), 0.3), 
+    transparent);
+  transition: left var(--transition-slow);
+  z-index: 1;
+}
+
+.blueprint-interactive:hover .blueprint-scan-effect::before {
+  left: 100%;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .blueprint-tech-overlay {
+    padding: var(--space-3);
+  }
+  
+  .tech-readout-title {
+    font-size: 16px;
+  }
+  
+  .tech-readout-specs {
+    font-size: 11px;
+  }
+  
+  .blueprint-detail-callout {
+    min-width: 240px;
+    max-width: 300px;
+    padding: var(--space-3);
+  }
+  
+  .blueprint-perf-overlay {
+    top: var(--space-2);
+    right: var(--space-2);
+    padding: var(--space-2);
+    font-size: 10px;
+  }
+}
+
+/* Touch Device Adaptations */
+@media (hover: none) {
+  .blueprint-interactive {
+    /* On touch devices, show overlay on tap/touch */
+  }
+  
+  .blueprint-interactive:active .blueprint-tech-overlay {
+    opacity: 1;
+    visibility: visible;
+  }
+}

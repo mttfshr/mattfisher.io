@@ -1,0 +1,21 @@
+/* ===================================================================
+   OVERLAY PATTERNS
+   Overlay components for modals and media
+   =================================================================== */
+
+/* Base Overlay Pattern */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: var(--transition-base);
+}
+
+.overlay:hover,
+.overlay.active {
+  opacity: 1;
+}

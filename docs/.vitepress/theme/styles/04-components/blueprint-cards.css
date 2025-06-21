@@ -1,0 +1,271 @@
+/* ===================================================================
+   BLUEPRINT CARD PATTERN
+   Technical drawing hierarchy for content cards with three-font symphony
+   =================================================================== */
+
+/* Base Blueprint Card */
+.blueprint-card {
+  background-color: var(--surface-secondary);
+  border-radius: var(--radius-lg);
+  border: var(--border-width) solid var(--border-primary);
+  overflow: hidden;
+  transition: var(--transition-base);
+  padding: var(--space-6);
+  position: relative;
+}
+
+.blueprint-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent-primary);
+}
+
+/* ===================================================================
+   THREE-FONT SYMPHONY HIERARCHY
+   Authentic Sans + IBM Plex Mono + IBM Plex Serif
+   =================================================================== */
+
+/* Primary Level - Technical Titles (Authentic Sans) */
+.blueprint-primary {
+  font-family: var(--font-sans); /* Authentic Sans */
+  font-size: 24px;
+  font-weight: var(--font-normal);
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: var(--leading-tight);
+  margin-bottom: var(--space-3);
+}
+
+/* Secondary Level - Technical Classification (Authentic Sans) */
+.blueprint-secondary {
+  font-family: var(--font-sans); /* Authentic Sans */
+  font-size: 18px;
+  font-weight: var(--font-normal);
+  color: var(--text-secondary);
+  opacity: 0.8;
+  letter-spacing: -0.005em;
+  margin-bottom: var(--space-2);
+}
+
+/* Tertiary Level - Supporting Context (Authentic Sans) */
+.blueprint-tertiary {
+  font-family: var(--font-sans); /* Authentic Sans */
+  font-size: 16px;
+  font-weight: var(--font-normal);
+  color: var(--text-tertiary);
+  opacity: 0.6;
+  line-height: var(--leading-normal);
+  margin-bottom: var(--space-2);
+}
+
+/* Quaternary Level - Technical Specifications (IBM Plex Mono) */
+.blueprint-quaternary {
+  font-family: var(--font-mono); /* IBM Plex Mono */
+  font-size: 14px;
+  font-weight: var(--font-normal);
+  color: var(--text-tertiary);
+  opacity: 0.4;
+  letter-spacing: 0.01em;
+  line-height: var(--leading-normal);
+}
+
+/* NEW: Human Annotation Level (IBM Plex Serif) */
+.blueprint-annotation-human {
+  font-family: var(--font-serif); /* IBM Plex Serif */
+  font-size: 15px;
+  font-style: italic;
+  font-weight: var(--font-normal);
+  color: var(--text-primary);
+  opacity: 0.85;
+  line-height: var(--leading-relaxed);
+  margin: var(--space-3) 0;
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--accent-primary);
+  margin-left: var(--space-2);
+}
+
+/* Personal insight annotation - warmer than technical */
+.blueprint-insight {
+  font-family: var(--font-serif); /* IBM Plex Serif */
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text-secondary);
+  opacity: 0.9;
+  line-height: var(--leading-relaxed);
+  background: rgba(var(--accent-primary-rgb, 0, 255, 255), 0.05);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--accent-primary);
+  margin: var(--space-4) 0;
+}
+
+/* Technical quote vs human quote distinction */
+.blueprint-quote-technical {
+  font-family: var(--font-mono); /* Technical quotes in mono */
+  font-size: 13px;
+  color: var(--text-tertiary);
+  background: var(--surface-tertiary);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-primary);
+  margin: var(--space-2) 0;
+}
+
+.blueprint-quote-human {
+  font-family: var(--font-serif); /* Human quotes in serif */
+  font-size: 15px;
+  font-style: italic;
+  color: var(--text-primary);
+  opacity: 0.9;
+  padding: var(--space-3);
+  border-left: 3px solid var(--accent-primary);
+  margin: var(--space-3) 0;
+  background: rgba(var(--accent-primary-rgb, 0, 255, 255), 0.03);
+}
+
+/* Blueprint Separators */
+.blueprint-separator {
+  height: 1px;
+  background: linear-gradient(90deg, 
+    var(--accent-primary) 0%, 
+    transparent 100%);
+  opacity: 0.3;
+  margin: var(--space-4) 0;
+}
+
+/* Blueprint Annotations - for metadata clusters */
+.blueprint-annotations {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-primary);
+  opacity: 0.5;
+}
+
+.blueprint-annotation {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* Blueprint Grid Reference - optional corner coordinates */
+.blueprint-grid-ref {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent-primary);
+  opacity: 0.3;
+  letter-spacing: 0.05em;
+}
+
+/* Blueprint Tag Clusters */
+.blueprint-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.blueprint-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-base);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  background-color: var(--surface-tertiary);
+  color: var(--text-tertiary);
+  opacity: 0.4;
+  border: 1px solid var(--border-primary);
+  transition: var(--transition-fast);
+}
+
+.blueprint-tag:hover {
+  opacity: 0.7;
+  border-color: var(--accent-primary);
+}
+
+/* Blueprint Status Indicators */
+.blueprint-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-primary);
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Blueprint Connector Lines - optional visual enhancement */
+.blueprint-connector {
+  position: relative;
+}
+
+.blueprint-connector::before {
+  content: '';
+  position: absolute;
+  left: -var(--space-3);
+  top: 50%;
+  width: var(--space-2);
+  height: 1px;
+  background: var(--accent-primary);
+  opacity: 0.3;
+}
+
+/* Responsive Blueprint Cards */
+@media (max-width: 768px) {
+  .blueprint-primary {
+    font-size: 20px;
+  }
+  
+  .blueprint-secondary {
+    font-size: 16px;
+  }
+  
+  .blueprint-tertiary {
+    font-size: 14px;
+  }
+  
+  .blueprint-quaternary {
+    font-size: 12px;
+  }
+  
+  .blueprint-card {
+    padding: var(--space-4);
+  }
+}
+
+/* Blueprint Card Variants */
+
+/* Dense variant for gallery views */
+.blueprint-card-dense {
+  padding: var(--space-4);
+}
+
+.blueprint-card-dense .blueprint-primary {
+  font-size: 18px;
+  margin-bottom: var(--space-2);
+}
+
+.blueprint-card-dense .blueprint-secondary {
+  font-size: 14px;
+  margin-bottom: var(--space-1);
+}
+
+/* Hero variant for featured content */
+.blueprint-card-hero .blueprint-primary {
+  font-size: 32px;
+}
+
+.blueprint-card-hero .blueprint-secondary {
+  font-size: 24px;
+}

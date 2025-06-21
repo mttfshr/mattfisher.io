@@ -72,23 +72,32 @@ const sessionInfo = computed(() => {
 </script>
 
 <template>
-  <div :id="id" class="log-session">
-    <div class="session-header">
-      <div class="session-date" :id="id">
-        <a :href="`#${id}`" class="date-link">{{ formattedDate }}</a>
-      </div>
-    </div>
+  <div :id="id" class="blueprint-card log-session">
+    <!-- Blueprint grid reference -->
+    <div class="blueprint-grid-ref">S{{ sessionInfo.number || 'XX' }}</div>
     
-    <div class="session-content">
-      <div class="session-title">
-        <span class="session-badge">Session {{ sessionInfo.number }}</span>
-        <h3>{{ sessionInfo.name }}</h3>
+    <!-- Session header with blueprint hierarchy -->
+    <div class="session-header">
+      <!-- PRIMARY LEVEL: Session Title -->
+      <h3 class="blueprint-primary session-title">{{ sessionInfo.name }}</h3>
+      
+      <!-- SECONDARY LEVEL: Technical Classification -->
+      <div class="blueprint-secondary session-classification">
+        <span class="session-badge">SESSION {{ sessionInfo.number }}</span>
+        <span class="claude-indicator">CLAUDE NOTES</span>
+        <span class="session-date">{{ formattedDate }}</span>
       </div>
       
-      <div class="claude-indicator">Notes by Claude</div>
+      <!-- TERTIARY LEVEL: Supporting Context -->
+      <div v-html="formattedContent" class="blueprint-tertiary content-text"></div>
       
-      <div v-html="formattedContent" class="content-text"></div>
+      <!-- Human insight annotation for significant sessions -->
+      <div v-if="sessionInfo.number && parseInt(sessionInfo.number) > 60" class="blueprint-insight">
+        <em>Recent Development:</em> Advanced sessions in our blueprint design system evolution, 
+        showcasing the sophisticated interplay between technical precision and human insight.
+      </div>
       
+      <!-- Session images -->
       <div v-if="images && images.length" class="session-images">
         <div 
           v-for="(image, index) in images" 
@@ -100,105 +109,108 @@ const sessionInfo = computed(() => {
         </div>
       </div>
       
-      <div v-if="tags && tags.length" class="session-tags">
-        <span 
+      <!-- QUATERNARY LEVEL: Technical Annotations -->
+      <div class="blueprint-annotations">
+        <div class="blueprint-annotation">
+          <span>{{ formattedDate }}</span>
+        </div>
+        
+        <div v-if="tags && tags.length" class="blueprint-annotation">
+          <span>{{ tags.length }} TAGS</span>
+        </div>
+        
+        <div class="blueprint-annotation">
+          <span>{{ id }}</span>
+        </div>
+      </div>
+      
+      <!-- Blueprint tags -->
+      <div v-if="tags && tags.length" class="blueprint-tags">
+        <div 
           v-for="tag in tags" 
-          :key="tag" 
-          class="tag"
+          :key="tag"
+          class="blueprint-tag"
         >
-          #{{ tag }}
-        </span>
+          #{{ tag.toUpperCase() }}
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* LogSession specific styling - extends blueprint-card pattern */
 .log-session {
-  display: flex;
-  gap: var(--space-6);
-  padding-bottom: var(--space-8);
-  border-bottom: var(--border-width) solid var(--vp-c-divider);
   margin-bottom: var(--space-8);
 }
 
 .session-header {
-  min-width: 100px;
-}
-
-.session-date {
-  position: sticky;
-  top: 80px;
-}
-
-.date-link {
-  font-weight: var(--font-medium);
-  color: var(--vp-c-text-2);
-  font-size: var(--text-sm);
-  text-decoration: none;
-}
-
-.date-link:hover {
-  color: var(--vp-c-brand);
-  text-decoration: underline;
-}
-
-.session-content {
   flex: 1;
 }
 
-.session-title {
+/* Technical classification styling */
+.session-classification {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin-bottom: var(--space-3);
-}
-
-.session-title h3 {
-  margin: 0;
-  font-size: var(--text-xl);
-  font-weight: var(--font-semibold);
+  flex-wrap: wrap;
 }
 
 .session-badge {
-  background-color: var(--vp-c-brand);
-  color: white;
-  font-size: var(--text-xs);
-  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  background: var(--accent-primary);
+  color: var(--surface-primary);
+  padding: 3px 8px;
   border-radius: var(--radius-sm);
-  font-weight: var(--font-medium);
+  border: 1px solid var(--accent-primary);
 }
 
 .claude-indicator {
-  display: inline-block;
-  margin-bottom: var(--space-4);
-  font-size: var(--text-sm);
-  color: var(--vp-c-text-2);
-  padding: var(--space-1) var(--space-2);
-  background-color: var(--vp-c-bg-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  background: var(--surface-tertiary);
+  color: var(--text-secondary);
+  padding: 3px 8px;
   border-radius: var(--radius-sm);
+  border: 1px solid var(--border-primary);
 }
 
+.session-date {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  opacity: 0.8;
+}
+
+/* Content text styling with blueprint aesthetics */
 .content-text {
   line-height: var(--leading-relaxed);
   margin-bottom: var(--space-4);
 }
 
 .content-text :deep(a) {
-  color: var(--vp-c-brand);
+  color: var(--accent-primary);
   text-decoration: none;
-  border-bottom: var(--border-width) dotted var(--vp-c-brand);
+  border-bottom: var(--border-width) dotted var(--accent-primary);
 }
 
 .content-text :deep(a:hover) {
-  color: var(--vp-c-brand-dark);
-  border-bottom: var(--border-width) solid var(--vp-c-brand-dark);
+  color: var(--text-primary);
+  border-bottom: var(--border-width) solid var(--accent-primary);
 }
 
+/* Session images */
 .session-images {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
   margin: var(--space-4) 0;
+  border-left: 2px solid var(--accent-primary);
+  padding-left: var(--space-4);
+  margin-left: var(--space-2);
 }
 
 .session-images.single {
@@ -212,6 +224,7 @@ const sessionInfo = computed(() => {
 .image-wrapper {
   border-radius: var(--radius-md);
   overflow: hidden;
+  border: 1px solid var(--border-primary);
 }
 
 .image-wrapper.single img {
@@ -229,36 +242,24 @@ const sessionInfo = computed(() => {
   aspect-ratio: 16/9;
 }
 
-.session-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-top: var(--space-3);
+/* Custom blueprint tag hover states for sessions */
+.blueprint-tag:hover {
+  background-color: var(--surface-secondary);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
 }
 
-.tag {
-  font-size: var(--text-sm);
-  color: var(--vp-c-brand);
-}
-
-@media (max-width: 640px) {
-  .log-session {
-    flex-direction: column;
-    gap: var(--space-3);
-  }
-  
-  .session-header {
-    min-width: unset;
-  }
-  
-  .session-date {
-    position: static;
-  }
-  
-  .session-title {
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .session-classification {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-2);
+  }
+  
+  .session-images {
+    margin-left: 0;
+    padding-left: var(--space-2);
   }
 }
 </style>

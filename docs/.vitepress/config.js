@@ -45,11 +45,11 @@ export default defineConfig({
   // Theme configuration
   lastUpdated: true,
   
-  // Add favicon, app icons, and mobile viewport with iOS-specific settings
+  // Add favicon, app icons, and mobile viewport
   head: [
     // Essential viewport meta tag for mobile rotation and responsiveness
-    ['meta', { name: 'viewport', content: 'width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover' }],
-    // iOS-specific meta tags to ensure proper rotation behavior
+    ['meta', { name: 'viewport', content: 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover' }],
+    // iOS-specific meta tags for proper mobile behavior
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
     ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }],
     ['meta', { name: 'format-detection', content: 'telephone=no' }],

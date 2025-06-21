@@ -188,10 +188,20 @@ const allTags = computed(() => {
   
   return tags
 })
+
+// Add date formatting for technical annotations
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
+  const date = new Date(dateString)
+  return date.toISOString().split('T')[0] // YYYY-MM-DD format for technical spec look
+}
 </script>
 
 <template>
-  <div class="pin-card card-interactive" :class="[`type-${pin.contentType}`, `layout-${layout}`]" @click="emit('click', pin)">
+  <div class="blueprint-card pin-card" :class="[`type-${pin.contentType}`, `layout-${layout}`]" @click="emit('click', pin)">
+    <!-- Blueprint grid reference -->
+    <div class="blueprint-grid-ref">{{ pin.contentType?.toUpperCase() || 'PIN' }}</div>
+    
     <!-- Reusable media thumbnail component -->
     <MediaThumbnail
       :thumbnail-url="getThumbnailUrl(pin)"
@@ -201,46 +211,74 @@ const allTags = computed(() => {
       :aspect-ratio="isCompactLayout ? 'square' : 'wide'"
     />
     
-    <!-- Card content - only show in detailed layout -->
-    <div v-if="!isCompactLayout" class="card-content">
-      <div class="pin-header">
-        <h3 class="pin-title">{{ pin.title || 'Untitled' }}</h3>
-        <div class="pin-source">
-          <Icon :name="getLinkIcon(pin.url)" :size="14" class="link-icon" />
-          <img v-if="pin.favicon" :src="pin.favicon" class="site-favicon" alt="Site icon" />
-          {{ getDomainName(pin.url) }}
-        </div>
+    <!-- Card content with blueprint hierarchy - only show in detailed layout -->
+    <div v-if="!isCompactLayout" class="blueprint-content">
+      <!-- PRIMARY LEVEL: Pin Title -->
+      <h3 class="blueprint-primary">{{ pin.title || 'Untitled' }}</h3>
+      
+      <!-- SECONDARY LEVEL: Technical Classification -->
+      <div class="blueprint-secondary pin-source">
+        <Icon :name="getLinkIcon(pin.url)" :size="16" class="link-icon" />
+        <img v-if="pin.favicon" :src="pin.favicon" class="site-favicon" alt="Site icon" />
+        <span>{{ getDomainName(pin.url) }}</span>
+        <span class="content-type">{{ pin.contentType?.toUpperCase() || 'LINK' }}</span>
       </div>
       
-      <p v-if="pin.description" class="pin-description">{{ pin.description }}</p>
+      <!-- TERTIARY LEVEL: Supporting Context -->
+      <p v-if="pin.description" class="blueprint-tertiary">{{ pin.description }}</p>
       
-      <div v-if="pin.notes" class="pin-notes">
+      <!-- Personal notes with human annotation styling -->
+      <div v-if="pin.notes" class="blueprint-annotation-human">
         "{{ pin.notes }}"
       </div>
       
-      <!-- Collapsible tag display -->
-      <div class="pin-tags">
-        <div class="tags-trigger" @click.stop="toggleTags" v-if="allTags.length > 0">
-          <Icon name="Tag" :size="14" />
-          <span class="tags-count">{{ allTags.length }}</span>
-          <div v-if="tagsExpanded" class="tags-expanded">
-            <TagDisplay 
-              :tags="allTags" 
-              :collapsible="false"
-              :initially-expanded="true"
-              @tag-click="(tag) => emit('tag-click', tag)"
-            />
-          </div>
+      <!-- QUATERNARY LEVEL: Technical Annotations -->
+      <div class="blueprint-annotations">
+        <div class="blueprint-annotation">
+          <Icon name="Calendar" :size="12" />
+          <span>{{ formatDate(pin.dateAdded) }}</span>
         </div>
+        
+        <div v-if="hasCollections" class="blueprint-annotation">
+          <Icon name="Folder" :size="12" />
+          <span>{{ pin.collections.length }} COLL</span>
+        </div>
+        
+        <div v-if="allTags.length > 0" class="blueprint-annotation">
+          <Icon name="Tag" :size="12" />
+          <span>{{ allTags.length }} TAGS</span>
+        </div>
+      </div>
+      
+      <!-- Blueprint tags as technical specifications -->
+      <div v-if="allTags.length > 0" class="blueprint-tags">
+        <div 
+          v-for="tag in allTags.slice(0, tagsExpanded ? allTags.length : 3)" 
+          :key="tag"
+          class="blueprint-tag"
+          @click.stop="emit('tag-click', tag)"
+        >
+          {{ tag.toUpperCase() }}
+        </div>
+        
+        <!-- Expand/collapse for more tags -->
+        <button 
+          v-if="allTags.length > 3"
+          @click.stop="tagsExpanded = !tagsExpanded"
+          class="blueprint-tag blueprint-tag-expand"
+        >
+          {{ tagsExpanded ? '−' : `+${allTags.length - 3}` }}
+        </button>
       </div>
     </div>
     
-    <!-- Compact layout overlay (only show title on hover) -->
-    <div v-if="isCompactLayout" class="compact-overlay">
+    <!-- Compact layout - blueprint overlay on hover -->
+    <div v-if="isCompactLayout" class="blueprint-compact-overlay">
       <div class="compact-content">
-        <h3 class="compact-title">{{ pin.title || 'Untitled' }}</h3>
-        <div class="compact-source">
+        <h3 class="blueprint-primary compact-title">{{ pin.title || 'Untitled' }}</h3>
+        <div class="blueprint-secondary compact-source">
           <Icon :name="getLinkIcon(pin.url)" :size="12" class="link-icon" />
+          <span class="content-type">{{ pin.contentType?.toUpperCase() || 'LINK' }}</span>
         </div>
       </div>
     </div>
@@ -248,7 +286,7 @@ const allTags = computed(() => {
 </template>
 
 <style scoped>
-/* Base pin card styles */
+/* Pin card specific styling - extends blueprint-card pattern */
 .pin-card {
   height: 100%;
   display: flex;
@@ -256,26 +294,52 @@ const allTags = computed(() => {
   position: relative;
 }
 
-/* Detailed layout card content */
-.pin-card.layout-detailed .card-content {
-  padding: var(--space-4);
+/* Blueprint content container */
+.blueprint-content {
+  padding: var(--space-6);
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
 
-/* Compact layout - no content padding, overlay on hover */
-.pin-card.layout-compact {
-  position: relative;
+/* Technical classification styling */
+.pin-source {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
-.compact-overlay {
+.link-icon {
+  color: var(--accent-primary);
+  opacity: 0.8;
+}
+
+.site-favicon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  opacity: 0.8;
+}
+
+.content-type {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  background: var(--surface-tertiary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-primary);
+  margin-left: auto; /* Push to right side */
+}
+
+/* Blueprint compact overlay */
+.blueprint-compact-overlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+  background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.9) 100%);
   opacity: 0;
   transition: opacity var(--transition-base);
   display: flex;
@@ -284,19 +348,14 @@ const allTags = computed(() => {
   pointer-events: none;
 }
 
-.pin-card.layout-compact:hover .compact-overlay {
+.pin-card.layout-compact:hover .blueprint-compact-overlay {
   opacity: 1;
 }
 
-.compact-content {
-  width: 100%;
-}
-
 .compact-title {
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
+  font-size: 16px !important; /* Override blueprint-primary for compact */
   color: white;
-  margin: 0 0 var(--space-1);
+  margin-bottom: var(--space-1) !important;
   line-height: var(--leading-tight);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -305,116 +364,48 @@ const allTags = computed(() => {
 }
 
 .compact-source {
+  font-size: 12px !important; /* Override blueprint-secondary for compact */
+  color: rgba(255, 255, 255, 0.8) !important;
   display: flex;
   align-items: center;
   gap: var(--space-1);
 }
 
-/* Detailed layout content styles */
-.pin-header {
-  margin-bottom: var(--space-2);
-}
-
-.pin-title {
-  font-size: var(--text-base);
-  font-weight: var(--font-semibold);
-  margin: 0 0 var(--space-1);
-  line-height: var(--leading-tight);
-}
-
-.pin-source {
-  font-size: var(--text-xs);
-  color: var(--text-secondary);
-  margin-bottom: var(--space-2);
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-}
-
-.link-icon {
-  color: var(--text-tertiary);
-}
-
-.site-favicon {
-  width: 14px;
-  height: 14px;
-  object-fit: contain;
-}
-
-.pin-description {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
-  margin: 0 0 var(--space-3);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;  
-  overflow: hidden;
-  line-height: var(--leading-normal);
-}
-
-.pin-notes {
-  font-size: var(--text-sm);
-  font-style: italic;
-  color: var(--text-primary);
-  margin: var(--space-2) 0;
-  padding: var(--space-2);
-  background-color: var(--surface-tertiary);
-  border-left: 3px solid var(--vp-c-brand);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-}
-
-/* Collapsible tags */
-.pin-tags {
-  margin-top: auto;
-  position: relative;
-}
-
-.tags-trigger {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
-  background-color: var(--surface-tertiary);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: var(--text-xs);
-  color: var(--text-secondary);
-  transition: all var(--transition-base);
-  user-select: none;
-}
-
-.tags-trigger:hover {
+/* Custom blueprint tag hover states */
+.blueprint-tag:hover {
   background-color: var(--surface-secondary);
-  color: var(--text-primary);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
 }
 
-.tags-count {
-  font-weight: var(--font-medium);
+.blueprint-tag-expand {
+  background-color: var(--accent-primary);
+  color: var(--surface-primary);
+  border-color: var(--accent-primary);
 }
 
-.tags-expanded {
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  right: 0;
+.blueprint-tag-expand:hover {
   background-color: var(--surface-primary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-base);
-  padding: var(--space-3);
-  margin-bottom: var(--space-1);
-  box-shadow: var(--shadow-lg);
-  z-index: 10;
-  animation: slideUp var(--transition-base) ease-out;
+  color: var(--accent-primary);
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+/* Enhanced blueprint connector for personal notes */
+.blueprint-connector {
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--accent-primary);
+  margin-left: var(--space-2);
+  font-style: italic;
+}
+
+/* Custom annotation icons */
+.blueprint-annotation .link-icon {
+  color: var(--accent-primary);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .blueprint-content {
+    padding: var(--space-4);
   }
 }
 </style>

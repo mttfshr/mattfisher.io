@@ -3,35 +3,10 @@ export function initializeMobileOrientation() {
   // Ensure this only runs on mobile devices
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   
-  if (!isMobile) return;
+  if (!isMobile && !('ontouchstart' in window)) return;
 
-  // Function to handle orientation changes
-  function handleOrientationChange() {
-    // Force a layout recalculation after orientation change
-    setTimeout(() => {
-      // Trigger a resize event to ensure proper layout
-      window.dispatchEvent(new Event('resize'));
-      
-      // Force viewport recalculation
-      const viewport = document.querySelector('meta[name="viewport"]');
-      if (viewport) {
-        const content = viewport.getAttribute('content');
-        viewport.setAttribute('content', content);
-      }
-    }, 100);
-  }
-
-  // Listen for orientation changes
-  if (screen.orientation) {
-    screen.orientation.addEventListener('change', handleOrientationChange);
-  } else {
-    // Fallback for older browsers
-    window.addEventListener('orientationchange', handleOrientationChange);
-  }
-
-  // Initial setup
-  document.addEventListener('DOMContentLoaded', () => {
-    // Ensure viewport meta tag is properly set
+  // Aggressive viewport setup
+  function setupViewport() {
     let viewport = document.querySelector('meta[name="viewport"]');
     if (!viewport) {
       viewport = document.createElement('meta');
@@ -39,46 +14,74 @@ export function initializeMobileOrientation() {
       document.head.appendChild(viewport);
     }
     
-    // Set comprehensive viewport content
-    viewport.content = 'width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover';
+    // Comprehensive viewport settings
+    viewport.content = 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover';
+  }
+
+  // Force orientation unlock
+  function forceOrientationUnlock() {
+    if (screen.orientation && screen.orientation.unlock) {
+      screen.orientation.unlock().catch(() => {
+        // Ignore errors, this is normal
+      });
+    }
+    
+    // Remove any CSS that might lock orientation
+    const style = document.createElement('style');
+    style.textContent = `
+      html, body {
+        -webkit-transform: none !important;
+        -moz-transform: none !important;
+        -ms-transform: none !important;
+        transform: none !important;
+      }
+      @media screen and (orientation: portrait) {
+        html, body { -webkit-transform: none !important; transform: none !important; }
+      }
+      @media screen and (orientation: landscape) {
+        html, body { -webkit-transform: none !important; transform: none !important; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // Function to handle orientation changes
+  function handleOrientationChange() {
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+      setupViewport();
+    }, 100);
+  }
+
+  // Multiple event listeners for orientation changes
+  if (screen.orientation) {
+    screen.orientation.addEventListener('change', handleOrientationChange);
+  }
+  
+  window.addEventListener('orientationchange', handleOrientationChange);
+  window.addEventListener('resize', handleOrientationChange);
+
+  // Initial setup
+  document.addEventListener('DOMContentLoaded', () => {
+    setupViewport();
+    forceOrientationUnlock();
     
     // iOS Safari specific fixes
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      // Prevent iOS from disabling rotation in certain circumstances
       document.body.style.minHeight = '100vh';
       document.documentElement.style.minHeight = '100vh';
       
-      // Add touch-action to ensure proper touch handling
-      document.body.style.touchAction = 'manipulation';
+      // Fix iOS Safari viewport issues
+      const fixIOSViewport = () => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      };
+      
+      fixIOSViewport();
+      window.addEventListener('resize', fixIOSViewport);
+      window.addEventListener('orientationchange', () => setTimeout(fixIOSViewport, 100));
     }
   });
-
-  // Additional iOS Safari orientation unlock attempts
-  if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    // Try to unlock orientation on first user interaction
-    const unlockOrientation = () => {
-      // Request fullscreen briefly and exit to unlock orientation
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen()
-          .then(() => {
-            setTimeout(() => {
-              if (document.exitFullscreen) {
-                document.exitFullscreen();
-              }
-            }, 100);
-          })
-          .catch(() => {
-            // Ignore errors, this is just a fallback attempt
-          });
-      }
-      
-      // Remove the event listener after first attempt
-      document.removeEventListener('touchstart', unlockOrientation);
-    };
-    
-    // Attach to first touch
-    document.addEventListener('touchstart', unlockOrientation, { once: true });
-  }
 }
 
 // Auto-initialize when script loads

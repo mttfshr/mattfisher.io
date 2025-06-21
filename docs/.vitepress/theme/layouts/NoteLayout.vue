@@ -122,6 +122,12 @@ onMounted(() => {
   padding: 0 var(--space-4);
 }
 
+/* Note h1 styling - IBM Plex Mono italic */
+.page-header-adaptive h1 {
+  font-family: var(--font-mono) !important; /* IBM Plex Mono */
+  font-style: italic !important; /* Italic style */
+}
+
 .note-metadata {
   padding: var(--space-6) 0;
   border-bottom: var(--border-width) solid var(--border-secondary);
@@ -132,6 +138,12 @@ onMounted(() => {
   font-size: var(--text-sm);
   color: var(--text-secondary);
   margin-bottom: var(--space-4);
+}
+
+/* Last modified timestamp styling - IBM Plex Mono italic */
+.modified-date {
+  font-family: var(--font-mono); /* IBM Plex Mono */
+  font-style: italic; /* Italic style */
 }
 
 .featured-image {

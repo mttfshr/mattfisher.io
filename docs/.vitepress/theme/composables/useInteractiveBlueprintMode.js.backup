@@ -1,0 +1,72 @@
+// useInteractiveBlueprintMode.js - Composable for interactive blueprint features
+import { ref, onMounted, onUnmounted } from 'vue'
+
+export function useInteractiveBlueprintMode() {
+  const showPerformanceOverlay = ref(false)
+  const performanceStats = ref({})
+  
+  // Toggle performance overlay with keyboard shortcut
+  const handleKeyPress = (event) => {
+    // Ctrl/Cmd + Shift + B = Blueprint mode
+    if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'B') {
+      event.preventDefault()
+      showPerformanceOverlay.value = !showPerformanceOverlay.value
+      updatePerformanceStats()
+    }
+  }
+  
+  // Update performance statistics
+  const updatePerformanceStats = () => {
+    if (typeof window !== 'undefined') {
+      const timing = window.performance?.timing
+      const navigation = window.performance?.navigation
+      
+      if (timing) {
+        performanceStats.value = {
+          loadTime: timing.loadEventEnd - timing.navigationStart,
+          domReady: timing.domContentLoadedEventEnd - timing.navigationStart,
+          renderTime: timing.loadEventEnd - timing.domLoading,
+          components: document.querySelectorAll('.blueprint-card').length,
+          interactive: document.querySelectorAll('.blueprint-interactive').length,
+          overlays: document.querySelectorAll('.blueprint-tech-overlay').length
+        }
+      }
+    }
+  }
+  
+  // Format milliseconds for display
+  const formatMs = (ms) => {
+    if (ms < 1000) return `${Math.round(ms)}ms`
+    return `${(ms / 1000).toFixed(2)}s`
+  }
+  
+  // Get site-wide blueprint statistics
+  const getBlueprintStats = () => {
+    if (typeof document !== 'undefined') {
+      return {
+        blueprintCards: document.querySelectorAll('.blueprint-card').length,
+        interactiveElements: document.querySelectorAll('.blueprint-interactive').length,
+        fontTypes: 3, // Authentic Sans, IBM Plex Mono, IBM Plex Serif
+        activeOverlays: document.querySelectorAll('.blueprint-tech-overlay:hover').length
+      }
+    }
+    return {}
+  }
+  
+  onMounted(() => {
+    document.addEventListener('keydown', handleKeyPress)
+    updatePerformanceStats()
+  })
+  
+  onUnmounted(() => {
+    document.removeEventListener('keydown', handleKeyPress)
+  })
+  
+  return {
+    showPerformanceOverlay,
+    performanceStats,
+    formatMs,
+    getBlueprintStats,
+    updatePerformanceStats
+  }
+}

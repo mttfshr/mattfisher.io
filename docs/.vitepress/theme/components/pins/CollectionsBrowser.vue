@@ -101,7 +101,7 @@ const getCollectionTypes = (collection) => {
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--vp-c-divider);
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: var(--font-normal);
 }
 
 .filter-icon {
@@ -153,8 +153,8 @@ const getCollectionTypes = (collection) => {
   padding: 0.15rem 0.4rem;
   border-radius: 12px;
   background-color: var(--vp-c-bg-soft);
-  font-size: 0.75rem;
-  color: var(--vp-c-text-2);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
 }
 
 .collection-button.active .collection-count {
@@ -172,15 +172,15 @@ const getCollectionTypes = (collection) => {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: 0.75rem;
-  color: var(--vp-c-text-2);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
 }
 
 .type-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--vp-c-text-3);
+  background-color: var(--text-tertiary);
 }
 
 /* Type indicator styling */

@@ -3,35 +3,18 @@ import Layout from './layouts/Layout.vue'
 import NoteLayout from './layouts/NoteLayout.vue'
 import WorkbookItemLayout from './layouts/WorkbookItemLayout.vue'
 import FolderIndexLayout from './layouts/FolderIndexLayout.vue'
-import '@fontsource-variable/source-sans-3';
+
 // IBM Plex Font Family - Complete Typography System
 import '@fontsource/ibm-plex-sans/300.css'     // Light
 import '@fontsource/ibm-plex-sans/400.css'     // Regular  
-import '@fontsource/ibm-plex-sans/500.css'     // Medium
-import '@fontsource/ibm-plex-sans/600.css'     // SemiBold
-import '@fontsource/ibm-plex-sans/700.css'     // Bold
+import '@fontsource/ibm-plex-mono/400.css'     // Regular
+import '@fontsource/ibm-plex-mono/400-italic.css' // Regular Italic
 import '@fontsource/ibm-plex-serif/300.css'    // Light
 import '@fontsource/ibm-plex-serif/400.css'    // Regular
 import '@fontsource/ibm-plex-serif/400-italic.css' // Regular Italic
-import '@fontsource/ibm-plex-serif/500.css'    // Medium
-import '@fontsource/ibm-plex-serif/600.css'    // SemiBold
-import '@fontsource/ibm-plex-mono/400.css'     // Regular
-import '@fontsource/ibm-plex-mono/400-italic.css' // Regular Italic
-import '@fontsource/ibm-plex-mono/500.css'     // Medium
-import '@fontsource/ibm-plex-mono/600.css'     // SemiBold
-import './style.css'
-// Design Token System
-import './styles/design-tokens.css'
-import './styles/utilities.css'
-import './styles/components.css'
-import './styles/patterns.css'
-// Semantic Atomic Utilities
-import './styles/utilities/layout.css'
-import './styles/utilities/interactions.css'
-import './styles/utilities/responsive.css'
-// Component-specific styles
-import './styles/pins.css'
-import './styles/workbook.css'
+
+// Main stylesheet - Clean architecture with Authentic Sans + IBM Plex
+import './styles/main.css'
 // Mobile orientation fix
 import './scripts/mobile-orientation.js'
 
@@ -72,6 +55,7 @@ import BottomNav from './components/common/BottomNav.vue'
 import VimeoEmbed from './components/common/VimeoEmbed.vue'
 import Icon from './components/common/Icon.vue'
 import MainLayout from './components/common/MainLayout.vue'
+import FontSymphonyDemo from './components/common/FontSymphonyDemo.vue'
 
 // Import collection components
 import CollectionsGallery from './components/collections/CollectionsGallery.vue'
@@ -114,6 +98,7 @@ export default {
     app.component('VimeoEmbed', VimeoEmbed)
     app.component('Icon', Icon)
     app.component('MainLayout', MainLayout)
+    app.component('FontSymphonyDemo', FontSymphonyDemo)
     
     // Register collection components
     app.component('CollectionsGallery', CollectionsGallery)

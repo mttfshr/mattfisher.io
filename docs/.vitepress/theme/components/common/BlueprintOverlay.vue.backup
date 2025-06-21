@@ -1,0 +1,97 @@
+<!-- BlueprintOverlay.vue - Interactive technical specification overlay -->
+<script setup>
+import { ref, computed } from 'vue'
+
+const props = defineProps({
+  title: {
+    type: String,
+    required: true
+  },
+  specs: {
+    type: Object,
+    default: () => ({})
+  },
+  insight: {
+    type: String,
+    default: ''
+  },
+  type: {
+    type: String,
+    default: 'component' // 'component', 'card', 'session', etc.
+  }
+})
+
+// Format specifications for display
+const formattedSpecs = computed(() => {
+  const specs = []
+  
+  Object.entries(props.specs).forEach(([key, value]) => {
+    const formattedKey = key.replace(/([A-Z])/g, '_$1').toUpperCase()
+    specs.push(`${formattedKey}: ${value}`)
+  })
+  
+  return specs
+})
+
+// Generate technical ID based on type and title
+const techId = computed(() => {
+  const prefix = props.type.substring(0, 3).toUpperCase()
+  const hash = props.title.split('').reduce((a, b) => {
+    a = ((a << 5) - a) + b.charCodeAt(0)
+    return a & a
+  }, 0)
+  return `${prefix}${Math.abs(hash).toString(16).substring(0, 4).toUpperCase()}`
+})
+</script>
+
+<template>
+  <div class="blueprint-tech-overlay">
+    <!-- Technical grid reference -->
+    <div class="blueprint-grid-ref overlay-ref">{{ techId }}</div>
+    
+    <!-- Technical readout content -->
+    <div class="tech-readout">
+      <div class="tech-readout-title">{{ title }}</div>
+      
+      <div class="tech-readout-specs">
+        <div v-for="spec in formattedSpecs" :key="spec" class="spec-line">
+          {{ spec }}
+        </div>
+        <div class="spec-line">
+          TYPE: {{ type.toUpperCase() }}
+        </div>
+        <div class="spec-line">
+          STATUS: ACTIVE
+        </div>
+      </div>
+      
+      <div v-if="insight" class="tech-readout-insight">
+        {{ insight }}
+      </div>
+    </div>
+    
+    <!-- Scanning effect lines -->
+    <div class="blueprint-annotation-line horizontal" style="top: 20%; left: 0;"></div>
+    <div class="blueprint-annotation-line horizontal" style="bottom: 20%; left: 0;"></div>
+    <div class="blueprint-annotation-line vertical" style="left: 20%; top: 0;"></div>
+    <div class="blueprint-annotation-line vertical" style="right: 20%; top: 0;"></div>
+  </div>
+</template>
+
+<style scoped>
+.overlay-ref {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.spec-line {
+  margin-bottom: 2px;
+}
+
+.tech-readout-specs {
+  margin-bottom: var(--space-2);
+}
+</style>

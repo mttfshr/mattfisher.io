@@ -1,0 +1,18 @@
+/* ===================================================================
+   UTILITIES
+   Common utility classes for layout, spacing, and typography
+   =================================================================== */
+
+/* Core Utilities - Organized by Category */
+@import './spacing.css';
+@import './icons.css';
+@import './flexbox-grid.css';
+@import './typography.css';
+@import './visual.css';
+@import './animations.css';
+@import './modifiers.css';
+
+/* Layout Patterns & Complex Utilities */
+@import './layout.css';
+@import './interactions.css';
+@import './responsive.css';

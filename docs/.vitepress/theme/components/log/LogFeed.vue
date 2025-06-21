@@ -144,61 +144,95 @@ const groupedByMonth = computed(() => {
 
 <template>
   <div class="log-feed container-responsive">
-    <div v-if="showFilters" class="log-filters stack-vertical gap-4">
-      <div class="filters-section flex flex-wrap items-center gap-2">
-        <div class="filter-label text-secondary font-medium">Type:</div>
-        <button 
-          class="filter-button btn btn-ghost type-filter" 
-          :class="{ 'btn-primary': activeTypeFilter === 'all' }"
-          @click="setTypeFilter('all')"
-        >
-          All
-        </button>
-        <button 
-          class="filter-button btn btn-ghost type-filter" 
-          :class="{ 'btn-primary': activeTypeFilter === 'updates' }"
-          @click="setTypeFilter('updates')"
-        >
-          Updates
-        </button>
-        <button 
-          class="filter-button btn btn-ghost type-filter" 
-          :class="{ 'btn-primary': activeTypeFilter === 'sessions' }"
-          @click="setTypeFilter('sessions')"
-        >
-          Sessions
-        </button>
+    <!-- Blueprint-style filter control panel -->
+    <div v-if="showFilters" class="blueprint-control-panel">
+      <div class="blueprint-grid-ref">CTRL</div>
+      
+      <h3 class="blueprint-primary">Log Filter Controls</h3>
+      
+      <div class="blueprint-secondary filter-section">
+        <span class="filter-label">TYPE:</span>
+        <div class="blueprint-filter-group">
+          <button 
+            class="blueprint-filter-button" 
+            :class="{ 'active': activeTypeFilter === 'all' }"
+            @click="setTypeFilter('all')"
+          >
+            ALL
+          </button>
+          <button 
+            class="blueprint-filter-button" 
+            :class="{ 'active': activeTypeFilter === 'updates' }"
+            @click="setTypeFilter('updates')"
+          >
+            UPDATES
+          </button>
+          <button 
+            class="blueprint-filter-button" 
+            :class="{ 'active': activeTypeFilter === 'sessions' }"
+            @click="setTypeFilter('sessions')"
+          >
+            SESSIONS
+          </button>
+        </div>
       </div>
       
-      <div v-if="uniqueTags.length > 0" class="filters-section flex flex-wrap items-center gap-2">
-        <div class="filter-label text-secondary font-medium">Tags:</div>
-        <button 
-          class="filter-button btn btn-ghost" 
-          :class="{ 'btn-primary': activeFilter === 'all' }"
-          @click="setActiveFilter('all')"
-        >
-          All
-        </button>
-        
-        <button 
-          v-for="tag in uniqueTags" 
-          :key="tag"
-          class="filter-button btn btn-ghost tag-filter" 
-          :class="{ 'btn-primary': activeFilter === tag }"
-          @click="setActiveFilter(tag)"
-        >
-          #{{ tag }}
-        </button>
+      <div v-if="uniqueTags.length > 0" class="blueprint-tertiary filter-section">
+        <span class="filter-label">TAGS:</span>
+        <div class="blueprint-filter-group">
+          <button 
+            class="blueprint-filter-button" 
+            :class="{ 'active': activeFilter === 'all' }"
+            @click="setActiveFilter('all')"
+          >
+            ALL
+          </button>
+          
+          <button 
+            v-for="tag in uniqueTags" 
+            :key="tag"
+            class="blueprint-filter-button" 
+            :class="{ 'active': activeFilter === tag }"
+            @click="setActiveFilter(tag)"
+          >
+            #{{ tag.toUpperCase() }}
+          </button>
+        </div>
+      </div>
+      
+      <!-- Blueprint technical readout -->
+      <div class="blueprint-annotations">
+        <div class="blueprint-annotation">
+          <span>{{ filteredEntries.length }} ENTRIES</span>
+        </div>
+        <div class="blueprint-annotation">
+          <span>{{ logSessions?.length || 0 }} SESSIONS</span>
+        </div>
+        <div class="blueprint-annotation">
+          <span>{{ uniqueTags.length }} TAGS</span>
+        </div>
       </div>
     </div>
     
-    <div v-if="filteredEntries.length === 0" class="no-entries text-center p-12">
-      <p class="text-secondary">No entries found matching your filter.</p>
+    <div v-if="filteredEntries.length === 0" class="blueprint-card no-entries">
+      <div class="blueprint-grid-ref">NULL</div>
+      <h3 class="blueprint-primary">No Data Found</h3>
+      <p class="blueprint-tertiary">No entries found matching current filter parameters.</p>
     </div>
     
     <div v-else class="log-timeline">
-      <div v-for="group in groupedByMonth" :key="group.key" class="timeline-group mb-12">
-        <h2 class="timeline-month text-xl font-semibold mb-6 text-primary">{{ group.label }}</h2>
+      <div v-for="group in groupedByMonth" :key="group.key" class="timeline-group">
+        <!-- Blueprint-style month header -->
+        <div class="blueprint-timeline-header">
+          <div class="blueprint-grid-ref">{{ group.key }}</div>
+          <h2 class="blueprint-primary timeline-month">{{ group.label }}</h2>
+          <div class="blueprint-annotations">
+            <div class="blueprint-annotation">
+              <span>{{ group.entries.length }} ENTRIES</span>
+            </div>
+          </div>
+          <div class="blueprint-separator"></div>
+        </div>
         
         <div class="timeline-entries">
           <template v-for="entry in group.entries" :key="entry.id">
@@ -229,43 +263,108 @@ const groupedByMonth = computed(() => {
 </template>
 
 <style scoped>
-/* Component-specific styles only - Layout utilities moved to template */
-
-/* Log filters enhancement */
-.log-filters {
+/* Blueprint Control Panel */
+.blueprint-control-panel {
+  background-color: var(--surface-secondary);
+  border-radius: var(--radius-lg);
+  border: var(--border-width) solid var(--border-primary);
+  padding: var(--space-6);
   margin-bottom: var(--space-8);
-  padding-bottom: var(--space-4);
-  border-bottom: var(--border-width) solid var(--border-primary);
-}
-
-/* Timeline month styling */
-.timeline-month {
   position: relative;
-  padding-left: var(--space-4);
 }
 
-.timeline-month::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 16px;
-  background-color: var(--vp-c-brand);
+.filter-section {
+  margin-bottom: var(--space-4);
+}
+
+.filter-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+  display: block;
+}
+
+.blueprint-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.blueprint-filter-button {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-tertiary);
+  border: 1px solid var(--border-primary);
   border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: var(--transition-fast);
 }
 
-/* Responsive behavior */
-@media (max-width: 640px) {
-  .filters-section {
-    flex-wrap: wrap !important;
-    margin-bottom: var(--space-2);
+.blueprint-filter-button:hover {
+  background: var(--surface-secondary);
+  color: var(--text-secondary);
+  border-color: var(--accent-primary);
+}
+
+.blueprint-filter-button.active {
+  background: var(--accent-primary);
+  color: var(--surface-primary);
+  border-color: var(--accent-primary);
+}
+
+/* Blueprint Timeline Headers */
+.blueprint-timeline-header {
+  background-color: var(--surface-secondary);
+  border-radius: var(--radius-lg);
+  border: var(--border-width) solid var(--border-primary);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  position: relative;
+}
+
+.timeline-month {
+  margin-bottom: var(--space-3) !important;
+}
+
+.timeline-group {
+  margin-bottom: var(--space-12);
+}
+
+.timeline-entries {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* No entries state */
+.no-entries {
+  text-align: center;
+  padding: var(--space-12);
+  margin-bottom: var(--space-8);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .blueprint-control-panel {
+    padding: var(--space-4);
   }
   
-  .filter-label {
-    width: 100%;
-    margin-bottom: var(--space-1);
+  .blueprint-timeline-header {
+    padding: var(--space-4);
+  }
+  
+  .blueprint-filter-group {
+    gap: var(--space-1);
+  }
+  
+  .blueprint-filter-button {
+    font-size: 10px;
+    padding: var(--space-1) var(--space-2);
   }
 }
 </style>

@@ -397,7 +397,7 @@ onMounted(() => {
 .app-bar {
   display: flex;
   align-items: center;
-  height: 56px;
+  height: 68px; /* Increased for larger site title */
   padding: 0 var(--space-4);
   background: var(--surface-primary);
   border-bottom: 1px solid var(--border-subtle);
@@ -414,7 +414,7 @@ onMounted(() => {
 /* Breadcrumb navigation */
 .breadcrumb-nav {
   display: flex;
-  align-items: center;
+  align-items: baseline; /* Align all elements to baseline for proper font mixing */
   flex: 1;
   gap: var(--space-2);
   min-width: 0;
@@ -457,22 +457,38 @@ onMounted(() => {
 }
 
 .site-title {
-  font-size: var(--text-lg);
-  font-weight: 600;
+  font-size: 36px; /* Authentic Sans sweet spot - shows character */
+  font-weight: var(--font-normal);
   color: var(--text-primary);
   white-space: nowrap;
+  letter-spacing: -0.02em; /* Tighten for technical precision */
+  line-height: 1; /* Consistent baseline alignment with other breadcrumb elements */
 }
 
 .subpage-title {
-  font-size: var(--text-base);
-  font-weight: 500;
-  color: var(--text-primary);
+  font-family: var(--font-mono); /* IBM Plex Mono */
+  font-style: italic; /* Italic style */
+  font-size: 36px; /* Same size as other breadcrumb elements */
+  font-weight: var(--font-normal);
+  color: var(--text-tertiary); /* Most subdued level */
+  opacity: 0.6; /* Additional subduing for third level */
   white-space: nowrap;
+  letter-spacing: -0.02em; /* Consistent technical spacing */
+  line-height: 1; /* Tight line height for baseline alignment */
+  vertical-align: baseline; /* Ensure baseline alignment */
 }
 
 .breadcrumb-separator {
-  color: var(--text-tertiary);
+  color: var(--accent-primary); /* Blueprint cyan for technical path separators */
   flex-shrink: 0;
+  opacity: 0.8;
+  transition: var(--transition-fast);
+}
+
+/* Progressive separator fading - later separators are more subdued */
+.breadcrumb-separator:nth-of-type(3),
+.breadcrumb-separator:nth-of-type(4) {
+  opacity: 0.5; /* More subdued for deeper levels */
 }
 
 /* Dropdown containers */
@@ -491,12 +507,38 @@ onMounted(() => {
   border: none;
   border-radius: var(--border-radius-md);
   cursor: pointer;
-  font-size: var(--text-base);
-  font-weight: 500;
-  color: var(--text-primary);
+  font-family: var(--font-mono); /* IBM Plex Mono */
+  font-style: italic; /* Italic style */
+  font-size: 36px; /* Same size as site title */
+  font-weight: var(--font-normal);
+  color: var(--text-secondary); /* Second level - medium emphasis */
   transition: var(--transition-fast);
   white-space: nowrap;
   min-height: 40px;
+  letter-spacing: -0.02em; /* Same technical spacing as site title */
+  line-height: 1; /* Tight line height for baseline alignment */
+  vertical-align: baseline; /* Ensure baseline alignment */
+}
+
+.page-dropdown-trigger:hover,
+.page-dropdown-trigger.active {
+  background: var(--surface-secondary);
+  color: var(--text-primary); /* Highlight on interaction */
+}
+
+/* View mode triggers (third level) - more subdued */
+.view-mode-trigger {
+  font-family: var(--font-mono); /* IBM Plex Mono */
+  font-style: italic; /* Italic style */
+  color: var(--text-tertiary); /* Most subdued level */
+  opacity: 0.6; /* Additional subduing for third level */
+  line-height: 1; /* Consistent baseline alignment */
+  vertical-align: baseline; /* Ensure baseline alignment */
+}
+
+.view-mode-trigger:hover,
+.view-mode-trigger.active {
+  opacity: 1; /* Full opacity on interaction */
 }
 
 .page-dropdown-trigger:hover,
@@ -554,6 +596,8 @@ onMounted(() => {
   padding: var(--space-3) var(--space-4);
   background: transparent;
   border: none;
+  font-family: var(--font-mono); /* IBM Plex Mono */
+  font-style: italic; /* Italic style */
   font-size: var(--text-sm);
   color: var(--text-secondary);
   cursor: pointer;

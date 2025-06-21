@@ -146,10 +146,10 @@ function togglePresentationMode() {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  z-index: 10;
-  transition: all 0.2s ease;
-  font-weight: 500;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Add slight shadow for depth */
+  z-index: var(--z-docked);
+  transition: var(--transition-base);
+  font-weight: var(--font-normal);
+  box-shadow: var(--shadow-base); /* Add slight shadow for depth */
 }
 
 .presentation-mode-toggle:hover {

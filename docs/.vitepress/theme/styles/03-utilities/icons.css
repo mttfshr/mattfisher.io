@@ -1,0 +1,21 @@
+/* ===================================================================
+   ICON UTILITIES
+   Icon sizing, coloring, and styling
+   =================================================================== */
+
+/* Icon Sizing */
+.icon-sm { width: 16px; height: 16px; }
+.icon-base { width: 20px; height: 20px; }
+.icon-lg { width: 24px; height: 24px; }
+.icon-xl { width: 32px; height: 32px; }
+
+/* Icon Colors */
+.icon-primary { color: var(--text-primary); }
+.icon-secondary { color: var(--text-secondary); }
+.icon-muted { color: var(--text-tertiary); }
+.icon-accent { color: var(--accent-primary); }
+
+/* Icon Styling */
+.icon {
+  stroke-width: 1.5px; /* Thinner stroke for Lucide icons */
+}

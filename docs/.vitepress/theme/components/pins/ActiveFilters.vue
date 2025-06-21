@@ -151,8 +151,8 @@ const clearAllFilters = () => {
 
 .filter-label {
   font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--vp-c-text-2);
+  font-weight: var(--font-normal);
+  color: var(--text-secondary);
 }
 
 .active-type-tags {
@@ -251,7 +251,7 @@ const clearAllFilters = () => {
 
 .results-count {
   font-size: 0.9rem;
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
 }
 
 @media (max-width: 768px) {

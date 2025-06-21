@@ -1,0 +1,63 @@
+/* ===================================================================
+   TYPOGRAPHY UTILITIES
+   Font sizing, weight, family, and text styling
+   =================================================================== */
+
+/* Font Size Utilities */
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+.text-3xl { font-size: var(--text-3xl); }
+
+/* Font Weight Utilities */
+.font-medium { font-weight: var(--font-medium); }
+.font-semibold { font-weight: var(--font-semibold); }
+.font-bold { font-weight: var(--font-bold); }
+
+/* Enhanced font weight options (IBM Plex available weights) */
+.font-thin { font-weight: var(--font-thin); }           /* 100 */
+.font-extralight { font-weight: var(--font-extralight); } /* 200 */
+.font-light { font-weight: var(--font-light); }         /* 300 */
+.font-normal { font-weight: var(--font-normal); }       /* 400 - max weight */
+
+/* Font Family Utilities */
+.font-sans { font-family: var(--font-sans); }           /* Authentic Sans */
+.font-mono { font-family: var(--font-mono); }           /* IBM Plex Mono */
+.font-display { font-family: var(--font-display); }     /* Authentic Sans */
+.font-condensed { font-family: var(--font-condensed); } /* Authentic Sans Condensed */
+
+/* Weight-neutral typography hierarchy */
+.text-emphasis { 
+  color: var(--text-emphasis); 
+  font-size: 1.05em; /* Slightly larger for emphasis */
+  font-weight: var(--font-normal);
+}
+
+.text-accent { 
+  color: var(--text-accent); 
+  font-weight: var(--font-normal);
+}
+
+.text-subtle { 
+  color: var(--text-subtle); 
+  font-size: 0.95em; /* Slightly smaller for deemphasis */
+  font-weight: var(--font-normal);
+}
+
+.text-muted { 
+  color: var(--text-muted); 
+  font-weight: var(--font-normal);
+}
+
+/* Line Height Utilities */
+.leading-tight { line-height: var(--leading-tight); }
+.leading-normal { line-height: var(--leading-normal); }
+.leading-relaxed { line-height: var(--leading-relaxed); }
+
+/* Text Color Utilities */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }

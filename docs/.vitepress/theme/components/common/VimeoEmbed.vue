@@ -50,23 +50,31 @@ const {
 const isLoading = ref(true)
 const hasError = ref(false)
 
-// Mobile rotation state
+// Mobile rotation state - initialized to false to prevent SSR issues
 const isMobile = ref(false)
 const isPortrait = ref(true)
 const showRotationHint = ref(false)
 const isFullscreen = ref(false)
 
-// Detect mobile device
+// Detect mobile device - only runs on client side
 const detectMobile = () => {
-  const userAgent = navigator.userAgent || navigator.vendor || window.opera
-  isMobile.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)
+  if (typeof window === 'undefined') return false // Skip on server
   
-  // Also check for touch capability and small screen
+  const userAgent = navigator.userAgent || navigator.vendor || window.opera
+  const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)
+  
+  // Also check specific mobile Chrome patterns that might be missed
+  const isMobileChrome = /Chrome/.test(userAgent) && /Mobile/.test(userAgent)
+  
+  // Check for touch capability and small screen
   const hasTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0
   const hasSmallScreen = window.innerWidth <= 768
   
-  // Consider it mobile if it has touch AND small screen, or matches user agent
-  isMobile.value = isMobile.value || (hasTouchScreen && hasSmallScreen)
+  // Consider it mobile if any of these conditions are true
+  const detected = isMobileUA || isMobileChrome || (hasTouchScreen && hasSmallScreen)
+  
+  isMobile.value = detected
+  return detected
 }
 
 // Check device orientation
@@ -518,7 +526,7 @@ const containerClasses = computed(() => [
 }
 
 .rotate-icon {
-  font-size: 48px;
+  font-size: var(--text-5xl);
   margin-bottom: var(--space-4);
   animation: rotateHint 2s ease-in-out infinite;
 }

@@ -217,7 +217,7 @@ const handleMobileBackdropClick = () => {
 .nav-label {
   white-space: nowrap;
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: var(--font-normal);
 }
 
 /* Expandable list styles */

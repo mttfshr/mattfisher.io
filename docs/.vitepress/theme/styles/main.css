@@ -1,0 +1,21 @@
+/* ===================================================================
+   MAIN STYLESHEET
+   Clean architecture: Foundation → Base → Utilities → Components → Pages
+   =================================================================== */
+
+/* Foundation - Variables & Font Loading */
+@import './01-foundation/design-tokens.css';
+@import './01-foundation/font-faces.css';
+@import './01-foundation/reset.css';
+
+/* Base - Element Defaults & Typography */
+@import './02-base/typography.css';
+
+/* Utilities - Layout, spacing, interactions */
+@import './03-utilities/index.css';
+
+/* Components - UI patterns and elements */
+@import './04-components/index.css';
+
+/* Pages - Page-specific styles */
+@import './05-pages/index.css';

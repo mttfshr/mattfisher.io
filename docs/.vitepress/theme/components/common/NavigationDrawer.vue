@@ -162,7 +162,7 @@ onUnmounted(() => {
 
 .nav-drawer-title {
   font-size: var(--text-lg);
-  font-weight: 600;
+  font-weight: var(--font-normal);
   color: var(--text-primary);
   margin: 0;
 }

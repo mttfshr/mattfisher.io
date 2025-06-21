@@ -225,7 +225,7 @@ watch(() => props.pageSize, (newSize) => {
   background-color: var(--vp-c-brand);
   color: var(--vp-c-brand-contrast);
   border-color: var(--vp-c-brand);
-  font-weight: 500;
+  font-weight: var(--font-normal);
 }
 
 .page-number.ellipsis {
@@ -239,7 +239,7 @@ watch(() => props.pageSize, (newSize) => {
   align-items: center;
   margin-left: 1rem;
   font-size: 0.85rem;
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
 }
 
 .page-size-selector label {
@@ -251,7 +251,7 @@ watch(() => props.pageSize, (newSize) => {
   border-radius: 4px;
   border: 1px solid var(--vp-c-divider);
   background-color: var(--vp-c-bg-soft);
-  color: var(--vp-c-text-1);
+  color: var(--text-primary);
   font-size: 0.85rem;
 }
 

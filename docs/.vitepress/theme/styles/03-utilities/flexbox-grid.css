@@ -1,0 +1,24 @@
+/* ===================================================================
+   FLEXBOX & GRID UTILITIES
+   Layout utilities for flexbox and grid
+   =================================================================== */
+
+/* Flexbox Utilities */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+
+/* Grid Utilities */
+.grid { display: grid; }
+.grid-auto { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+  gap: var(--space-4);
+}
+.grid-auto-lg { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+  gap: var(--space-6);
+}

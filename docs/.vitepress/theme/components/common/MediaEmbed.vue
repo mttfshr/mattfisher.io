@@ -186,7 +186,7 @@ const safeEmbedCode = computed(() => {
 
 .media-link a {
   color: var(--vp-c-brand);
-  font-weight: 500;
+  font-weight: var(--font-normal);
   text-decoration: none;
 }
 

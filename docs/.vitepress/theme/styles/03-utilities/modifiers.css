@@ -1,0 +1,49 @@
+/* ===================================================================
+   COMPONENT MODIFIER UTILITIES
+   States and modifiers for extending component behavior
+   =================================================================== */
+
+/* Interactive States */
+.interactive {
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.interactive:hover {
+  transform: translateY(-1px);
+}
+
+.interactive:active {
+  transform: translateY(0);
+}
+
+/* Loading State */
+.loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--surface-primary);
+  border-radius: inherit;
+  opacity: 0.8;
+}
+
+/* Responsive Utilities */
+@media (max-width: 768px) {
+  .mobile-stack > * {
+    flex-direction: column !important;
+  }
+  
+  .mobile-full-width {
+    width: 100% !important;
+  }
+  
+  .mobile-text-center {
+    text-align: center !important;
+  }
+}

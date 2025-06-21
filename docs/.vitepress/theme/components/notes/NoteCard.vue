@@ -118,14 +118,14 @@ const noteUrl = computed(() => {
 
 .card-title {
   font-size: 1.4rem;
-  font-weight: 600;
+  font-weight: var(--font-normal);
   margin: 0;
   line-height: 1.3;
 }
 
 .recent-badge {
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: var(--font-normal);
   padding: 0.25rem 0.5rem;
   border-radius: 20px;
   background-color: var(--vp-c-brand);
@@ -135,14 +135,14 @@ const noteUrl = computed(() => {
 
 .card-description {
   margin: 0.5rem 0 1rem;
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
   line-height: 1.6;
   flex-grow: 1;
 }
 
 .card-meta {
   font-size: 0.85rem;
-  color: var(--vp-c-text-3);
+  color: var(--text-tertiary);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -153,7 +153,7 @@ const noteUrl = computed(() => {
 }
 
 .meta-label {
-  font-weight: 500;
+  font-weight: var(--font-normal);
   margin-right: 0.5rem;
 }
 
@@ -169,7 +169,7 @@ const noteUrl = computed(() => {
   background-color: var(--vp-c-bg-alt);
   border-radius: 20px;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: var(--font-normal);
 }
 
 .card-image {

@@ -142,7 +142,7 @@ const hasTechSpecs = computed(() => {
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--vp-c-divider);
   font-size: 0.9rem;
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
 }
 
 .featured-image {
@@ -169,7 +169,7 @@ const hasTechSpecs = computed(() => {
   color: var(--vp-c-brand-dark);
   border-radius: 20px;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: var(--font-normal);
 }
 
 .media-embed {
@@ -216,13 +216,13 @@ const hasTechSpecs = computed(() => {
 }
 
 .specs-list dt {
-  font-weight: 600;
-  color: var(--vp-c-text-1);
+  font-weight: var(--font-normal);
+  color: var(--text-primary);
 }
 
 .specs-list dd {
   margin: 0;
-  color: var(--vp-c-text-2);
+  color: var(--text-secondary);
 }
 
 @media (max-width: 768px) {

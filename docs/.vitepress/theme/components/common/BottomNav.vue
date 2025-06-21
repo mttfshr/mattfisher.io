@@ -201,7 +201,7 @@ onMounted(() => {
 .nav-label {
   margin-top: var(--space-1);
   font-size: var(--text-xs);
-  font-weight: 500;
+  font-weight: var(--font-normal);
   white-space: nowrap;
   line-height: 1;
 }
@@ -242,7 +242,7 @@ onMounted(() => {
 .more-menu-header h3 {
   margin: 0;
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: var(--font-normal);
   color: var(--text-primary);
 }
 
@@ -306,7 +306,7 @@ onMounted(() => {
 /* Responsive adjustments for smaller mobile screens */
 @media (max-width: 380px) {
   .nav-label {
-    font-size: 10px;
+    font-size: var(--text-xs);
   }
   
   .more-menu {
