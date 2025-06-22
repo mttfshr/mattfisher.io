@@ -42,7 +42,7 @@ export function useThemeData() {
   const contentTypes = computed(() => pinsData.value.contentTypes || [])
   const allTags = computed(() => pinsData.value.allTags || [])
   const userTags = computed(() => pinsData.value.userTags || [])
-  const collections = computed(() => pinsData.value.collections || [])
+  const collections = computed(() => theme.value.collections || []) // Fix: collections are stored directly on theme
 
   const workbookItems = computed(() => workbookData.value.items || [])
   const logEntries = computed(() => logData.value.entries || [])

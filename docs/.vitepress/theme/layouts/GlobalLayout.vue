@@ -113,6 +113,16 @@ onMounted(() => {
   checkMobile()
   window.addEventListener('resize', checkMobile)
   
+  // Listen for view changes from workbook page
+  window.addEventListener('workbook-view-changed', (e) => {
+    workbookTab.value = e.detail
+  })
+  
+  // Listen for view changes from pins page
+  window.addEventListener('pins-view-changed', (e) => {
+    pinsLayout.value = e.detail
+  })
+  
   // Listen for drawer close events from child components
   window.addEventListener('pins-drawer-close', () => {
     pinsDrawer.value = false
@@ -121,16 +131,6 @@ onMounted(() => {
   window.addEventListener('workbook-drawer-close', () => {
     workbookDrawer.value = false
   })
-  
-  return () => {
-    window.removeEventListener('resize', checkMobile)
-    window.removeEventListener('pins-drawer-close', () => {
-      pinsDrawer.value = false
-    })
-    window.removeEventListener('workbook-drawer-close', () => {
-      workbookDrawer.value = false
-    })
-  }
 })
 </script>
 

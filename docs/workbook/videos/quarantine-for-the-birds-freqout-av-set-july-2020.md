@@ -8,12 +8,7 @@ media:
   embed: true
 duration: 3521
 tags:
-  - video
-  - vimeo
-  - video
-  - vimeo
-  - performance
-  - 'collection:vimeo-import'
+  - 'status:finished'
 vimeoId: 560371905
 public: true
 ---

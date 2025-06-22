@@ -8,14 +8,7 @@ media:
   embed: true
 duration: 262
 tags:
-  - video
-  - vimeo
-  - video
-  - vimeo
-  - performance
-  - collaboration
-  - visual
-  - 'collection:vimeo-import'
+  - 'status:finished'
 vimeoId: 684505621
 public: true
 ---

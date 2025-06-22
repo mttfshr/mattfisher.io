@@ -48,13 +48,14 @@ const navigationStructure = {
     label: 'Workbook', 
     icon: 'BookOpen',
     children: [
-      { path: '/workbook/folios/', label: 'Folios' },
+      { path: '/workbook/folio/', label: 'Folio' },
+      { path: '/workbook/gallery/', label: 'Gallery' },
       { path: '/workbook/collections/', label: 'Collections' }
     ],
     viewModes: [
-      { key: 'folio', label: 'Folio', icon: 'BookOpen' },
-      { key: 'items', label: 'Items', icon: 'Grid3x3' },
-      { key: 'collections', label: 'Collections', icon: 'Tags' }
+      { key: 'collections', label: 'Collections', icon: 'Tags' },
+      { key: 'items', label: 'Gallery', icon: 'Grid3x3' },
+      { key: 'folio', label: 'Folio', icon: 'BookOpen' }
     ]
   },
   '/pins/': { 
@@ -84,7 +85,7 @@ const showSubpageDropdown = ref(false)
 const showViewModeDropdown = ref(false)
 
 // View mode state (received from GlobalLayout)
-const currentViewMode = ref('items') // Default for workbook
+const currentViewMode = ref('collections') // Default to collections for workbook
 const currentPinsLayout = ref('compact') // Default for pins
 
 // Current page detection

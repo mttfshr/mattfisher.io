@@ -8,11 +8,7 @@ media:
   embed: true
 duration: 430
 tags:
-  - video
-  - vimeo
-  - video
-  - vimeo
-  - 'collection:vimeo-import'
+  - status:sketch
 vimeoId: 618637278
 public: true
 ---

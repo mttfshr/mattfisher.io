@@ -4,7 +4,7 @@ description: Visual essay exploring theoretical physics concepts through mixed m
 year: 2021
 sidebar: false
 tags:
-  - video synth
+  - 'status:finished'
 media:
   type: video
   provider: vimeo

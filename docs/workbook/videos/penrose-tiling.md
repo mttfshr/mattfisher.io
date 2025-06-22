@@ -4,7 +4,7 @@ description: Video synth for the track "Penrose Tiling" by THEATH and Marc Manni
 year: 2021
 sidebar: false
 tags:
-  - video synth
+  - 'status:finished'
 media:
   type: video
   provider: vimeo

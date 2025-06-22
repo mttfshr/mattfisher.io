@@ -4,14 +4,7 @@ description: For "Obsidian Heart" by THEATH and MANNING.
 year: 2021
 sidebar: false
 tags:
-  - 'type:video'
-  - 'medium:digital'
-  - 'tech:video-synth'
-  - 'tool:max-msp'
-  - 'tool:jitter'
-  - 'status:completed'
-  - 'project:abstract-hymns'
-  - 'collab:theath-manning'
+  - 'status:finished'
 media:
   type: video
   provider: vimeo

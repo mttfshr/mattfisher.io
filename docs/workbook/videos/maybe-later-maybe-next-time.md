@@ -7,7 +7,7 @@ date: 2021-02-08T00:00:00.000Z
 year: 2021
 sidebar: false
 tags:
-  - video synth
+  - 'status:finished'
 media:
   type: video
   provider: vimeo

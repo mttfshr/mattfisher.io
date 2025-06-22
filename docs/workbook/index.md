@@ -1,6 +1,6 @@
 ---
 title: Workbook
-description: Visual experiments and media collection
+description: Curated collections of visual experiments and creative works
 ---
 
 <WorkbookPage />

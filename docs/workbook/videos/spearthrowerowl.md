@@ -4,7 +4,7 @@ description: Video synth for the track "SpearThrowerOwl" by THEATH and Marc Mann
 year: 2021
 sidebar: false
 tags:
-  - video synth
+  - 'status:finished'
 media:
   type: video
   provider: vimeo
