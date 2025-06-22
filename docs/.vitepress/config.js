@@ -7,7 +7,7 @@ import { getCollections, processCollections } from './utils/services/content/col
 import { getWorkbookItems } from './utils/services/content/workbook.js'
 import { getNotes } from './utils/services/content/notes.js'
 import { getLogEntries } from './utils/services/content/log.js'
-import { getSessions } from './utils/services/content/sessions.js'
+// import { getSessions } from './utils/services/content/sessions.js' // REMOVED: Sessions moved to project/sessions/
 import { getPins } from './utils/services/content/pins.js'
 
 // Ensure the VitePress public directory exists (but NOT media directories - zero media policy)
@@ -29,7 +29,7 @@ if (collections.length > 0) {
 
 // Load async data synchronously at module level
 const logEntries = await getLogEntries();
-const sessions = await getSessions();
+// const sessions = await getSessions(); // REMOVED: Sessions moved to project/sessions/
 
 export default defineConfig({
   // Basic configuration
@@ -94,7 +94,7 @@ export default defineConfig({
     // Load log data with proper structure
     log: {
       entries: logEntries,
-      sessions: sessions,
+      // sessions: sessions, // REMOVED: Sessions moved to project/sessions/
       stats: {}
     },
     

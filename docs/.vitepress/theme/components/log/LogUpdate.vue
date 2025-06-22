@@ -30,6 +30,18 @@ const props = defineProps({
   isClaudeSession: {
     type: Boolean,
     default: false
+  },
+  type: {
+    type: String,
+    default: 'update' // 'update', 'annotation'
+  },
+  category: {
+    type: String,
+    default: null // 'workbook', 'notes', 'pins'
+  },
+  link: {
+    type: String,
+    default: null // Link to the referenced content
   }
 })
 
@@ -40,6 +52,34 @@ const formattedDate = computed(() => {
     month: 'short',
     day: 'numeric'
   })
+})
+
+// Check if this is an annotation vs regular update
+const isAnnotation = computed(() => props.type === 'annotation')
+
+// Get category icon for annotations
+const categoryIcon = computed(() => {
+  if (!isAnnotation.value) return ''
+  
+  switch (props.category) {
+    case 'workbook': return '🎬'
+    case 'notes': return '📝'
+    case 'pins': return '📌'
+    default: return '📄'
+  }
+})
+
+// Format annotation content - just the title for POSSE entries, ignore duplicate content
+const annotationContent = computed(() => {
+  if (!isAnnotation.value) return ''
+  
+  // For POSSE content updates, only use the title - content is often duplicate
+  const content = props.title
+  
+  if (props.link) {
+    return `<a href="${props.link}">${content}</a>`
+  }
+  return content
 })
 
 // Format content to find URLs and convert them to links
@@ -58,7 +98,13 @@ const formattedContent = computed(() => {
 </script>
 
 <template>
-  <div class="log-update" :id="id">
+  <!-- Annotation: minimal one-line POSSE format - no date, just content -->
+  <div v-if="isAnnotation" class="log-annotation" :id="id">
+    <span class="annotation-content" v-html="annotationContent"></span>
+  </div>
+
+  <!-- Regular update: full format with date/time -->
+  <div v-else class="log-update" :id="id">
     <div class="update-header">
       <div class="update-time">
         <a :href="`#${id}`" class="update-date">{{ formattedDate }}</a>
@@ -94,12 +140,36 @@ const formattedContent = computed(() => {
 </template>
 
 <style scoped>
+/* Annotation styles - minimal one-line POSSE format */
+.log-annotation {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0;
+  padding: var(--space-1) 0;
+}
+
+.annotation-content {
+  color: var(--text-secondary);
+  opacity: 0.9;
+}
+
+.annotation-content a {
+  color: var(--vp-c-brand);
+  text-decoration: none;
+  opacity: 1;
+}
+
+.annotation-content a:hover {
+  color: var(--vp-c-brand-dark);
+  text-decoration: underline;
+}
+
+/* Regular update styles */
 .log-update {
   display: flex;
   gap: 1.5rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid var(--vp-c-divider);
-  margin-bottom: 2rem;
+  padding-bottom: var(--space-4); /* Reduced padding since entries are grouped */
 }
 
 .update-header {
@@ -199,6 +269,10 @@ const formattedContent = computed(() => {
 }
 
 @media (max-width: 640px) {
+  .log-annotation {
+    font-size: var(--text-xs);
+  }
+  
   .log-update {
     flex-direction: column;
     gap: 0.75rem;

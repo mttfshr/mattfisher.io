@@ -1,21 +1,21 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import PinGrid from './PinGrid.vue'
-import PinDetail from './PinDetail.vue'
+// import PinDetail from './PinDetail.vue' // REMOVED: No more modal
 import PinsPagination from './PinsPagination.vue'
 import TypeFilter from './TypeFilter.vue'
+import PinsFilterBar from './PinsFilterBar.vue' // NEW: Filter bar for collections
 import CollectionsBrowser from './CollectionsBrowser.vue'
 import ActiveFilters from './ActiveFilters.vue'
 import NavigationDrawer from '../common/NavigationDrawer.vue'
 import { useThemeData } from '../../composables/useThemeData'
-import { usePinModal } from '../../composables/useModal'
+// import { usePinModal } from '../../composables/useModal' // REMOVED: No more modal
 import { usePinFiltering } from '../../composables/useFiltering'
 
 // Get theme data using composable
 const { pins, pinsData, contentTypes, collections } = useThemeData()
 
-// Modal management using composable
-const { selectedItem: selectedPin, isOpen: modalOpen, openModal: openPinDetail, closeModal: closePinDetail, relatedItems: relatedPins } = usePinModal(pins)
+// REMOVED: Modal management - no more modals
 
 // Filtering using composable
 const { 
@@ -227,6 +227,13 @@ onMounted(() => {
       <!-- Page header with drawer trigger -->
       <!-- Main content (header removed, actions moved to global app bar) -->
       <main class="page-content" :class="{ 'drawer-open': drawerOpen }">
+        <!-- Collections filter bar (desktop and mobile) -->
+        <PinsFilterBar 
+          :collections="formattedCollections"
+          :selectedCollection="selectedCollection"
+          @collection-select="handleCollectionSelect"
+        />
+        
         <!-- Active filters display -->
         <ActiveFilters 
           :selectedTypes="selectedTypes"
@@ -240,19 +247,13 @@ onMounted(() => {
           @clearAllFilters="clearAllFilters"
         />
         
-        <!-- Pagination at top -->
-        <PinsPagination
-          v-model:currentPage="currentPage"
-          v-model:pageSize="pageSize"
-          :totalPages="totalPages"
-        />
+        <!-- REMOVED: Top pagination - keeping only bottom pagination -->
         
         <!-- Pins grid -->
         <div class="gallery-container">
           <PinGrid
             :pins="paginatedPins"
             :layout="layout"
-            @pin-click="openPinDetail"
           />
           
           <div v-if="paginatedPins.length === 0" class="card empty-state-pattern">
@@ -271,16 +272,17 @@ onMounted(() => {
         />
       </main>
 
-      <!-- Navigation Drawer -->
+      <!-- Navigation Drawer (mobile-only) -->
       <NavigationDrawer
         :is-open="drawerOpen"
         title="Filter Pins"
+        class="mobile-only-drawer"
         @close="() => {
           drawerOpen = false
           window.dispatchEvent(new CustomEvent('pins-drawer-close'))
         }"
       >
-        <!-- Search -->
+        <!-- Search (mobile-only) -->
         <div class="search-container">
           <input 
             type="text" 
@@ -295,64 +297,33 @@ onMounted(() => {
           >×</button>
         </div>
         
-        <!-- Filter controls moved from sidebar -->
+        <!-- Type Filter (mobile-only) -->
         <TypeFilter 
           :contentTypes="formattedContentTypes" 
           :selectedTypes="selectedTypes"
           @update:selectedTypes="handleTypeSelect"
         />
         
-        <CollectionsBrowser 
-          :collections="formattedCollections" 
-          :selectedCollection="selectedCollection"
-          @collection-select="handleCollectionSelect"
-        />
+        <!-- REMOVED: CollectionsBrowser - now in filter bar -->
       </NavigationDrawer>
     
-      <!-- Pin detail modal -->
-      <div v-if="selectedPin" class="modal-overlay" @click="closePinDetail">
-        <div class="modal animate-scale-in" @click.stop>
-          <button class="modal-close btn btn-ghost" @click="closePinDetail">×</button>
-          <PinDetail
-            :pin="selectedPin"
-            :relatedPins="relatedPins"
-            @pin-click="openPinDetail"
-          />
-        </div>
-      </div>
+      <!-- REMOVED: Pin detail modal - navigation handled by breadcrumbs -->
     </div>
   </div>
 </template>
 
 <style scoped>
 /* Component-specific styles only - Layout utilities moved to semantic system */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: var(--z-modal);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+/* REMOVED: Modal styles - no more modals */
+
+/* Make drawer mobile-only */
+.mobile-only-drawer {
+  display: none;
 }
 
-.modal {
-  position: relative;
-  width: 90%;
-  max-width: 1000px;
-  max-height: 90vh;
-  overflow-y: auto;
-  z-index: var(--z-modal);
-}
-
-.modal-close {
-  position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
-  z-index: var(--z-popover);
+@media (max-width: 768px) {
+  .mobile-only-drawer {
+    display: block;
+  }
 }
 </style>

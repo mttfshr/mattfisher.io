@@ -403,7 +403,7 @@ onMounted(() => {
   border-bottom: 1px solid var(--border-subtle);
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 200; /* INCREASED: Higher than filter drawers and other UI elements */
   gap: var(--space-3);
 }
 
@@ -457,7 +457,7 @@ onMounted(() => {
 }
 
 .site-title {
-  font-size: 36px; /* Authentic Sans sweet spot - shows character */
+  font-size: 36px; /* RESTORED: Desktop size */
   font-weight: var(--font-normal);
   color: var(--text-primary);
   white-space: nowrap;
@@ -468,7 +468,7 @@ onMounted(() => {
 .subpage-title {
   font-family: var(--font-mono); /* IBM Plex Mono */
   font-style: italic; /* Italic style */
-  font-size: 36px; /* Same size as other breadcrumb elements */
+  font-size: 36px; /* RESTORED: Desktop size */
   font-weight: var(--font-normal);
   color: var(--text-tertiary); /* Most subdued level */
   opacity: 0.6; /* Additional subduing for third level */
@@ -509,7 +509,7 @@ onMounted(() => {
   cursor: pointer;
   font-family: var(--font-mono); /* IBM Plex Mono */
   font-style: italic; /* Italic style */
-  font-size: 36px; /* Same size as site title */
+  font-size: 36px; /* RESTORED: Desktop size */
   font-weight: var(--font-normal);
   color: var(--text-secondary); /* Second level - medium emphasis */
   transition: var(--transition-fast);
@@ -654,7 +654,11 @@ onMounted(() => {
   }
   
   .site-title {
-    font-size: var(--text-base);
+    font-size: 20px; /* MOBILE: Smaller size for mobile screens */
+  }
+  
+  .subpage-title {
+    font-size: 20px; /* MOBILE: Smaller size for mobile screens */
   }
   
   .dropdown-menu {
@@ -665,7 +669,7 @@ onMounted(() => {
   
   .page-dropdown-trigger {
     padding: var(--space-1) var(--space-2);
-    font-size: var(--text-sm);
+    font-size: 20px; /* MOBILE: Consistent 20px on mobile */
   }
   
   .expand-button {

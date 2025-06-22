@@ -17,7 +17,6 @@
             :key="pin.id"
             :pin="pin"
             :layout="layout"
-            @click="emit('pin-click', pin)"
             @tag-click="emit('tag-click', $event)"
           />
         </div>
@@ -32,7 +31,6 @@
           :key="pin.id"
           :pin="pin"
           :layout="layout"
-          @click="emit('pin-click', pin)"
           @tag-click="emit('tag-click', $event)"
         />
       </div>
@@ -66,7 +64,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['pin-click', 'tag-click']);
+const emit = defineEmits(['tag-click']); // REMOVED: 'pin-click' - cards handle navigation directly
 
 // Group pins based on the groupBy prop
 const groupedPins = computed(() => {
@@ -161,8 +159,8 @@ const getGroupId = (name) => {
 
 @media (max-width: 768px) {
   .pin-grid.compact .pins-container {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: var(--space-2);
+    grid-template-columns: repeat(2, 1fr) !important; /* FIXED: 2 columns on mobile */
+    gap: var(--space-2) !important; /* Tighter gap for mobile */
   }
   
   .pin-grid.detailed .pins-container {

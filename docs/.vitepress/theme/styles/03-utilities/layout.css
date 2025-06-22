@@ -650,6 +650,62 @@ body:has(.page-full-width) .VPDoc,
 }
 
 /* ===================================================================
+   VITEPRESS OVERRIDES
+   Hide default VitePress navigation to use custom GlobalLayout
+   =================================================================== */
+
+/* Hide VitePress default navigation completely */
+.VPNav,
+.VPNavBar,
+.VPLocalNav,
+.VPNavBarHamburger,
+.VPNavBarTitle,
+.VPNavBarMenu,
+.VPNavBarAppearance,
+.VPNavBarSocialLinks,
+.VPNavBarExtra {
+  display: none !important;
+}
+
+/* Hide VitePress sidebar and outline */
+.VPSidebar,
+.VPDocAside {
+  display: none !important;
+}
+
+/* Remove VitePress default margins and padding that assume nav presence */
+.VPContent {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+.VPDoc .container {
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.VPDoc .content {
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.VPDoc .content-container {
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Ensure our custom layout takes full control */
+.global-layout {
+  min-height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===================================================================
    RESPONSIVE DISPLAY UTILITIES
    Control visibility across breakpoints
    =================================================================== */

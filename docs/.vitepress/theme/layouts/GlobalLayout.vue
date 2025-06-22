@@ -4,7 +4,7 @@ import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useData, useRoute } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import AppBar from '../components/common/AppBar.vue'
-import BottomNav from '../components/common/BottomNav.vue'
+// import BottomNav from '../components/common/BottomNav.vue' // REMOVED: Breadcrumbs handle navigation
 import Icon from '../components/common/Icon.vue'
 
 const { Layout } = DefaultTheme
@@ -162,8 +162,7 @@ onMounted(() => {
       <Layout />
     </main>
 
-    <!-- PWA bottom navigation (mobile only) -->
-    <BottomNav />
+    <!-- REMOVED: PWA bottom navigation - breadcrumbs handle navigation -->
   </div>
 </template>
 

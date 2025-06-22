@@ -18,7 +18,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['click', 'tag-click'])
+const emit = defineEmits(['tag-click']) // REMOVED: 'click' - direct navigation now
 
 // Local state for tag expansion
 const tagsExpanded = ref(false)
@@ -198,7 +198,9 @@ const formatDate = (dateString) => {
 </script>
 
 <template>
-  <div class="blueprint-card pin-card" :class="[`type-${pin.contentType}`, `layout-${layout}`]" @click="emit('click', pin)">
+  <div class="blueprint-card pin-card" :class="[`type-${pin.contentType}`, `layout-${layout}`]">
+    <!-- Make the card clickable to go to external URL -->
+    <a :href="pin.url" target="_blank" rel="noopener noreferrer" class="pin-card-link">
     <!-- Blueprint grid reference -->
     <div class="blueprint-grid-ref">{{ pin.contentType?.toUpperCase() || 'PIN' }}</div>
     
@@ -282,16 +284,41 @@ const formatDate = (dateString) => {
         </div>
       </div>
     </div>
+    </a> <!-- Close the link tag -->
   </div>
 </template>
 
 <style scoped>
+/* Card link styling */
+.pin-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  height: 100%;
+}
+
+.pin-card-link:hover {
+  color: inherit;
+}
+
 /* Pin card specific styling - extends blueprint-card pattern */
 .pin-card {
   height: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
+}
+
+/* Ensure compact layout cards are square */
+.pin-card.layout-compact {
+  aspect-ratio: 1; /* Force square aspect ratio */
+}
+
+/* Center thumbnails in compact layout */
+.pin-card.layout-compact .media-container,
+.pin-card.layout-compact .media-container-square {
+  margin: 0 auto;
 }
 
 /* Blueprint content container */

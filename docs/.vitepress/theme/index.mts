@@ -51,7 +51,7 @@ import PinsPage from './components/pins/PinsPage.vue'
 // Import common components
 import NavigationDrawer from './components/common/NavigationDrawer.vue'
 import AppBar from './components/common/AppBar.vue'
-import BottomNav from './components/common/BottomNav.vue'
+// import BottomNav from './components/common/BottomNav.vue' // REMOVED: Breadcrumbs handle navigation
 import VimeoEmbed from './components/common/VimeoEmbed.vue'
 import Icon from './components/common/Icon.vue'
 import MainLayout from './components/common/MainLayout.vue'
@@ -94,7 +94,7 @@ export default {
     // Register common components
     app.component('NavigationDrawer', NavigationDrawer)
     app.component('AppBar', AppBar)
-    app.component('BottomNav', BottomNav)
+    // app.component('BottomNav', BottomNav) // REMOVED: Breadcrumbs handle navigation
     app.component('VimeoEmbed', VimeoEmbed)
     app.component('Icon', Icon)
     app.component('MainLayout', MainLayout)

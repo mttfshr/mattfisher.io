@@ -18,6 +18,7 @@
     "update-youtube-full": "node docs/.vitepress/utils/workflows/update-youtube-pins.js",
     "update-youtube-thumbnails": "node docs/.vitepress/utils/services/media/thumbnails.js --youtube",
     "create-session": "node docs/.vitepress/utils/maintenance/createSessionNote.js",
+    "add-annotation": "node scripts/add-annotation.js",
     "auth": "node docs/.vitepress/utils/services/external/auth.js",
     "verify": "node docs/.vitepress/utils/services/external/verify.js",
     "ensure-cache": "node docs/.vitepress/utils/ensurePublicCache.js",
