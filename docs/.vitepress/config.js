@@ -10,6 +10,9 @@ import { getLogEntries } from './utils/services/content/log.js'
 // import { getSessions } from './utils/services/content/sessions.js' // REMOVED: Sessions moved to project/sessions/
 import { getPins } from './utils/services/content/pins.js'
 
+// Development mode detection
+const isDev = process.env.NODE_ENV === 'development'
+
 // Ensure the VitePress public directory exists (but NOT media directories - zero media policy)
 // const { publicDir, mediaDir, thumbnailsDir } = createMediaDirectories(); // DISABLED
 
@@ -69,6 +72,15 @@ export default defineConfig({
     nav: [],
     sidebar: false,
     
+    // Development-only content management features
+    ...(isDev && {
+      devTools: {
+        enabled: true,
+        contentManagement: true,
+        adminRoutes: ['/admin', '/admin/pins', '/admin/collections']
+      }
+    }),
+    
     // Social links in footer only
     socialLinks: [
       { icon: 'github', link: 'https://github.com/mttfshr' }
@@ -111,7 +123,18 @@ export default defineConfig({
   vite: {
     plugins: [
       // videoThumbnailsPlugin(), // DISABLED: No local media storage
-      cloudflareImagesPlugin()
+      cloudflareImagesPlugin(),
+      
+      // Development-only content management API
+      ...(isDev ? [{
+        name: 'content-management-api',
+        configureServer(server) {
+          // Import dev API routes
+          import('./dev-tools/api-routes.js').then(({ setupDevAPI }) => {
+            setupDevAPI(server);
+          });
+        }
+      }] : [])
     ],
     // Disable asset inlining
     build: {

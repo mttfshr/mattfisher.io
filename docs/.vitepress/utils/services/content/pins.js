@@ -447,6 +447,16 @@ function getOgDataFromCache(url) {
       }
     }
 
+    // NEW: Try the OpenGraph images cache from thumbnail generation
+    const ogImagesCachePath = path.resolve(process.cwd(), 'docs/.vitepress/cache/og-images-cache.json');
+    if (fs.existsSync(ogImagesCachePath)) {
+      const ogImagesCache = JSON.parse(fs.readFileSync(ogImagesCachePath, 'utf8'));
+      const urlKey = url.replace(/[^a-zA-Z0-9]/g, '_');
+      if (ogImagesCache[urlKey]) {
+        return ogImagesCache[urlKey];
+      }
+    }
+
     // Also try the global OG cache in public directory
     const publicGlobalCachePath = path.resolve(process.cwd(), 'docs/public/cache/og-cache.json');
     if (fs.existsSync(publicGlobalCachePath)) {

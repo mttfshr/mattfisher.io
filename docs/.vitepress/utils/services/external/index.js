@@ -6,6 +6,7 @@ import fs from 'fs/promises';
 import fetchSpotifyFavorites from './spotify.js';
 import fetchVimeoFavorites from './vimeo.js';
 import fetchYouTubeLikedVideos from './youtube.js';
+import fetchPinterestPins from './pinterest.js';
 
 // Load environment variables
 dotenv.config();
@@ -17,7 +18,7 @@ const docsDir = projectRoot;
 
 /**
  * Run a specific connector
- * @param {string} connector - The connector to run ('spotify', 'vimeo', 'all')
+ * @param {string} connector - The connector to run ('spotify', 'vimeo', 'youtube', 'pinterest', 'all')
  * @returns {Promise<boolean>} - Success status
  */
 async function runConnector(connector) {
@@ -38,6 +39,7 @@ async function runConnector(connector) {
     let spotifySuccess = true;
     let vimeoSuccess = true;
     let youtubeSuccess = true;
+    let pinterestSuccess = true;
     
     // Run Spotify connector if requested
     if (connector === 'all' || connector === 'spotify') {
@@ -116,6 +118,29 @@ async function runConnector(connector) {
         youtubeSuccess = false;
       }
     }
+
+    // Run Pinterest connector if requested
+    if (connector === 'all' || connector === 'pinterest') {
+      console.log('\n---------------------------------------');
+      console.log('Starting Pinterest connector...');
+      console.log('---------------------------------------');
+      
+      try {
+        await fetchPinterestPins(docsDir);
+        console.log('✅ Pinterest pins updated successfully!');
+      } catch (error) {
+        console.error('❌ Error updating Pinterest pins:', error.message);
+        console.error('Stack trace:', error.stack);
+        
+        // Check for common issues
+        if (!process.env.PINTEREST_ACCESS_TOKEN) {
+          console.error('\nMissing Pinterest access token! Please add PINTEREST_ACCESS_TOKEN to your .env file.');
+          console.error('Visit https://developers.pinterest.com/ to get your API credentials.');
+        }
+        
+        pinterestSuccess = false;
+      }
+    }
     
     console.log('\n=======================================');
     console.log('Connector execution completed!');
@@ -123,13 +148,15 @@ async function runConnector(connector) {
     
     // Return overall success status
     if (connector === 'all') {
-      return spotifySuccess && vimeoSuccess && youtubeSuccess;
+      return spotifySuccess && vimeoSuccess && youtubeSuccess && pinterestSuccess;
     } else if (connector === 'spotify') {
       return spotifySuccess;
     } else if (connector === 'vimeo') {
       return vimeoSuccess;
     } else if (connector === 'youtube') {
       return youtubeSuccess;
+    } else if (connector === 'pinterest') {
+      return pinterestSuccess;
     }
     
     return true;

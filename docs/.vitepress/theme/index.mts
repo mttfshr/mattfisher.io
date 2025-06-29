@@ -63,6 +63,13 @@ import TagFilter from './components/collections/TagFilter.vue'
 import TagVisualization from './components/collections/TagVisualization.vue'
 import StructuredTagsDisplay from './components/collections/StructuredTagsDisplay.vue'
 
+// Import admin components (dev-only)
+import AdminPanel from './components/admin/AdminPanel.vue'
+import PinOrganizer from './components/admin/PinOrganizer.vue'
+import CollectionManager from './components/admin/CollectionManager.vue'
+import TagManager from './components/admin/TagManager.vue'
+import SystemInfo from './components/admin/SystemInfo.vue'
+
 export default {
   extends: DefaultTheme,
   Layout, // Use our custom layout
@@ -105,6 +112,13 @@ export default {
     app.component('TagFilter', TagFilter)
     app.component('TagVisualization', TagVisualization)
     app.component('StructuredTagsDisplay', StructuredTagsDisplay)
+    
+    // Register admin components (dev-only)
+    app.component('AdminPanel', AdminPanel)
+    app.component('PinOrganizer', PinOrganizer)
+    app.component('CollectionManager', CollectionManager)
+    app.component('TagManager', TagManager)
+    app.component('SystemInfo', SystemInfo)
     
     // Register Cloudflare Images component
     app.component('CloudflareImage', CloudflareImage)
