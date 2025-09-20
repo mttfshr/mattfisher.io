@@ -380,8 +380,6 @@
 
 - [JB 720 XNS 25911 Project + (21:35)](https://vimeo.com/187181957) #collection:vimeo
 
-- [Hexadic Talk with Ben Chasny of Six Organs of Admittance (4:54)](https://vimeo.com/136754392) #collection:vimeo
-
 - [Cyclotone II (3:57)](https://vimeo.com/paulprudence/httpsvimeocomcyclotoneii) #collection:vimeo
 
 - [Chromophore (1:38)](https://vimeo.com/69483128) #collection:vimeo
